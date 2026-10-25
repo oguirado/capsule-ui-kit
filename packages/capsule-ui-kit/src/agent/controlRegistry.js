@@ -124,9 +124,59 @@ function assertSafeNonNegativeInt(value, label, errCode = 'ERR_INVALID_INTEGER')
 
 /**
  * Allowed control-family inventory from UI_ARCHITECTURE.md §9 (13 normative rows, expanded into pattern rules).
+ * Additive SaaS rows (record/destroy, layout-save, detail steppers/pty/scaled-badge, review-confirm)
+ * extend existing rows without changing the 13-row shape.
  * @type {readonly ControlFamilyRule[]}
  */
 const FAMILY_RULES = Object.freeze([
+  Object.freeze({
+    rowIndex: 6,
+    template: 'terminal/session/{sid}/output',
+    pattern: /^terminal\/session\/([A-Za-z0-9._-]+)\/output$/,
+    allowedRoles: Object.freeze(['button']),
+    requiresReasonWhenDisabled: false,
+    forbidsZeroWhenUnknown: false,
+  }),
+  Object.freeze({
+    rowIndex: 6,
+    template: 'terminal/side/{toggle,collapse,edge-tab,new,custom-open,cancel,custom-back,custom-confirm}',
+    pattern: /^terminal\/side\/(toggle|collapse|edge-tab|new|custom-open|cancel|custom-back|custom-confirm)$/,
+    allowedRoles: Object.freeze(['button']),
+    requiresReasonWhenDisabled: false,
+    forbidsZeroWhenUnknown: false,
+  }),
+  Object.freeze({
+    rowIndex: 6,
+    template: 'terminal/side/panel',
+    pattern: /^terminal\/side\/panel$/,
+    allowedRoles: Object.freeze(['complementary']),
+    requiresReasonWhenDisabled: false,
+    forbidsZeroWhenUnknown: false,
+  }),
+  Object.freeze({
+    rowIndex: 6,
+    template: 'terminal/side/{dialog,custom-dialog}',
+    pattern: /^terminal\/side\/(dialog|custom-dialog)$/,
+    allowedRoles: Object.freeze(['dialog']),
+    requiresReasonWhenDisabled: false,
+    forbidsZeroWhenUnknown: false,
+  }),
+  Object.freeze({
+    rowIndex: 6,
+    template: 'terminal/side/{custom-executable,custom-args}',
+    pattern: /^terminal\/side\/(custom-executable|custom-args)$/,
+    allowedRoles: Object.freeze(['textbox']),
+    requiresReasonWhenDisabled: false,
+    forbidsZeroWhenUnknown: false,
+  }),
+  Object.freeze({
+    rowIndex: 6,
+    template: 'terminal/launch/provider/{id}',
+    pattern: /^terminal\/launch\/provider\/([a-z0-9][a-z0-9._-]{0,63})$/,
+    allowedRoles: Object.freeze(['button']),
+    requiresReasonWhenDisabled: false,
+    forbidsZeroWhenUnknown: false,
+  }),
   Object.freeze({
     rowIndex: 6,
     template: 'terminal/launcher',
@@ -335,6 +385,54 @@ const FAMILY_RULES = Object.freeze([
     requiresReasonWhenDisabled: false,
     forbidsZeroWhenUnknown: false,
   }),
+  Object.freeze({
+    rowIndex: 3,
+    template: 'capsule/{id}/{record,destroy}',
+    pattern: /^capsule\/([A-Za-z0-9._-]+)\/(record|destroy)$/,
+    allowedRoles: Object.freeze(['button']),
+    requiresReasonWhenDisabled: true,
+    forbidsZeroWhenUnknown: false,
+  }),
+  Object.freeze({
+    rowIndex: 1,
+    template: 'shell/layout-save',
+    pattern: /^shell\/layout-save$/,
+    allowedRoles: Object.freeze(['button']),
+    requiresReasonWhenDisabled: false,
+    forbidsZeroWhenUnknown: false,
+  }),
+  Object.freeze({
+    rowIndex: 5,
+    template: 'detail/{id}/stepper-{w,h}',
+    pattern: /^detail\/([A-Za-z0-9._-]+)\/stepper-(w|h)$/,
+    allowedRoles: Object.freeze(['spinbutton']),
+    requiresReasonWhenDisabled: false,
+    forbidsZeroWhenUnknown: false,
+  }),
+  Object.freeze({
+    rowIndex: 5,
+    template: 'detail/{id}/pty-toggle',
+    pattern: /^detail\/([A-Za-z0-9._-]+)\/pty-toggle$/,
+    allowedRoles: Object.freeze(['switch']),
+    requiresReasonWhenDisabled: false,
+    forbidsZeroWhenUnknown: false,
+  }),
+  Object.freeze({
+    rowIndex: 5,
+    template: 'detail/{id}/scaled-badge',
+    pattern: /^detail\/([A-Za-z0-9._-]+)\/scaled-badge$/,
+    allowedRoles: Object.freeze(['status']),
+    requiresReasonWhenDisabled: false,
+    forbidsZeroWhenUnknown: false,
+  }),
+  Object.freeze({
+    rowIndex: 9,
+    template: 'dispatch/{did}/review-confirm',
+    pattern: /^dispatch\/([A-Za-z0-9._-]+)\/review-confirm$/,
+    allowedRoles: Object.freeze(['button']),
+    requiresReasonWhenDisabled: false,
+    forbidsZeroWhenUnknown: false,
+  }),
 ]);
 
 /**
@@ -343,7 +441,7 @@ const FAMILY_RULES = Object.freeze([
 export const CONTROL_FAMILY_INVENTORY = Object.freeze([
   Object.freeze({
     row: 1,
-    templates: Object.freeze(['shell/fullscreen', 'shell/navigation/{id}']),
+    templates: Object.freeze(['shell/fullscreen', 'shell/navigation/{id}', 'shell/layout-save']),
     roles: Object.freeze(['button', 'tab']),
   }),
   Object.freeze({
@@ -353,7 +451,7 @@ export const CONTROL_FAMILY_INVENTORY = Object.freeze([
   }),
   Object.freeze({
     row: 3,
-    templates: Object.freeze(['capsule/{id}/{fold,pin,control,close,popout,dock-back,float,maximize,hide,show}']),
+    templates: Object.freeze(['capsule/{id}/{fold,pin,control,close,popout,dock-back,float,maximize,hide,show}', 'capsule/{id}/{record,destroy}']),
     roles: Object.freeze(['button']),
   }),
   Object.freeze({
@@ -363,13 +461,13 @@ export const CONTROL_FAMILY_INVENTORY = Object.freeze([
   }),
   Object.freeze({
     row: 5,
-    templates: Object.freeze(['capsule/{id}/slot', 'capsule/{id}/session/{sid}/tab']),
-    roles: Object.freeze(['region', 'tab']),
+    templates: Object.freeze(['capsule/{id}/slot', 'capsule/{id}/session/{sid}/tab', 'detail/{id}/stepper-{w,h}', 'detail/{id}/pty-toggle', 'detail/{id}/scaled-badge']),
+    roles: Object.freeze(['region', 'tab', 'spinbutton', 'switch', 'status']),
   }),
   Object.freeze({
     row: 6,
-    templates: Object.freeze(['session/{sid}/{attach,stop,replay,target}', 'terminal/launcher', 'terminal/launch/{shell,pi,claude,codex}', 'terminal/session/{sid}/{tab,close}', 'terminal/composer', 'terminal/composer/send']),
-    roles: Object.freeze(['button']),
+    templates: Object.freeze(['session/{sid}/{attach,stop,replay,target}', 'terminal/launcher', 'terminal/launch/{shell,pi,claude,codex}', 'terminal/session/{sid}/{tab,close}', 'terminal/composer', 'terminal/composer/send', 'terminal/side/{toggle,collapse,edge-tab,new,custom-open,cancel,custom-back,custom-confirm}', 'terminal/side/panel', 'terminal/side/{dialog,custom-dialog}', 'terminal/side/{custom-executable,custom-args}', 'terminal/launch/provider/{id}', 'terminal/session/{sid}/output']),
+    roles: Object.freeze(['button', 'tab', 'textbox', 'complementary', 'dialog']),
   }),
   Object.freeze({
     row: 7,
@@ -383,7 +481,7 @@ export const CONTROL_FAMILY_INVENTORY = Object.freeze([
   }),
   Object.freeze({
     row: 9,
-    templates: Object.freeze(['dispatch/{did}/target/{sid}/{result,retry,cancel}']),
+    templates: Object.freeze(['dispatch/{did}/target/{sid}/{result,retry,cancel}', 'dispatch/{did}/review-confirm']),
     roles: Object.freeze(['region', 'button']),
   }),
   Object.freeze({

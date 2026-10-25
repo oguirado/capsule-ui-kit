@@ -545,7 +545,6 @@ test('Dock host unit — DockWorkspace.vue', async (t) => {
         'InspectorPanel',
         'AlertBoard',
         'TimelinePanel',
-        'OrchestratorDrawer',
         'HelpSettingsPanel',
         'MissingPanel',
       ]) {
@@ -560,6 +559,8 @@ test('Dock host unit — DockWorkspace.vue', async (t) => {
         MissingPanel: { name: 'MissingPanelStub' },
       });
       assert.equal(registry.resolveComponentName('CapsulePanel'), 'CapsulePanel');
+      assert.equal(DOCK_PANEL_REGISTRY_TYPES.includes('OrchestratorDrawer'), false);
+      assert.equal(registry.resolveComponentName('OrchestratorDrawer'), 'MissingPanel', 'Retired drawer cannot instantiate in the active registry');
       assert.equal(
         registry.resolveComponentName('RetiredLegacyGraph'),
         'MissingPanel',
@@ -749,7 +750,7 @@ test('Dock host unit — DockWorkspace.vue', async (t) => {
   );
 
   await t.test(
-    '4. NEGATIVE CONTRAST (binding): panel move, tab switch, float, dock-back, close, or Dockview remove/add callbacks CANNOT destroy capsule or duplicate OrchestratorDrawer',
+    '4. NEGATIVE CONTRAST (binding): panel move, tab switch, float, dock-back, close, or Dockview remove/add callbacks CANNOT destroy capsule or instantiate a retired drawer',
     async () => {
       const { createDockWorkspaceHost } = helpers;
       const mockApi = createMockDockviewApi();
@@ -849,7 +850,8 @@ test('Dock host unit — DockWorkspace.vue', async (t) => {
       assert.equal(forbiddenDestroy.code, 'ERR_DOCKHOST_FORBIDS_CAPSULE_DESTROY');
       assert.equal(host.getState().capsuleDestroyAttemptsBlocked, 1);
 
-      // 6. Moving OrchestratorDrawer uses singular identity and refuses duplicate drawer panels (UI_ARCHITECTURE.md §3 line 111)
+      // 6. Retired drawer references restore as inert placeholders. Neither
+      // reference may create a composer or dispatch owner in the current host.
       const addDrawer1 = host.mountPanel({
         id: 'panel-orchestrator-drawer',
         component: 'OrchestratorDrawer',
@@ -863,12 +865,11 @@ test('Dock host unit — DockWorkspace.vue', async (t) => {
         component: 'OrchestratorDrawer',
         title: 'Orchestrator Copy',
       });
-      assert.equal(addDrawer2.ok, false);
-      assert.equal(
-        addDrawer2.code,
-        'ERR_DUPLICATE_ORCHESTRATOR_DRAWER',
-        'Moving or docking OrchestratorDrawer must never create a second composer or dispatch owner'
-      );
+      assert.equal(addDrawer2.ok, true);
+      for (const id of ['panel-orchestrator-drawer', 'panel-orchestrator-drawer-duplicate']) {
+        assert.equal(mockApi.getPanel(id).api.component, 'MissingPanel', 'Retired references must never instantiate a drawer or dispatch owner');
+      }
+      assert.equal(backendDestroyCalls.length, 0, 'Retirement never acquires capsule destruction authority');
     }
   );
 

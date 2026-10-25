@@ -8,8 +8,8 @@ import { createRequire } from 'node:module';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const VUE_SFC_PATH = path.resolve(__dirname, '../src/orchestrator/OrchestratorDrawer.vue');
-const BOOK_PATH = path.resolve(__dirname, '../books/orchestrator-drawer.md');
+const VUE_SFC_PATH = path.resolve(__dirname, './fixtures/retired/src/orchestrator/OrchestratorDrawer.vue');
+const BOOK_PATH = path.resolve(__dirname, './fixtures/retired/books/orchestrator-drawer.md');
 
 
 const requireFromShell = createRequire(import.meta.url);
@@ -56,7 +56,7 @@ before(async () => {
   assert.equal(parsed.errors.length, 0, `SFC parse errors: ${JSON.stringify(parsed.errors)}`);
   sfcDescriptor = parsed.descriptor;
 
-  const localDrawerModelPath = path.resolve(__dirname, '../src/orchestrator/drawerModel.js');
+  const localDrawerModelPath = path.resolve(__dirname, './fixtures/retired/src/orchestrator/drawerModel.js');
   const resolvedDrawerModelPath = localDrawerModelPath;
 
   const localRegistryPath = path.resolve(__dirname, '../src/agent/controlRegistry.js');

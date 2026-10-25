@@ -9,7 +9,7 @@
  * - UI_ARCHITECTURE.md §4 (UiLayout boundary, layout profile rules, restore pipeline, atomic save guards)
  * - UI_ARCHITECTURE.md §5 (Read / save layout and preferences)
  * - UI_ARCHITECTURE.md §6 (Presentation moves vs backend lifecycle)
- * - UI_ARCHITECTURE.md §7 (OrchestratorDrawer presentation states: collapsed, expanded, maximized)
+ * - UI_ARCHITECTURE.md §7 (retired bottom-drawer presentation states: collapsed, expanded, maximized)
  * - UI_ARCHITECTURE.md §13 (Layout migration unit)
  * - Installed `dockview-core version 8.4.1` `SerializedDockview` / `GroupviewPanelState` / `Orientation` declarations
  *
@@ -48,6 +48,8 @@ export const MISSING_PANEL_TYPE = 'MissingPanel';
 
 /**
  * Default admitted substantive panel types in the shared capsule kit (UI_ARCHITECTURE.md §3).
+ * Types absent from this set decode to `MissingPanel` with `originalPanelType`
+ * preserved (retired types, e.g. the former bottom drawer, included).
  * @type {ReadonlySet<string>}
  */
 export const DEFAULT_ACTIVE_PANEL_TYPES = Object.freeze(
@@ -57,7 +59,6 @@ export const DEFAULT_ACTIVE_PANEL_TYPES = Object.freeze(
     'InspectorPanel',
     'AlertBoard',
     'TimelinePanel',
-    'OrchestratorDrawer',
     'HelpSettingsPanel',
     MISSING_PANEL_TYPE,
   ])
@@ -142,7 +143,9 @@ const VALID_ORIENTATIONS = Object.freeze(new Set(['HORIZONTAL', 'VERTICAL']));
 const VALID_PANEL_RENDERERS = Object.freeze(new Set(['onlyWhenVisible', 'always']));
 
 /**
- * Valid OrchestratorDrawer modes (UI_ARCHITECTURE.md §7).
+ * Valid retired-drawer chrome modes (UI_ARCHITECTURE.md §7). The shell keeps
+ * validating `drawerMode`/`drawerExpandedHeight` so profiles saved before the
+ * drawer retirement still decode; the values no longer drive any surface.
  * @type {ReadonlySet<string>}
  */
 const VALID_DRAWER_MODES = Object.freeze(new Set(['collapsed', 'expanded', 'maximized']));

@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en" data-theme-scheme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI multislot bench (stub host only)</title>
+<link rel="stylesheet" href="../src/design/theme.css">
+<style>
+:root {
+  --bench-canvas: var(--cuk-semantic-surface-canvas, #0b0f19);
+  --bench-panel: var(--cuk-semantic-surface-panel, #0f172a);
+  --bench-raised: var(--cuk-semantic-surface-elevated, #1e293b);
+  --bench-border: var(--cuk-semantic-border-subtle, #1e293b);
+  --bench-ink: var(--cuk-semantic-text-primary, #f8fafc);
+  --bench-muted: var(--cuk-semantic-text-muted, #94a3b8);
+  --bench-accent: var(--cuk-semantic-accent-primary, #6366f1);
+  --bench-focus: var(--cuk-semantic-focus-ringColor, #6366f1);
+  --bench-record: var(--cuk-semantic-status-error-text, #e11d48);
+  --bench-ok: var(--cuk-semantic-status-success-text, #059669);
+}
+:root[data-theme-scheme="light"] {
+  --bench-canvas: var(--cuk-semantic-surface-canvas, #ffffff);
+  --bench-panel: var(--cuk-semantic-surface-panel, #f1f4f7);
+  --bench-raised: var(--cuk-semantic-surface-elevated, #ffffff);
+  --bench-border: var(--cuk-semantic-border-subtle, #dee3e9);
+  --bench-ink: var(--cuk-semantic-text-primary, #1c1e21);
+  --bench-muted: var(--cuk-semantic-text-muted, #64748b);
+  --bench-accent: var(--cuk-semantic-accent-primary, #0064e0);
+  --bench-focus: var(--cuk-semantic-focus-ringColor, #0064e0);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bench-canvas);
+  color: var(--bench-ink);
+  font-family: var(--cuk-semantic-typography-font-family-sans, system-ui, -apple-system, sans-serif);
+  font-size: 14px;
+  line-height: 1.45;
+}
+header.bench-bar {
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  padding: 10px 14px; border-bottom: 1px solid var(--bench-border);
+  background: var(--bench-panel);
+}
+header.bench-bar h1 { font-size: 15px; margin: 0 8px 0 0; font-weight: 600; }
+button.pill {
+  font: inherit; color: var(--bench-ink);
+  background: var(--bench-raised);
+  border: 1px solid var(--bench-border);
+  border-radius: 999px; padding: 4px 12px; cursor: pointer;
+}
+button.pill[aria-pressed="true"] { border-color: var(--bench-accent); }
+button.pill:disabled { opacity: 0.55; cursor: not-allowed; }
+button.pill:focus-visible { outline: 2px solid var(--bench-focus); outline-offset: 2px; }
+main { display: grid; grid-template-columns: 1fr 340px; gap: 12px; padding: 12px 14px; }
+@media (max-width: 1100px) { main { grid-template-columns: 1fr; } }
+.slot {
+  border: 1px solid var(--bench-border); border-radius: 8px;
+  background: var(--bench-panel); margin-bottom: 12px; overflow: hidden;
+}
+.slot.floating { position: fixed; right: 16px; bottom: 16px; width: 520px; z-index: 40;
+  box-shadow: 0 8px 30px rgba(0,0,0,.35); }
+.slot-head { display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+  padding: 8px 10px; border-bottom: 1px solid var(--bench-border); }
+.chip { font-size: 12px; border: 1px solid var(--bench-border); border-radius: 999px;
+  padding: 1px 9px; color: var(--bench-muted); white-space: nowrap; }
+.chip.live { color: var(--bench-ok); border-color: var(--bench-ok); }
+.chip.rec { color: var(--bench-record); border-color: var(--bench-record); }
+.controls { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 10px;
+  border-bottom: 1px solid var(--bench-border); }
+.slot-body { display: flex; min-height: 220px; }
+.slot-body.side-bottom { flex-direction: column; }
+.pane { padding: 10px; min-width: 0; min-height: 0; }
+.surface-pane { flex: 1 1 60%; background: var(--bench-raised); }
+.terminal-pane { flex: 1 1 40%; border-left: 1px solid var(--bench-border); }
+.side-bottom .terminal-pane { border-left: none; border-top: 1px solid var(--bench-border); }
+.splitter { flex: 0 0 8px; background: var(--bench-border); cursor: col-resize; }
+.side-bottom .splitter { cursor: row-resize; }
+.splitter:focus-visible { outline: 2px solid var(--bench-focus); outline-offset: -2px; }
+.surface-mock { border: 1px dashed var(--bench-muted); border-radius: 6px;
+  min-height: 120px; display: flex; align-items: center; justify-content: center;
+  color: var(--bench-muted); text-align: center; padding: 12px; }
+.surface-mock.veil { cursor: not-allowed; }
+.terminal-mock { border: 1px solid var(--bench-border); border-radius: 6px;
+  min-height: 120px; display: flex; flex-direction: column; }
+.terminal-log { flex: 1; min-height: 80px; max-height: 160px; overflow: auto;
+  padding: 8px; margin: 0; white-space: pre-wrap;
+  font-family: var(--cuk-semantic-typography-font-family-mono, ui-monospace, monospace);
+  font-size: 12px; }
+.terminal-input { display: flex; gap: 6px; padding: 6px; border-top: 1px solid var(--bench-border); }
+.terminal-input input { flex: 1; font: inherit; color: var(--bench-ink);
+  background: var(--bench-canvas); border: 1px solid var(--bench-border);
+  border-radius: 6px; padding: 4px 8px; }
+.tabs { display: flex; gap: 4px; padding: 6px 6px 0; flex-wrap: wrap; }
+.tab { font-size: 12px; border: 1px solid var(--bench-border); border-radius: 6px 6px 0 0;
+  padding: 2px 8px; background: var(--bench-canvas); }
+.tab[aria-selected="true"] { border-color: var(--bench-accent); }
+aside.panels { display: flex; flex-direction: column; gap: 12px; }
+.panel { border: 1px solid var(--bench-border); border-radius: 8px;
+  background: var(--bench-panel); padding: 10px; }
+.panel h2 { font-size: 13px; margin: 0 0 8px; text-transform: uppercase;
+  letter-spacing: .04em; color: var(--bench-muted); }
+.log { max-height: 220px; overflow: auto; margin: 0; padding: 6px;
+  font-family: var(--cuk-semantic-typography-font-family-mono, ui-monospace, monospace);
+  font-size: 11.5px; background: var(--bench-canvas);
+  border: 1px solid var(--bench-border); border-radius: 6px; white-space: pre-wrap; }
+.check { display: flex; gap: 8px; align-items: baseline; margin: 4px 0; }
+.badge { font-size: 11px; font-weight: 700; border-radius: 4px; padding: 0 6px; }
+.badge.pass { color: var(--bench-ok); border: 1px solid var(--bench-ok); }
+.badge.info { color: var(--bench-muted); border: 1px solid var(--bench-muted); }
+.folded-rail { display: none; padding: 6px 10px; color: var(--bench-muted); font-size: 12px; }
+.slot.folded .slot-body, .slot.folded .controls { display: none; }
+.slot.folded .folded-rail { display: flex; gap: 6px; }
+.notice { font-size: 12px; color: var(--bench-muted); }
+code { font-family: var(--cuk-semantic-typography-font-family-mono, ui-monospace, monospace);
+  font-size: 12px; }
+</style>
+</head>
+<body>
+<header class="bench-bar">
+  <h1>AI multislot bench</h1>
+  <span class="chip">stub host only</span>
+  <span class="chip">no backend</span>
+  <button class="pill" id="schemeToggle" type="button" aria-pressed="false">Scheme: dark</button>
+  <button class="pill" id="diskToggle" type="button" aria-pressed="false">Disk destination: none</button>
+  <span class="notice" id="serveNotice">Serve this kit directory over http so the page imports the real kit modules.</span>
+</header>
+<main>
+  <section aria-label="Slot frames">
+    <p class="notice">Schematic frames mirror the <code>AiMultiSlot</code> control surface 1:1
+    (surface + attached hideable terminal, splitter, control bar). Slot A is attached on the
+    <code>right</code>; slot B is attached on the <code>bottom</code>. Every button emits a
+    <code>submit-intent</code> into the log; the stub host below answers in memory.</p>
+    <div id="slots"></div>
+  </section>
+  <aside class="panels">
+    <section class="panel" aria-label="Stub host">
+      <h2>Stub host (in memory)</h2>
+      <div class="check"><span class="badge info">SurfaceStream</span><span id="surfaceCaps">subscribe / setInputEnabled / geometry</span></div>
+      <div class="check"><span class="badge info">RecordingSink</span><span id="recordCaps">destination / start / stop / onPhase (RAM)</span></div>
+      <div class="check"><span class="badge info">ScreenshotSink</span><span>capture to RAM (disk when configured)</span></div>
+      <div class="check"><span class="badge info">InputMode</span><span>scripted read | write service</span></div>
+      <div class="check"><span class="badge info">TerminalSession</span><span>fake PTY facade: open / input / resize / close / onOutput / onExit</span></div>
+      <div class="check"><span class="badge pass" id="spawnBadge">spawn 0 · kill 0</span><span>fold / hide / float never spawn or kill</span></div>
+    </section>
+    <section class="panel" aria-label="Intent log">
+      <h2>Intent log</h2>
+      <p class="log" id="intentLog" role="log" aria-label="submit-intent log">— no intents yet —</p>
+    </section>
+    <section class="panel" aria-label="Acceptance checklist">
+      <h2>Checklist (spec section 10, overrides applied)</h2>
+      <div class="check"><span class="badge pass" id="c1">PASS</span><span>Fold, hide/show, float and tab switches keep hosts mounted (v-show)</span></div>
+      <div class="check"><span class="badge pass" id="c2">PASS</span><span>Input mode READ/WRITE is an operator tool; switching never takes AI control away</span></div>
+      <div class="check"><span class="badge info" id="c3">GATED</span><span>Disk record/screenshot disabled with reason while no destination is configured</span></div>
+      <div class="check"><span class="badge pass" id="c4">PASS</span><span>Hidden/folded controls report no geometry; label + role + id + anchor kept</span></div>
+      <div class="check"><span class="badge pass" id="c5">PASS</span><span>No product names, no backend verbs, no kit disk/network/clipboard writes</span></div>
+    </section>
+    <section class="panel" aria-label="Registry coverage">
+      <h2>Registry coverage</h2>
+      <p class="log" id="registryLog" role="log" aria-label="anchor registry rows">loading…</p>
+    </section>
+  </aside>
+</main>
+<script type="module">
+// Bench stub host: every section-7 capability in memory. No fetch, no XHR,
+// no clipboard, no storage. Intent vocabulary (conductor override):
+// record-ai, record-disk, screenshot, copy-id, hide-surface, show-surface,
+// hide-terminal, show-terminal, input-mode-read, input-mode-write,
+// operator-guidance, fold, unfold, float, dock-back, close.
+const FALLBACK_INTENTS = Object.freeze([
+  'record-ai', 'record-disk', 'screenshot', 'copy-id',
+  'hide-surface', 'show-surface', 'hide-terminal', 'show-terminal',
+  'input-mode-read', 'input-mode-write', 'operator-guidance',
+  'fold', 'unfold', 'float', 'dock-back', 'close',
+]);
+const FALLBACK_ROWS = Object.freeze([
+  ['multislot.record.ai', 'capsule/{id}/record-ai'],
+  ['multislot.record.disk', 'capsule/{id}/record-disk'],
+  ['multislot.screenshot', 'capsule/{id}/screenshot'],
+  ['multislot.copy-id', 'capsule/{id}/copy-id'],
+  ['multislot.hide-surface', 'capsule/{id}/hide-surface'],
+  ['multislot.hide-terminal', 'capsule/{id}/hide-terminal'],
+  ['multislot.input-mode', 'capsule/{id}/input-mode'],
+  ['multislot.fold', 'capsule/{id}/fold'],
+  ['multislot.float', 'capsule/{id}/float'],
+  ['multislot.dock-back', 'capsule/{id}/dock-back'],
+  ['multislot.close', 'capsule/{id}/close'],
+]);
+
+const intentLog = document.getElementById('intentLog');
+const registryLog = document.getElementById('registryLog');
+const serveNotice = document.getElementById('serveNotice');
+const lines = [];
+let kitIntents = null;
+
+function stamp(ts) {
+  const d = new Date(ts);
+  const p = (n) => String(n).padStart(2, '0');
+  return `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+}
+
+function logIntent(type, capsuleId, extra = {}) {
+  const entry = { type, capsuleId, ts: Date.now(), ...extra };
+  lines.push(`[${stamp(entry.ts)}] submit-intent ${JSON.stringify(entry)}`);
+  if (lines.length > 200) lines.shift();
+  intentLog.textContent = lines.join('\n');
+}
+
+function fmtElapsed(ms) {
+  const s = Math.floor(ms / 1000);
+  return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+}
+
+// In-memory stub host -------------------------------------------------
+const stub = {
+  spawnCount: 0,
+  killCount: 0,
+  diskDestination: null, // { path, retention } when the Disk toggle is on
+  inputMode: 'read',
+  surface: {
+    subscribe() { return () => {}; },
+    setInputEnabled() {},
+    geometry() { return { width: 1280, height: 900 }; },
+  },
+  recording: {
+    destination(kind) {
+      if (kind === 'ai') return { store: 'ram' };
+      return stub.diskDestination ? { store: 'disk', path: stub.diskDestination.path } : null;
+    },
+    start(capsuleId, kind) {
+      const dest = stub.recording.destination(kind);
+      if (!dest) throw new Error('ERR_DISK_RECORD_WITHOUT_DESTINATION');
+      return { id: `job-${capsuleId}-${kind}`, capsuleId, kind, store: dest.store, since: Date.now() };
+    },
+    stop() {},
+    onPhase() { return () => {}; },
+  },
+  screenshot: {
+    capture(capsuleId) {
+      return { handle: `shot-${capsuleId}-${Date.now()}`, store: stub.diskDestination ? 'disk' : 'ram' };
+    },
+  },
+  pty: {
+    seq: 0,
+    open(entry) {
+      stub.pty.seq += 1;
+      return { id: `pty-${stub.pty.seq}`, entry, live: true, transcript: [`[stub] ${entry} ready (fake PTY)`] };
+    },
+    input(session, data) {
+      session.transcript.push(`$ ${data}`);
+      session.transcript.push(`[stub echo] ${data}`);
+    },
+    resize() {},
+    close(session) { session.live = false; },
+  },
+};
+
+// Slot frames ----------------------------------------------------------
+const slotsRoot = document.getElementById('slots');
+const slots = [
+  { capsuleId: 'cap-demo-01', label: 'Slot A', attachSide: 'right' },
+  { capsuleId: 'cap-demo-02', label: 'Slot B', attachSide: 'bottom' },
+];
+
+function el(tag, attrs = {}, text = '') {
+  const node = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (v !== undefined) node.setAttribute(k, v);
+  }
+  if (text) node.textContent = text;
+  return node;
+}
+
+function guard(node) {
+  // Focus guard: never steal the live surface focus on pointer press.
+  node.addEventListener('pointerdown', (e) => e.preventDefault());
+  node.addEventListener('mousedown', (e) => e.preventDefault());
+}
+
+function controlButton(label, anchor, onClick, opts = {}) {
+  const b = el('button', {
+    type: 'button',
+    class: 'pill',
+    role: 'button',
+    'data-semantic-anchor': anchor,
+    'aria-label': opts.ariaLabel || label,
+    ...(opts.pressed !== undefined ? { 'aria-pressed': String(opts.pressed) } : {}),
+    ...(opts.busy ? { 'aria-busy': 'true' } : {}),
+    ...(opts.reason ? { title: opts.reason, 'data-unavailable-reason': opts.reason } : {}),
+  }, label);
+  guard(b);
+  if (opts.disabled) b.disabled = true;
+  b.addEventListener('click', onClick);
+  return b;
+}
+
+function buildSlot({ capsuleId, label, attachSide }) {
+  const state = {
+    folded: false,
+    floating: false,
+    surfaceHidden: false,
+    terminalHidden: false,
+    surfaceState: 'live',
+    mode: 'read',
+    copy: 'ready',
+    ai: { phase: 'idle', job: null, timer: null },
+    disk: { phase: 'idle', job: null, timer: null },
+    tabs: [stub.pty.open('shell')],
+    selected: 0,
+  };
+
+  const root = el('section', { class: 'slot', 'aria-label': `${label} (${capsuleId}) attached ${attachSide}` });
+  const head = el('div', { class: 'slot-head' });
+  const title = el('strong', {}, `${label} · ${capsuleId}`);
+  const surfaceBadge = el('span', { class: 'chip live' }, 'surface live');
+  const termBadge = el('span', { class: 'chip' }, 'PTY #1');
+  const modeBadge = el('span', { class: 'chip' }, 'READ');
+  head.append(title, surfaceBadge, termBadge, modeBadge,
+    el('span', { class: 'chip' }, `attach ${attachSide}`));
+
+  const bar = el('div', { class: 'controls', role: 'toolbar', 'aria-label': `${label} controls` });
+  const body = el('div', { class: `slot-body side-${attachSide}` });
+  const surfacePane = el('div', { class: 'pane surface-pane' });
+  const splitter = el('div', {
+    class: 'splitter', role: 'separator', tabindex: '0',
+    'aria-label': `${label} pane splitter`,
+    title: 'Arrows 1px | Shift 10px',
+    'data-semantic-anchor': `workspace/separator/${capsuleId}`,
+  });
+  const termPane = el('div', { class: 'pane terminal-pane' });
+  const rail = el('div', { class: 'folded-rail' }, `${label} folded — hosts stay mounted`);
+
+  const surfaceMock = el('div', { class: 'surface-mock veil' },
+    'Live surface (stub) — READ veil: operator input is not forwarded');
+  surfacePane.append(surfaceMock);
+
+  const tabsRow = el('div', { class: 'tabs', role: 'tablist', 'aria-label': `${label} terminal tabs` });
+  const termMock = el('div', { class: 'terminal-mock' });
+  const termLog = el('p', { class: 'log terminal-log', role: 'log', 'aria-label': `${label} terminal output` });
+  const inputRow = el('div', { class: 'terminal-input' });
+  const input = el('input', { type: 'text', 'aria-label': `${label} terminal input`, placeholder: 'Type to the fake PTY…' });
+  const send = controlButton('Send', `session/sess-demo/tab`, () => {
+    const sess = state.tabs[state.selected];
+    if (sess && sess.live && input.value.trim()) {
+      stub.pty.input(sess, input.value.trim());
+      termLog.textContent = sess.transcript.join('\n');
+      input.value = '';
+    }
+  });
+  inputRow.append(input, send);
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') send.click();
+  });
+  termMock.append(termLog, inputRow);
+  termPane.append(tabsRow, termMock);
+
+  function renderTabs() {
+    tabsRow.replaceChildren();
+    state.tabs.forEach((sess, i) => {
+      const t = el('button', {
+        type: 'button', class: 'tab', role: 'tab',
+        'aria-selected': String(i === state.selected),
+      }, `${sess.entry} ${sess.live ? '' : '(exited)'}`);
+      guard(t);
+      t.addEventListener('click', () => { state.selected = i; renderTabs(); renderTerm(); });
+      tabsRow.append(t);
+    });
+    const add = el('button', { type: 'button', class: 'tab', 'aria-label': 'New terminal tab' }, '+ shell');
+    guard(add);
+    add.addEventListener('click', () => {
+      // Shell-first launch menu (stub): System shell, provider entries, custom.
+      const entry = state.tabs.length === 1 ? 'provider' : 'shell';
+      state.tabs.push(stub.pty.open(entry));
+      state.selected = state.tabs.length - 1;
+      renderTabs(); renderTerm();
+    });
+    tabsRow.append(add);
+  }
+
+  function renderTerm() {
+    const sess = state.tabs[state.selected];
+    termLog.textContent = sess ? sess.transcript.join('\n') : '— no tab —';
+    termBadge.textContent = sess ? `PTY #${state.selected + 1}${sess.live ? '' : ' exited'}` : 'no PTY';
+  }
+
+  function renderSurface() {
+    surfaceMock.style.display = state.surfaceHidden ? 'none' : '';
+    termPane.style.display = state.terminalHidden ? 'none' : '';
+    splitter.style.display = state.surfaceHidden || state.terminalHidden ? 'none' : '';
+    const names = {
+      live: 'Live surface (stub)', connecting: 'Surface connecting…',
+      lost: 'Surface lost', empty: 'No surface',
+    };
+    surfaceMock.textContent = state.mode === 'read'
+      ? `${names[state.surfaceState]} — READ veil: operator input is not forwarded`
+      : `${names[state.surfaceState]} — WRITE: pointer/keyboard/wheel act on the capsule and journal guidance`;
+    surfaceMock.classList.toggle('veil', state.mode === 'read');
+    surfaceBadge.textContent = `surface ${state.surfaceState}${state.surfaceHidden ? ' hidden' : ''}`;
+    surfaceBadge.classList.toggle('live', state.surfaceState === 'live');
+    modeBadge.textContent = state.mode.toUpperCase();
+    root.classList.toggle('folded', state.folded);
+    root.classList.toggle('floating', state.floating);
+  }
+
+  surfaceMock.addEventListener('click', () => {
+    if (state.mode !== 'write') return;
+    logIntent('operator-guidance', capsuleId, { inputKind: 'pointer' });
+  });
+  surfaceMock.setAttribute('tabindex', '0');
+  surfaceMock.addEventListener('keydown', (e) => {
+    if (state.mode !== 'write') return;
+    if (e.key.length === 1) logIntent('operator-guidance', capsuleId, { inputKind: 'keyboard' });
+  });
+  surfaceMock.addEventListener('wheel', () => {
+    if (state.mode !== 'write') return;
+    logIntent('operator-guidance', capsuleId, { inputKind: 'wheel' });
+  }, { passive: true });
+
+  splitter.addEventListener('keydown', (e) => {
+    const step = e.shiftKey ? 10 : 1;
+    const horiz = attachSide === 'bottom';
+    const delta = e.key === (horiz ? 'ArrowUp' : 'ArrowLeft') ? step
+      : e.key === (horiz ? 'ArrowDown' : 'ArrowRight') ? -step : 0;
+    if (delta !== 0) {
+      e.preventDefault();
+      splitter.title = `Arrows 1px | Shift 10px (last ${delta > 0 ? '+' : ''}${delta}px, clamped 100–1000)`;
+    }
+  });
+
+  function recordButton(kind, store) {
+    const st = kind === 'ai' ? state.ai : state.disk;
+    const verb = kind === 'ai' ? 'record-ai' : 'record-disk';
+    const anchor = `capsule/${capsuleId}/${verb}`;
+    const btn = controlButton(kind === 'ai' ? 'Record AI · RAM idle' : 'Record disk idle',
+      anchor, () => {
+        if (st.phase === 'recording') {
+          st.phase = 'sealed';
+          if (st.timer) clearInterval(st.timer);
+          stub.recording.stop(st.job);
+          logIntent(verb, capsuleId, { phase: 'sealed', store });
+          btn.textContent = `${kind === 'ai' ? 'Record AI · RAM' : 'Record disk'} sealed`;
+          return;
+        }
+        try {
+          st.job = stub.recording.start(capsuleId, kind);
+        } catch {
+          logIntent(verb, capsuleId, { refused: 'ERR_DISK_RECORD_WITHOUT_DESTINATION' });
+          return;
+        }
+        st.phase = 'recording';
+        logIntent(verb, capsuleId, { phase: 'recording', store });
+        const since = Date.now();
+        btn.setAttribute('aria-busy', 'false');
+        st.timer = setInterval(() => {
+          btn.textContent = `${kind === 'ai' ? '● Record AI · RAM' : '● Record disk'} ${fmtElapsed(Date.now() - since)}`;
+        }, 500);
+      });
+    btn.dataset.kind = kind;
+    return btn;
+  }
+
+  const aiBtn = recordButton('ai', 'RAM');
+  const diskBtn = recordButton('disk', 'DISK');
+  const shotBtn = controlButton('Screenshot', `capsule/${capsuleId}/screenshot`, () => {
+    const h = stub.screenshot.capture(capsuleId);
+    logIntent('screenshot', capsuleId, { store: h.store });
+  });
+  const copyBtn = controlButton('Copy ID', `capsule/${capsuleId}/copy-id`, () => {
+    state.copy = 'copying';
+    copyBtn.textContent = 'Copying…';
+    // Stub sink captures the payload (the kit never touches the clipboard).
+    const payload = { capsule_id: capsuleId, surface: { kind: 'stub' }, ts: Date.now() };
+    logIntent('copy-id', capsuleId, { payload });
+    state.copy = 'copied';
+    copyBtn.textContent = 'Copied';
+    setTimeout(() => { state.copy = 'ready'; copyBtn.textContent = 'Copy ID'; }, 2000);
+  });
+  const hideSurface = controlButton('Hide surface', `capsule/${capsuleId}/hide-surface`, () => {
+    state.surfaceHidden = !state.surfaceHidden;
+    hideSurface.textContent = state.surfaceHidden ? 'Show surface' : 'Hide surface';
+    logIntent(state.surfaceHidden ? 'hide-surface' : 'show-surface', capsuleId);
+    renderSurface();
+  });
+  const hideTerm = controlButton('Hide terminal', `capsule/${capsuleId}/hide-terminal`, () => {
+    state.terminalHidden = !state.terminalHidden;
+    hideTerm.textContent = state.terminalHidden ? 'Show terminal' : 'Hide terminal';
+    logIntent(state.terminalHidden ? 'hide-terminal' : 'show-terminal', capsuleId);
+    renderSurface();
+  });
+  const modeBtn = controlButton('Mode: READ', `capsule/${capsuleId}/input-mode`, () => {
+    state.mode = state.mode === 'read' ? 'write' : 'read';
+    stub.inputMode = state.mode;
+    modeBtn.textContent = `Mode: ${state.mode.toUpperCase()}`;
+    modeBtn.setAttribute('aria-pressed', String(state.mode === 'write'));
+    logIntent(state.mode === 'read' ? 'input-mode-read' : 'input-mode-write', capsuleId);
+    renderSurface();
+  }, { ariaLabel: 'Operator input mode READ or WRITE', pressed: false });
+  const foldBtn = controlButton('Fold', `capsule/${capsuleId}/fold`, () => {
+    if (!state.folded) foldBtn.focus();
+    state.folded = !state.folded;
+    foldBtn.textContent = state.folded ? 'Unfold' : 'Fold';
+    logIntent(state.folded ? 'fold' : 'unfold', capsuleId);
+    renderSurface();
+  });
+  const floatBtn = controlButton('Float', `capsule/${capsuleId}/float`, () => {
+    state.floating = !state.floating;
+    floatBtn.textContent = state.floating ? 'Dock back' : 'Float';
+    logIntent(state.floating ? 'float' : 'dock-back', capsuleId);
+    renderSurface();
+  });
+  const closeBtn = controlButton('Close', `capsule/${capsuleId}/close`, () => {
+    if (window.confirm(`Close ${capsuleId}? (explicit + confirmed)`)) {
+      logIntent('close', capsuleId);
+    }
+  });
+  const surfaceCycle = controlButton('Surface: live', `capsule/${capsuleId}/slot`, () => {
+    const order = ['live', 'connecting', 'lost', 'empty'];
+    state.surfaceState = order[(order.indexOf(state.surfaceState) + 1) % order.length];
+    surfaceCycle.textContent = `Surface: ${state.surfaceState}`;
+    renderSurface();
+  });
+
+  bar.append(aiBtn, diskBtn, shotBtn, copyBtn, hideSurface, hideTerm, modeBtn,
+    foldBtn, floatBtn, closeBtn, surfaceCycle);
+  body.append(surfacePane, splitter, termPane);
+  root.append(head, bar, body, rail);
+  slotsRoot.append(root);
+  renderTabs(); renderTerm(); renderSurface();
+  return { state, diskBtn };
+}
+
+const built = slots.map(buildSlot);
+
+// Header toggles ---------------------------------------------------------
+const schemeToggle = document.getElementById('schemeToggle');
+schemeToggle.addEventListener('click', () => {
+  const root = document.documentElement;
+  const next = root.getAttribute('data-theme-scheme') === 'dark' ? 'light' : 'dark';
+  root.setAttribute('data-theme-scheme', next);
+  schemeToggle.textContent = `Scheme: ${next}`;
+  schemeToggle.setAttribute('aria-pressed', String(next === 'light'));
+});
+
+const diskToggle = document.getElementById('diskToggle');
+const c3 = document.getElementById('c3');
+function renderDisk() {
+  const on = Boolean(stub.diskDestination);
+  diskToggle.textContent = `Disk destination: ${on ? 'configured' : 'none'}`;
+  diskToggle.setAttribute('aria-pressed', String(on));
+  for (const { diskBtn } of built) {
+    diskBtn.disabled = !on;
+    if (!on) {
+      diskBtn.title = 'No disk destination configured';
+      diskBtn.setAttribute('data-unavailable-reason', 'No disk destination configured');
+      diskBtn.textContent = 'Record disk (no destination)';
+    } else {
+      diskBtn.removeAttribute('data-unavailable-reason');
+      diskBtn.title = '';
+      diskBtn.textContent = 'Record disk idle';
+    }
+  }
+  c3.textContent = on ? 'READY' : 'GATED';
+}
+diskToggle.addEventListener('click', () => {
+  stub.diskDestination = stub.diskDestination ? null : { path: 'stub://recordings', retention: '30d' };
+  renderDisk();
+});
+renderDisk();
+
+// Real kit modules when served over http ---------------------------------
+try {
+  const [intents, rows] = await Promise.all([
+    import('../src/multislot/multislotIntents.js'),
+    import('../src/multislot/multislotRegistryRows.js'),
+  ]);
+  kitIntents = intents;
+  serveNotice.textContent = 'Kit modules loaded: intents + registry rows resolve from src/multislot/.';
+  const list = rows.MULTISLOT_REGISTRY_ROWS ?? rows.default ?? [];
+  registryLog.textContent = list.length > 0
+    ? list.map((r) => `${r.agentLaneId} → ${r.anchorExample} (${r.role})`).join('\n')
+    : FALLBACK_ROWS.map(([id, anchor]) => `${id} → ${anchor}`).join('\n');
+} catch {
+  serveNotice.textContent = 'Fallback vocabulary in use (serve over http for the real kit modules).';
+  registryLog.textContent = FALLBACK_ROWS.map(([id, anchor]) => `${id} → ${anchor}`).join('\n');
+}
+void kitIntents;
+void FALLBACK_INTENTS;
+</script>
+</body>
+</html>

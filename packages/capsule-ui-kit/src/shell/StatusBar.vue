@@ -6,7 +6,8 @@ import UiButton from '../ui/UiButton.vue';
 /**
  * Generic S1 status bar (28px telemetry footer). The host supplies breadcrumb,
  * telemetry and shortcut entries via props, or overrides any region through
- * slots. No application names.
+ * slots. The optional layout slot (layoutSaved prop, default null) renders
+ * nothing unless the host opts in. No application names.
  * @module shell/StatusBar
  */
 
@@ -34,6 +35,8 @@ import UiButton from '../ui/UiButton.vue';
 const props = defineProps({
   crumbs: { type: Array, default: () => [] },
   telemetry: { type: Array, default: () => [] },
+  /** Tri-state layout persistence flag: null (default) renders no layout region. */
+  layoutSaved: { type: Boolean, default: null },
   shortcuts: {
     type: Array,
     default: () => [
@@ -97,6 +100,14 @@ defineExpose({ openShortcuts, closeShortcuts });
           <strong class="s1-statusbar-value">{{ item.value }}</strong>
         </span>
       </div>
+    </slot>
+    <slot name="layout">
+      <span
+        v-if="layoutSaved !== null && layoutSaved !== undefined"
+        id="shell/statusbar/layout"
+        class="s1-statusbar-layout"
+        role="status"
+      >{{ layoutSaved ? 'Layout saved' : 'Layout unsaved' }}</span>
     </slot>
     <slot name="shortcuts">
       <span class="s1-statusbar-shortcuts">
@@ -182,6 +193,7 @@ defineExpose({ openShortcuts, closeShortcuts });
 .s1-statusbar-crumb-strong{color: var(--cuk-semantic-text-primary);font-weight:var(--cuk-semantic-typography-font-weight-medium);}
 .s1-statusbar-crumb-accent{color: var(--cuk-semantic-text-accent);font-weight:var(--cuk-semantic-typography-font-weight-medium);}
 .s1-statusbar-telemetry{display:flex;align-items:center;gap:var(--cuk-primitive-space-8);}
+.s1-statusbar-layout{color:var(--cuk-semantic-text-disabled);white-space:nowrap;}
 .s1-statusbar-metric{display:flex;align-items:center;gap:var(--cuk-primitive-space-3);white-space:nowrap;}
 .s1-statusbar-bullet{color: var(--cuk-semantic-text-disabled);}
 .s1-statusbar-live{

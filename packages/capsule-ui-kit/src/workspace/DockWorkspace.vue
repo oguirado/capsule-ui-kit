@@ -23,8 +23,9 @@
  * 3. `dockview-core` `onDidAddPanel` and `onDidRemovePanel` fire during panel moves across groups
  *    (`component.api.d.ts:397-404`). Panel move, tab switch, float, dock-back, or presentation close
  *    NEVER calls `destroy` on a capsule or drops its core identity, terminal binding, or capture lease.
- * 4. Moving or docking the expanded `OrchestratorDrawer` uses a singular identity and never creates
- *    a second composer or dispatch owner (`UI_ARCHITECTURE.md` §3 line 111).
+ * 4. (Retired rule) The former bottom orchestrator drawer and its singular-identity
+ *    rule were removed; terminal presentation lives in the side terminal panel
+ *    and is not a dock panel.
  *
  * Notice on AUSENTE contracts:
  * - `dockview-vue version 8.6.1`: AUSENTE in `node_modules` (installed version is `8.4.1`; `UI_ARCHITECTURE.md` §2, §14 R1).
@@ -128,7 +129,6 @@ export const DOCK_PANEL_REGISTRY_TYPES = Object.freeze([
   'InspectorPanel',
   'AlertBoard',
   'TimelinePanel',
-  'OrchestratorDrawer',
   'HelpSettingsPanel',
   'MissingPanel',
 ]);
@@ -529,8 +529,6 @@ export function createDockWorkspaceHost(config) {
   const capsuleBindingsById = new Map();
   /** @type {Map<string, string>} */
   const capsuleIdByPanelId = new Map();
-  /** @type {string | null} */
-  let orchestratorDrawerPanelId = null;
 
   /**
    * Evaluates whether all restore barrier gates are satisfied; if so, reveals the wall
@@ -711,14 +709,6 @@ export function createDockWorkspaceHost(config) {
       dockviewApi.fromJSON(presentationLayout, { reuseExistingPanels: true });
     }
 
-    // Track any OrchestratorDrawer panel present in restored layout
-    orchestratorDrawerPanelId = null;
-    for (const [pid, pState] of Object.entries(targetProfile.dockview.panels ?? {})) {
-      if (pState.contentComponent === 'OrchestratorDrawer') {
-        orchestratorDrawerPanelId = pid;
-      }
-    }
-
     return res;
   }
 
@@ -812,32 +802,15 @@ export function createDockWorkspaceHost(config) {
 
   /**
    * Mounts a panel in the Dockview presentation grid (`DockviewApi.addPanel`).
-   * Enforces the singular `OrchestratorDrawer` rule (`UI_ARCHITECTURE.md` §3 line 111:
-   * "Moving it must not create another composer or another dispatch owner").
+   * Unknown or retired component types resolve to `MissingPanel` via
+   * `buildAddPanelOptions`; no panel type carries a singular-identity rule.
    *
    * @param {AddPanelOptionsInput} input
    */
   function mountPanel(input) {
-    if (input?.component === 'OrchestratorDrawer') {
-      if (
-        orchestratorDrawerPanelId !== null &&
-        orchestratorDrawerPanelId !== input.id
-      ) {
-        return {
-          ok: false,
-          code: 'ERR_DUPLICATE_ORCHESTRATOR_DRAWER',
-          reason: `OrchestratorDrawer is already mounted as "${orchestratorDrawerPanelId}"; moving or docking it must reuse the same identity and never create a second composer or dispatch owner`,
-        };
-      }
-    }
-
     const built = buildAddPanelOptions(input);
     if (!built.ok) {
       return built;
-    }
-
-    if (built.options.component === 'OrchestratorDrawer') {
-      orchestratorDrawerPanelId = built.options.id;
     }
 
     if (dockviewApi) {
@@ -1254,7 +1227,6 @@ export function createDockWorkspaceHost(config) {
       lastPopoutFailureReason,
       capsuleDestroyAttemptsBlocked,
       activePanelId,
-      orchestratorDrawerPanelId,
       activeProfile: ctrl.activeProfile,
     });
   }

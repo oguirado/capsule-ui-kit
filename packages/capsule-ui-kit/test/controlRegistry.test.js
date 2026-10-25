@@ -690,3 +690,26 @@ test('terminal control families admit declared S4 anchors and refuse invented si
   for (const anchor of ['terminal/launcher', 'terminal/launch/shell', 'terminal/launch/pi', 'terminal/launch/claude', 'terminal/launch/codex', 'terminal/session/session-a/tab', 'terminal/session/session-a/close', 'terminal/composer', 'terminal/composer/send']) assert.ok(matchControlFamily(anchor), anchor);
   for (const anchor of ['terminal/launch/invented', 'terminal/session/1/tab', 'terminal/session/session-a/execute', 'terminal/composer/execute', 'invented/control']) assert.equal(matchControlFamily(anchor), null, anchor);
 });
+
+
+test('side terminal controls remain a closed, role-checked registry', () => {
+  const families = [
+    ['terminal/session/session-a/output', 'button'], ['terminal/side/toggle', 'button'], ['terminal/side/panel', 'complementary'],
+    ['terminal/side/collapse', 'button'], ['terminal/side/edge-tab', 'button'],
+    ['terminal/side/new', 'button'], ['terminal/side/dialog', 'dialog'],
+    ['terminal/side/custom-open', 'button'], ['terminal/side/custom-dialog', 'dialog'],
+    ['terminal/side/custom-executable', 'textbox'], ['terminal/side/custom-args', 'textbox'],
+    ['terminal/side/cancel', 'button'], ['terminal/side/custom-back', 'button'],
+    ['terminal/side/custom-confirm', 'button'], ['terminal/launch/provider/custom-tool', 'button'],
+  ];
+  for (const [anchor, role] of families) {
+    const rule = matchControlFamily(anchor);
+    assert.ok(rule, anchor);
+    assert.ok(rule.allowedRoles.includes(role), anchor);
+    assert.equal(rule.allowedRoles.includes('application'), false, anchor);
+    assert.ok(CONTROL_FAMILY_INVENTORY.find(row => row.row === rule.rowIndex).templates.includes(rule.template));
+  }
+  for (const anchor of ['terminal/side/execute', 'terminal/side/new/execute',
+    'terminal/launch/invented', 'terminal/launch/provider/', 'terminal/launch/provider/../x',
+    'terminal/launch/provider/tool/execute']) assert.equal(matchControlFamily(anchor), null, anchor);
+});

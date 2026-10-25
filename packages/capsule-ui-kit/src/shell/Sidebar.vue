@@ -3,8 +3,14 @@
  * @file Generic S1 navigation rail (Stitch S1 spec section 2).
  * 240px group rail with workspace header, active/count/unread/NEW/price
  * adornments, user card and engine strip. Data arrives via props, visual
- * overrides via the icon/header/footer slots. Contains no application names:
+ * overrides via the icon/header/footer/telemetry slots (telemetry renders
+ * nothing by default). Contains no application names:
  * product strings live in the consumer navigation model (renderer-v2).
+ * Overlay mode (default): the collapsed icon rail reserves its width in
+ * flow while the expanded panel floats above the dock layer (absolute,
+ * drawer z-index, floating shadow) without reflowing siblings. The
+ * consumer must give the sidebar's offset parent position:relative.
+ * Every surface and text color resolves from scheme tokens.
  * Plain JS + JSDoc, no TypeScript.
  *
  * @typedef {Object} SidebarItem
@@ -53,6 +59,7 @@ const props = defineProps({
   collapsed: { type: Boolean, default: false },
   autoCollapse: { type: Boolean, default: true },
   collapseBreakpoint: { type: Number, default: 1280 },
+  overlay: { type: Boolean, default: true },
   activeId: { type: String, default: '' },
   user: { type: Object, default: null },
   engine: { type: Object, default: null },
@@ -135,7 +142,7 @@ function itemDescription(nav) {
 }
 </script>
 <template>
-  <aside id="shell/navigation" class="cuk-sidebar" :class="{ 'cuk-sidebar--collapsed': isCollapsed }" :aria-label="navLabel">
+  <aside id="shell/navigation" class="cuk-sidebar" :class="{ 'cuk-sidebar--collapsed': isCollapsed, 'cuk-sidebar--overlay': overlay }" :aria-label="navLabel">
     <div class="cuk-sidebar__body">
       <slot name="header" :workspace-label="workspaceLabel" :workspace-version="workspaceVersion" :collapsed="isCollapsed">
         <div class="cuk-sidebar__workspace">
@@ -172,6 +179,7 @@ function itemDescription(nav) {
       </Menu>
     </div>
     <div class="cuk-sidebar__footer">
+      <slot name="telemetry" :collapsed="isCollapsed" />
       <slot name="footer" :user="user" :engine="engine" :collapsed="isCollapsed">
         <div v-if="user" class="cuk-sidebar__user">
           <div class="cuk-sidebar__identity">
@@ -226,7 +234,25 @@ function itemDescription(nav) {
 .cuk-sidebar--collapsed {
   width: var(--cuk-semantic-size-rail-collapsed-width);
 }
+/* Overlay mode (default): the expanded panel floats above the dock layer
+   while the collapsed rail stays in flow, so expanding never reflows
+   siblings. Requires a positioned offset parent (see file docs). */
+.cuk-sidebar--overlay:not(.cuk-sidebar--collapsed) {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: var(--cuk-semantic-z-index-drawer);
+  box-shadow: var(--cuk-semantic-elevation-s1-floating);
+}
 .cuk-sidebar :deep(.p-menu) { min-width: 0; width: 100%; max-width: 100%; }
+/* R1: vendor-owned menu nodes stay transparent so every sidebar surface
+   resolves from scheme tokens in every scheme (no dark vendor default
+   under light-scheme text). */
+.cuk-sidebar :deep(.p-menu-list),
+.cuk-sidebar :deep(.p-menu-submenu-label) {
+  background: transparent;
+}
 .cuk-sidebar__item { box-sizing: border-box; max-width: 100%; }
 .cuk-sidebar__body {
   display: flex;

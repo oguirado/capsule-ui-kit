@@ -11,7 +11,7 @@ export const TERMINAL_SESSION_TAB_SCHEMA = 'capsule-ui-kit.terminal-session-tabs
 </script>
 <script setup>
 import { computed } from 'vue';
-import { resolveSessionTabStatus } from '../orchestrator/drawerModel.js';
+import { resolveSessionTabStatus } from '../side-terminal/sessionTabStatus.js';
 
 const props = defineProps({
   sessions: {
@@ -35,13 +35,17 @@ const sessionIds = computed(() =>
 );
 
 /**
+ * Visible tab label in `{title} #{shortId}` form so same-titled sessions stay
+ * distinguishable. Falls back to the raw session id when untitled.
  * @param {{ sessionId?: string, title?: string, kind?: string, activity?: string, unreadCount?: number } | null | undefined} sess
  * @returns {string}
  */
 function tabTitle(sess) {
   const title = typeof sess?.title === 'string' ? sess.title.trim() : '';
-  if (title.length > 0) return title;
-  return typeof sess?.sessionId === 'string' ? sess.sessionId : '';
+  const id = typeof sess?.sessionId === 'string' ? sess.sessionId : '';
+  const base = title.length > 0 ? title : id;
+  if (base.length === 0 || id.length === 0) return base;
+  return `${base} #${id.slice(0, 6)}`;
 }
 
 /**
@@ -141,7 +145,7 @@ function onTablistKeydown(event) {
           type="button"
           role="tab"
           class="cui-terminal-tabs__tab"
-          :class="{ 'cui-terminal-tabs__tab--active': isSelected(sess) }"
+          :class="{ 'cui-terminal-tabs__tab--active': isSelected(sess), 'cui-terminal-tabs__tab--exited': tabStatus(sess) === 'exited' }"
           :data-semantic-anchor="`terminal/session/${sess.sessionId}/tab`"
           :aria-label="tabName(sess)"
           :aria-selected="isSelected(sess) ? 'true' : 'false'"
@@ -221,6 +225,9 @@ function onTablistKeydown(event) {
   color: var(--cuk-semantic-text-accent);
   border-bottom: var(--cuk-semantic-border-width) solid var(--cuk-semantic-accent-primary);
   margin-bottom: calc(var(--cuk-semantic-border-width) * -1);
+}
+.cui-terminal-tabs__tab--exited {
+  opacity: var(--cuk-semantic-opacity-disabled);
 }
 .cui-terminal-tabs__tab:focus-visible,
 .cui-terminal-tabs__close:focus-visible {

@@ -12,7 +12,9 @@ import UiTextInput from '../ui/UiTextInput.vue';
 /**
  * Generic S1 top bar (48px instrument header). No application names: the host
  * supplies product text, palette entries, speeds and notification state via
- * props, or overrides any region through slots.
+ * props, or overrides any region through slots. Optional SaaS slots
+ * (role-pill, environment, credit, clock) render nothing unless the host
+ * supplies slot content or the matching label prop.
  * @module shell/TopBar
  */
 
@@ -41,6 +43,10 @@ const props = defineProps({
   newLabel: { type: String, default: 'New' },
   speeds: { type: Array, default: () => [] },
   navExpanded: { type: Boolean, default: true },
+  rolePill: { type: String, default: '' },
+  environmentLabel: { type: String, default: '' },
+  creditLabel: { type: String, default: '' },
+  clockLabel: { type: String, default: '' },
 });
 const emit = defineEmits(['open', 'new-capsule', 'speed-change', 'notifications-open', 'help-open', 'toggle-nav']);
 
@@ -105,6 +111,9 @@ defineExpose({ openPalette: showPalette, closePalette });
         </span>
       </slot>
       <slot name="context" />
+      <slot name="role-pill">
+        <span v-if="rolePill" id="shell/topbar/role-pill" class="s1-topbar-pill" role="status">{{ rolePill }}</span>
+      </slot>
     </div>
     <div class="s1-topbar-center">
       <slot name="search">
@@ -124,6 +133,15 @@ defineExpose({ openPalette: showPalette, closePalette });
       </slot>
     </div>
     <div class="s1-topbar-right">
+      <slot name="environment">
+        <span v-if="environmentLabel" id="shell/topbar/environment" class="s1-topbar-meta">{{ environmentLabel }}</span>
+      </slot>
+      <slot name="credit">
+        <span v-if="creditLabel" id="shell/topbar/credit" class="s1-topbar-meta">{{ creditLabel }}</span>
+      </slot>
+      <slot name="clock">
+        <span v-if="clockLabel" id="shell/topbar/clock" class="s1-topbar-meta" role="timer">{{ clockLabel }}</span>
+      </slot>
       <slot name="cluster" />
       <slot name="speed">
         <div v-if="speeds.length" class="s1-topbar-speed" role="group" aria-label="Simulation speed">
@@ -344,6 +362,23 @@ defineExpose({ openPalette: showPalette, closePalette });
 .s1-topbar-divider{
   width: var(--cuk-semantic-border-width); height: var(--cuk-primitive-space-8);
   background: var(--cuk-semantic-border-subtle); flex: none;
+}
+.s1-topbar-pill{
+  display: inline-flex; align-items: center;
+  padding: var(--cuk-primitive-space-1) var(--cuk-primitive-space-3);
+  background: var(--cuk-semantic-surface-elevated);
+  border: var(--cuk-semantic-border-width) solid var(--cuk-semantic-border-subtle);
+  border-radius: var(--cuk-semantic-radius-pill);
+  font-family: var(--cuk-semantic-typography-font-family-mono);
+  font-size: var(--cuk-semantic-typography-font-size-s1_10);
+  color: var(--cuk-semantic-text-muted);
+  white-space: nowrap;
+}
+.s1-topbar-meta{
+  font-family: var(--cuk-semantic-typography-font-family-mono);
+  font-size: var(--cuk-semantic-typography-font-size-xs);
+  color: var(--cuk-semantic-text-muted);
+  white-space: nowrap;
 }
 .s1-topbar .s1-topbar-new{
   height: var(--cuk-component-app-shell-status-height);

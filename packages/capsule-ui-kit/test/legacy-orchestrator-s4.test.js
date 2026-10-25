@@ -18,14 +18,14 @@ const require = createRequire(import.meta.url);
 
 const compilerSfc = require('@vue/compiler-sfc');
 
-const DRAWER_PATH = path.resolve(__dirname, '../src/orchestrator/OrchestratorDrawer.vue');
+const DRAWER_PATH = path.resolve(__dirname, './fixtures/retired/src/orchestrator/OrchestratorDrawer.vue');
 const THEME_PATH = path.resolve(__dirname, '../src/design/theme.css');
 
 import {
   TAB_STATUSES,
   resolveSessionTabStatus,
   createDrawerModel
-} from '../src/orchestrator/drawerModel.js';
+} from './fixtures/retired/src/orchestrator/drawerModel.js';
 
 /**
  * @param {Record<string, unknown>} [overrides]
