@@ -1,10 +1,23 @@
 version: 2
+# Dependency moves for the kit itself (packages/capsule-ui-kit and the runtime it ships with) happen in the owner's source package
+# under its "latest version at least 14 days old" pin rule and arrive through an export; Dependabot never edits them here.
 updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "monthly"
+    cooldown:
+      default-days: 14
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "monthly"
+    cooldown:
+      default-days: 14
+    ignore:
+      # kit runtime dependencies: moved only in the owner's source package
+      - dependency-name: "electron"
+      - dependency-name: "vue"
+      - dependency-name: "dockview-core"
+      - dependency-name: "dockview-vue"
+      - dependency-name: "@xterm/*"
