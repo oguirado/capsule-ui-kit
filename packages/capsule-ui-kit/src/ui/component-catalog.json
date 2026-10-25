@@ -1,0 +1,82 @@
+{
+  "schema": "capsule-ui-kit.component-catalog/v1",
+  "components": [
+    {
+      "name": "UiButton",
+      "source": "./UiButton.vue",
+      "props": [
+        "label",
+        "intent",
+        "loading"
+      ],
+      "slots": [
+        "default"
+      ]
+    },
+    {
+      "name": "UiTextInput",
+      "source": "./UiTextInput.vue",
+      "props": [
+        "modelValue",
+        "label"
+      ],
+      "slots": []
+    },
+    {
+      "name": "UiField",
+      "source": "./UiField.vue",
+      "props": [
+        "label",
+        "forId",
+        "help"
+      ],
+      "slots": [
+        "default"
+      ]
+    },
+    {
+      "name": "UiPage",
+      "source": "./UiPage.vue",
+      "props": [
+        "title"
+      ],
+      "slots": [
+        "default"
+      ]
+    },
+    {
+      "name": "UiToolbar",
+      "source": "./UiToolbar.vue",
+      "props": [
+        "label"
+      ],
+      "slots": [
+        "start",
+        "end"
+      ]
+    },
+    {
+      "name": "UiTag",
+      "source": "./UiTag.vue",
+      "props": [
+        "label",
+        "status"
+      ],
+      "slots": []
+    }
+  ],
+  "recipes": [
+    {
+      "id": "resource-list",
+      "component": "LayoutRecipes.vue"
+    },
+    {
+      "id": "settings-form",
+      "component": "LayoutRecipes.vue"
+    },
+    {
+      "id": "detail-inspector",
+      "component": "LayoutRecipes.vue"
+    }
+  ]
+}

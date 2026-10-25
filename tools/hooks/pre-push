@@ -1,0 +1,11 @@
+#!/bin/sh
+# Local guard (private phase). Install from the repository root with:
+#   install -m 755 tools/hooks/pre-push .git/hooks/pre-push
+# Blocks the push when the publication lint, the claims check or gitleaks fails. Fails closed: a missing gitleaks blocks the push.
+root=$(git rev-parse --show-toplevel) || exit 1
+cd "$root" || exit 1
+python3 -I tools/publication_lint.py . --report-only packages/capsule-ui-kit || { echo "pre-push: publication lint failed"; exit 1; }
+python3 -I tools/claims_check.py || { echo "pre-push: claims check failed"; exit 1; }
+command -v gitleaks >/dev/null 2>&1 || { echo "pre-push: gitleaks is not installed; install v8.18.4 (see docs/CI.md) or the push stays blocked"; exit 1; }
+gitleaks detect --source . --config .gitleaks.toml --redact --no-banner --exit-code 1 || { echo "pre-push: gitleaks found secrets"; exit 1; }
+exit 0

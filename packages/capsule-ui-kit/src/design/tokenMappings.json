@@ -1,0 +1,1746 @@
+{
+  "schema": "capsule-ui-kit.token-mappings/v1",
+  "sourceTokensSchema": "capsule-ui-kit.design-tokens/v1",
+  "authority": {
+    "owner": "packages/capsule-ui-kit/src/design/tokenMappings.json",
+    "allowedStatuses": ["mapped", "approved_default", "irrelevant"],
+    "deterministicOfflineGeneration": true,
+    "rules": {
+      "mappedRequires": ["vendorToken", "status", "$type", "sourceToken"],
+      "mappedForbids": ["defaultValue", "irrelevantReason"],
+      "approvedDefaultRequires": ["vendorToken", "status", "$type", "defaultValue", "reason"],
+      "approvedDefaultForbids": ["sourceToken"],
+      "irrelevantRequires": ["vendorToken", "status", "reason"],
+      "irrelevantForbids": ["sourceToken", "defaultValue"]
+    }
+  },
+  "rootBridge": {
+    "selector": ":root",
+    "attributes": {
+      "scheme": "data-theme-scheme",
+      "contrast": "data-theme-contrast",
+      "density": "data-theme-density",
+      "textScale": "data-theme-text-scale",
+      "forcedColors": "data-theme-forced-colors",
+      "reducedMotion": "data-theme-motion"
+    },
+    "bootstrapBeforeFirstPaint": true,
+    "propagateToWindowDocuments": true
+  },
+  "vendorSurfaces": {
+    "dockview": {
+      "package": "dockview-core / dockview-vue",
+      "version": "8.4.1",
+      "commissionNote": "Installed PINS baseline is 8.4.1; commissioner 8.6.1 reconciliation tracked under UI_ARCHITECTURE §2/§14 R1",
+      "inspectedDeclarations": [
+        "node_modules/dockview-core/dist/cjs/dockview/theme.d.ts",
+        "node_modules/dockview-vue/dist/styles/dockview.css"
+      ],
+      "themeMetadataProperties": {
+        "name": {
+          "status": "approved_default",
+          "$type": "keyword",
+          "defaultValue": "capsule-ui-kit",
+          "reason": "Stable DockviewTheme identifier bound to capsule-ui-kit adapter"
+        },
+        "className": {
+          "status": "approved_default",
+          "$type": "keyword",
+          "defaultValue": "cuk-dockview-theme",
+          "reason": "CSS class name scoping Dockview custom properties to shared token variables"
+        },
+        "colorScheme": {
+          "status": "mapped",
+          "$type": "keyword",
+          "sourceAxis": "axes.scheme.resolvedModes",
+          "reason": "Driven by committed resolved scheme ('light' | 'dark')"
+        },
+        "gap": {
+          "status": "approved_default",
+          "$type": "number",
+          "defaultValue": 0,
+          "reason": "Flush group docking layout with 1px separator borders"
+        },
+        "edgeGroupCollapsedSize": {
+          "status": "approved_default",
+          "$type": "number",
+          "defaultValue": 34,
+          "reason": "Matches regular tab strip height (semantic.size.tab.height)"
+        },
+        "dndOverlayMounting": {
+          "status": "approved_default",
+          "$type": "keyword",
+          "defaultValue": "relative",
+          "reason": "Mounts drop overlay inside group container per DockviewTheme contract"
+        },
+        "dndPanelOverlay": {
+          "status": "approved_default",
+          "$type": "keyword",
+          "defaultValue": "content",
+          "reason": "Drop overlay encompasses panel content region"
+        },
+        "dndTabIndicator": {
+          "status": "approved_default",
+          "$type": "keyword",
+          "defaultValue": "line",
+          "reason": "Bordered/high-contrast-safe 4px insertion line indicator"
+        },
+        "dndOverlayBorder": {
+          "status": "mapped",
+          "$type": "border",
+          "sourceToken": "component.dockWorkspace.floatingBorder"
+        },
+        "tabGroupIndicator": {
+          "status": "approved_default",
+          "$type": "keyword",
+          "defaultValue": "none",
+          "reason": "Flat continuous bar without JS SVG wrap path overhead"
+        },
+        "tabAnimation": {
+          "status": "approved_default",
+          "$type": "keyword",
+          "defaultValue": "default",
+          "reason": "Immediate deterministic tab reorder compatible with reduced-motion law"
+        }
+      },
+      "tokens": [
+        {
+          "vendorToken": "--dv-active-sash-color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "component.dockWorkspace.activeSashColor"
+        },
+        {
+          "vendorToken": "--dv-active-sash-transition-delay",
+          "status": "mapped",
+          "$type": "duration",
+          "sourceToken": "semantic.motion.duration.instant"
+        },
+        {
+          "vendorToken": "--dv-active-sash-transition-duration",
+          "status": "mapped",
+          "$type": "duration",
+          "sourceToken": "semantic.motion.duration.fast"
+        },
+        {
+          "vendorToken": "--dv-activegroup-hiddenpanel-tab-background-color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "component.dockWorkspace.inactiveTabBackground"
+        },
+        {
+          "vendorToken": "--dv-activegroup-hiddenpanel-tab-color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "component.dockWorkspace.inactiveTabText"
+        },
+        {
+          "vendorToken": "--dv-activegroup-visiblepanel-tab-background-color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "component.dockWorkspace.activeTabBackground"
+        },
+        {
+          "vendorToken": "--dv-activegroup-visiblepanel-tab-color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "component.dockWorkspace.activeTabText"
+        },
+        {
+          "vendorToken": "--dv-border-radius",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.radius.md"
+        },
+        {
+          "vendorToken": "--dv-context-menu-background-color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.surface.elevated"
+        },
+        {
+          "vendorToken": "--dv-context-menu-color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.text.primary"
+        },
+        {
+          "vendorToken": "--dv-dnd-compass-active-cell-color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.accent.primary"
+        },
+        {
+          "vendorToken": "--dv-dnd-compass-cell-color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.surface.interactive"
+        },
+        {
+          "vendorToken": "--dv-dnd-compass-color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.surface.elevated"
+        },
+        {
+          "vendorToken": "--dv-dnd-compass-edge-cell-color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.border.strong"
+        },
+        {
+          "vendorToken": "--dv-drag-over-background-color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "component.dockWorkspace.dragOverBackground"
+        },
+        {
+          "vendorToken": "--dv-drag-over-border",
+          "status": "mapped",
+          "$type": "border",
+          "sourceToken": "component.dockWorkspace.floatingBorder"
+        },
+        {
+          "vendorToken": "--dv-drag-over-border-color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "component.dockWorkspace.dragOverBorderColor"
+        },
+        {
+          "vendorToken": "--dv-dropdown-border-radius",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.radius.sm"
+        },
+        {
+          "vendorToken": "--dv-edge-dock-indicator-color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.focus.ringColor"
+        },
+        {
+          "vendorToken": "--dv-floating-border",
+          "status": "mapped",
+          "$type": "border",
+          "sourceToken": "component.dockWorkspace.floatingBorder"
+        },
+        {
+          "vendorToken": "--dv-floating-box-shadow",
+          "status": "mapped",
+          "$type": "shadow",
+          "sourceToken": "component.dockWorkspace.floatingShadow"
+        },
+        {
+          "vendorToken": "--dv-floating-group-border",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.border.strong"
+        },
+        {
+          "vendorToken": "--dv-floating-group-dragging-opacity",
+          "status": "mapped",
+          "$type": "opacity",
+          "sourceToken": "semantic.opacity.dragging"
+        },
+        {
+          "vendorToken": "--dv-floating-titlebar-background-color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.surface.chrome"
+        },
+        {
+          "vendorToken": "--dv-floating-titlebar-border-bottom",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.border.default"
+        },
+        {
+          "vendorToken": "--dv-floating-titlebar-height",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.size.tab.height"
+        },
+        {
+          "vendorToken": "--dv-group-view-background-color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "component.dockWorkspace.groupBackground"
+        },
+        {
+          "vendorToken": "--dv-icon-hover-background-color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.surface.interactiveHover"
+        },
+        {
+          "vendorToken": "--dv-inactivegroup-hiddenpanel-tab-background-color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "component.dockWorkspace.inactiveTabBackground"
+        },
+        {
+          "vendorToken": "--dv-inactivegroup-hiddenpanel-tab-color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "component.dockWorkspace.inactiveTabText"
+        },
+        {
+          "vendorToken": "--dv-inactivegroup-visiblepanel-tab-background-color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "component.dockWorkspace.activeTabBackground"
+        },
+        {
+          "vendorToken": "--dv-inactivegroup-visiblepanel-tab-color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.text.muted"
+        },
+        {
+          "vendorToken": "--dv-max-tab-rows",
+          "status": "approved_default",
+          "$type": "number",
+          "defaultValue": 1,
+          "reason": "Single horizontal tab strip per group prevents vertical layout jitter"
+        },
+        {
+          "vendorToken": "--dv-overlay-z-index",
+          "status": "mapped",
+          "$type": "zIndex",
+          "sourceToken": "semantic.zIndex.floating"
+        },
+        {
+          "vendorToken": "--dv-paneview-active-outline-color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.focus.ringColor"
+        },
+        {
+          "vendorToken": "--dv-paneview-header-border-color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.border.divider"
+        },
+        {
+          "vendorToken": "--dv-pinned-sticky-left",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.spacing.none"
+        },
+        {
+          "vendorToken": "--dv-sash-border-radius",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.radius.none"
+        },
+        {
+          "vendorToken": "--dv-sash-color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "component.dockWorkspace.sashColor"
+        },
+        {
+          "vendorToken": "--dv-scrollbar-background-color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.terminal.scrollbarSliderBackground"
+        },
+        {
+          "vendorToken": "--dv-separator-border",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.border.divider"
+        },
+        {
+          "vendorToken": "--dv-smart-guides-color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.accent.primary"
+        },
+        {
+          "vendorToken": "--dv-smart-guides-preview-color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.selection.background"
+        },
+        {
+          "vendorToken": "--dv-spacing-padding",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.spacing.none"
+        },
+        {
+          "vendorToken": "--dv-tab-border-radius",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.radius.xs"
+        },
+        {
+          "vendorToken": "--dv-tab-close-icon-size",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.size.tab.closeIconSize"
+        },
+        {
+          "vendorToken": "--dv-tab-divider-color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.border.subtle"
+        },
+        {
+          "vendorToken": "--dv-tab-font-size",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.typography.fontSize.sm"
+        },
+        {
+          "vendorToken": "--dv-tab-group-chip-border-radius",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.radius.xs"
+        },
+        {
+          "vendorToken": "--dv-tab-group-chip-font-size",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.typography.fontSize.xs"
+        },
+        {
+          "vendorToken": "--dv-tab-group-chip-padding",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.spacing.xs"
+        },
+        {
+          "vendorToken": "--dv-tab-group-color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.accent.primary"
+        },
+        {
+          "vendorToken": "--dv-tab-group-color-blue",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "component.dockWorkspace.tabGroupBlue"
+        },
+        {
+          "vendorToken": "--dv-tab-group-color-cyan",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "component.dockWorkspace.tabGroupCyan"
+        },
+        {
+          "vendorToken": "--dv-tab-group-color-green",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "component.dockWorkspace.tabGroupGreen"
+        },
+        {
+          "vendorToken": "--dv-tab-group-color-grey",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "component.dockWorkspace.tabGroupGrey"
+        },
+        {
+          "vendorToken": "--dv-tab-group-color-orange",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "component.dockWorkspace.tabGroupOrange"
+        },
+        {
+          "vendorToken": "--dv-tab-group-color-pink",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "component.dockWorkspace.tabGroupPink"
+        },
+        {
+          "vendorToken": "--dv-tab-group-color-purple",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "component.dockWorkspace.tabGroupPurple"
+        },
+        {
+          "vendorToken": "--dv-tab-group-color-red",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "component.dockWorkspace.tabGroupRed"
+        },
+        {
+          "vendorToken": "--dv-tab-group-color-yellow",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "component.dockWorkspace.tabGroupYellow"
+        },
+        {
+          "vendorToken": "--dv-tab-group-line-height",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.focus.ringWidth"
+        },
+        {
+          "vendorToken": "--dv-tab-group-line-opacity",
+          "status": "approved_default",
+          "$type": "opacity",
+          "defaultValue": 1,
+          "reason": "Full opacity indicator line for contrast compliance"
+        },
+        {
+          "vendorToken": "--dv-tab-margin",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.spacing.none"
+        },
+        {
+          "vendorToken": "--dv-tab-margin-block",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.size.tab.marginBlock"
+        },
+        {
+          "vendorToken": "--dv-tab-margin-inline",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.size.tab.marginInline"
+        },
+        {
+          "vendorToken": "--dv-tabs-and-actions-container-background-color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "component.dockWorkspace.tabsContainerBackground"
+        },
+        {
+          "vendorToken": "--dv-tabs-and-actions-container-font-size",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.typography.fontSize.sm"
+        },
+        {
+          "vendorToken": "--dv-tabs-and-actions-container-height",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.size.tab.height"
+        },
+        {
+          "vendorToken": "--dv-tabs-container-scrollbar-color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.terminal.scrollbarSliderBackground"
+        },
+        {
+          "vendorToken": "--dv-transition-duration",
+          "status": "mapped",
+          "$type": "duration",
+          "sourceToken": "semantic.motion.duration.fast"
+        },
+        {
+          "vendorToken": "--dv-wrap-vertical-tab-height",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.size.tab.height"
+        },
+        {
+          "vendorToken": "--dv-color-abyss",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview abyss preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-abyss-accent",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview abyss preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-abyss-dark",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview abyss preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-abyss-light",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview abyss preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-abyss-lighter",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview abyss preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-abyss-primary-text",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview abyss preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-abyss-secondary-text",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview abyss preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-gh-accent",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview github-dark preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-gh-border",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview github-dark preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-gh-border-muted",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview github-dark preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-gh-canvas-default",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview github-dark preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-gh-canvas-inset",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview github-dark preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-gh-canvas-subtle",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview github-dark preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-gh-fg-default",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview github-dark preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-gh-fg-muted",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview github-dark preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-gh-fg-subtle",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview github-dark preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-gh-light-accent",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview github-light preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-gh-light-border",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview github-light preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-gh-light-canvas-default",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview github-light preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-gh-light-canvas-inset",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview github-light preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-gh-light-canvas-subtle",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview github-light preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-gh-light-fg-default",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview github-light preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-gh-light-fg-muted",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview github-light preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-gh-light-fg-subtle",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview github-light preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-mocha-base",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview catppuccin-mocha preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-mocha-crust",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview catppuccin-mocha preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-mocha-lavender",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview catppuccin-mocha preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-mocha-mantle",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview catppuccin-mocha preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-mocha-mauve",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview catppuccin-mocha preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-mocha-subtext0",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview catppuccin-mocha preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-mocha-subtext1",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview catppuccin-mocha preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-mocha-surface0",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview catppuccin-mocha preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-mocha-surface1",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview catppuccin-mocha preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-mocha-text",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview catppuccin-mocha preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-monokai-bg",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview monokai preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-monokai-bg-light",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview monokai preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-monokai-comment",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview monokai preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-monokai-fg",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview monokai preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-monokai-green",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview monokai preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-nord-frost",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview nord preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-nord-frost-2",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview nord preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-nord-polar-0",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview nord preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-nord-polar-1",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview nord preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-nord-polar-2",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview nord preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-nord-polar-3",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview nord preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-nord-snow-0",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview nord preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-nord-snow-1",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview nord preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-sol-base00",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview solarized-light preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-sol-base01",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview solarized-light preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-sol-base1",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview solarized-light preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-sol-base2",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview solarized-light preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-sol-base3",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview solarized-light preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        },
+        {
+          "vendorToken": "--dv-color-sol-blue",
+          "status": "irrelevant",
+          "reason": "Built-in Dockview solarized-light preset internal palette variable; unused by capsule-ui-kit theme adapter"
+        }
+      ]
+    },
+    "openvue": {
+      "package": "openvue / @openvue/core / @openuxkit/styled / @openuxkit/styles",
+      "version": "1.0.0 / 1.0.0 / 1.0.3 / 1.1.0",
+      "inspectedDeclarations": [
+        "node_modules/openvue/config/index.d.ts",
+        "node_modules/@openvue/core/config/index.d.ts",
+        "node_modules/@openuxkit/styled/dist/index.d.mts",
+        "node_modules/@openuxkit/styles/dist/index.d.mts"
+      ],
+      "ausenteNote": "Bundled vendor theme preset package (@openuxkit/themes or @primeuix/themes) and colorScheme.highContrast are AUSENTE in node_modules; capsule-ui-kit generates the OpenVue preset and high-contrast overrides directly from repository-owned shared tokens",
+      "themeOptions": {
+        "prefix": "p",
+        "darkModeSelector": "[data-theme-scheme=\"dark\"]",
+        "cssLayer": false,
+        "inputVariant": "outlined",
+        "ripple": false
+      },
+      "tokens": [
+        {
+          "vendorToken": "disabled.opacity",
+          "status": "mapped",
+          "$type": "opacity",
+          "sourceToken": "semantic.opacity.disabled"
+        },
+        {
+          "vendorToken": "icon.size",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.size.control.iconSize"
+        },
+        {
+          "vendorToken": "mask.background",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.surface.overlay"
+        },
+        {
+          "vendorToken": "mask.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.text.primary"
+        },
+        {
+          "vendorToken": "mask.transition.duration",
+          "status": "mapped",
+          "$type": "duration",
+          "sourceToken": "semantic.motion.duration.normal"
+        },
+        {
+          "vendorToken": "zIndex.modal",
+          "status": "mapped",
+          "$type": "zIndex",
+          "sourceToken": "semantic.zIndex.modal"
+        },
+        {
+          "vendorToken": "zIndex.overlay",
+          "status": "mapped",
+          "$type": "zIndex",
+          "sourceToken": "semantic.zIndex.overlay"
+        },
+        {
+          "vendorToken": "zIndex.menu",
+          "status": "mapped",
+          "$type": "zIndex",
+          "sourceToken": "semantic.zIndex.floating"
+        },
+        {
+          "vendorToken": "zIndex.tooltip",
+          "status": "mapped",
+          "$type": "zIndex",
+          "sourceToken": "semantic.zIndex.tooltip"
+        },
+        {
+          "vendorToken": "semantic.primary.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.accent.primary"
+        },
+        {
+          "vendorToken": "semantic.primary.contrast.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.accent.primaryContrast"
+        },
+        {
+          "vendorToken": "semantic.primary.hover.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.accent.primaryHover"
+        },
+        {
+          "vendorToken": "semantic.primary.active.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.accent.primaryActive"
+        },
+        {
+          "vendorToken": "semantic.content.background",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.surface.panel"
+        },
+        {
+          "vendorToken": "semantic.content.hover.background",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.surface.interactiveHover"
+        },
+        {
+          "vendorToken": "semantic.content.border.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.border.default"
+        },
+        {
+          "vendorToken": "semantic.content.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.text.primary"
+        },
+        {
+          "vendorToken": "semantic.content.border.radius",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.radius.md"
+        },
+        {
+          "vendorToken": "semantic.text.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.text.primary"
+        },
+        {
+          "vendorToken": "semantic.text.muted.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.text.muted"
+        },
+        {
+          "vendorToken": "semantic.focus.ring.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.focus.ringColor"
+        },
+        {
+          "vendorToken": "semantic.focus.ring.width",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.focus.ringWidth"
+        },
+        {
+          "vendorToken": "semantic.focus.ring.offset",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.focus.ringOffset"
+        },
+        {
+          "vendorToken": "semantic.focus.ring.style",
+          "status": "mapped",
+          "$type": "keyword",
+          "sourceToken": "semantic.focus.ringStyle"
+        },
+        {
+          "vendorToken": "semantic.focus.ring.shadow",
+          "status": "mapped",
+          "$type": "shadow",
+          "sourceToken": "semantic.focus.ringShadow"
+        },
+        {
+          "vendorToken": "button.border.radius",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.radius.sm"
+        },
+        {
+          "vendorToken": "button.padding.x",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.size.control.paddingXMd"
+        },
+        {
+          "vendorToken": "button.padding.y",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.size.control.paddingYMd"
+        },
+        {
+          "vendorToken": "button.sm.padding.x",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.size.control.paddingXSm"
+        },
+        {
+          "vendorToken": "button.sm.padding.y",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.size.control.paddingYSm"
+        },
+        {
+          "vendorToken": "button.lg.padding.x",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.size.control.paddingXLg"
+        },
+        {
+          "vendorToken": "button.lg.padding.y",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.size.control.paddingYLg"
+        },
+        {
+          "vendorToken": "button.primary.background",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.accent.primary"
+        },
+        {
+          "vendorToken": "button.primary.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.accent.primaryContrast"
+        },
+        {
+          "vendorToken": "button.primary.border.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.accent.primary"
+        },
+        {
+          "vendorToken": "button.secondary.background",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.surface.interactive"
+        },
+        {
+          "vendorToken": "button.secondary.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.text.primary"
+        },
+        {
+          "vendorToken": "button.secondary.border.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.border.default"
+        },
+        {
+          "vendorToken": "button.danger.background",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.status.error.surface"
+        },
+        {
+          "vendorToken": "button.danger.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.status.error.text"
+        },
+        {
+          "vendorToken": "button.danger.border.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.status.error.border"
+        },
+        {
+          "vendorToken": "inputtext.background",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.surface.sunken"
+        },
+        {
+          "vendorToken": "inputtext.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.text.primary"
+        },
+        {
+          "vendorToken": "inputtext.border.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.border.default"
+        },
+        {
+          "vendorToken": "inputtext.focus.border.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.focus.ringColor"
+        },
+        {
+          "vendorToken": "inputtext.border.radius",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.radius.sm"
+        },
+        {
+          "vendorToken": "inputtext.padding.x",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.size.control.paddingXMd"
+        },
+        {
+          "vendorToken": "inputtext.padding.y",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.size.control.paddingYMd"
+        },
+        {
+          "vendorToken": "textarea.background",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.surface.sunken"
+        },
+        {
+          "vendorToken": "textarea.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.text.primary"
+        },
+        {
+          "vendorToken": "textarea.border.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.border.default"
+        },
+        {
+          "vendorToken": "textarea.border.radius",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.radius.sm"
+        },
+        {
+          "vendorToken": "select.background",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.surface.sunken"
+        },
+        {
+          "vendorToken": "select.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.text.primary"
+        },
+        {
+          "vendorToken": "select.border.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.border.default"
+        },
+        {
+          "vendorToken": "select.border.radius",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.radius.sm"
+        },
+        {
+          "vendorToken": "checkbox.background",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.surface.sunken"
+        },
+        {
+          "vendorToken": "checkbox.checked.background",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.accent.primary"
+        },
+        {
+          "vendorToken": "checkbox.border.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.border.default"
+        },
+        {
+          "vendorToken": "checkbox.border.radius",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.radius.xs"
+        },
+        {
+          "vendorToken": "dialog.background",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "component.dialogHost.surface"
+        },
+        {
+          "vendorToken": "dialog.border.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "component.dialogHost.borderColor"
+        },
+        {
+          "vendorToken": "dialog.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.text.primary"
+        },
+        {
+          "vendorToken": "dialog.border.radius",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "component.dialogHost.borderRadius"
+        },
+        {
+          "vendorToken": "drawer.background",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "component.orchestratorDrawer.background"
+        },
+        {
+          "vendorToken": "drawer.border.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "component.orchestratorDrawer.borderColor"
+        },
+        {
+          "vendorToken": "drawer.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.text.primary"
+        },
+        {
+          "vendorToken": "tabs.tablist.background",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "component.multiSlot.headerBackground"
+        },
+        {
+          "vendorToken": "tabs.tab.active.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.text.primary"
+        },
+        {
+          "vendorToken": "tabs.tab.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.text.muted"
+        },
+        {
+          "vendorToken": "tabs.tabpanel.background",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.surface.panel"
+        },
+        {
+          "vendorToken": "datatable.header.cell.background",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.surface.chrome"
+        },
+        {
+          "vendorToken": "datatable.header.cell.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.text.primary"
+        },
+        {
+          "vendorToken": "datatable.row.background",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.surface.panel"
+        },
+        {
+          "vendorToken": "datatable.row.hover.background",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "component.fleetPanel.rowHoverBackground"
+        },
+        {
+          "vendorToken": "datatable.row.selected.background",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "component.fleetPanel.rowSelectedBackground"
+        },
+        {
+          "vendorToken": "datatable.body.cell.border.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.border.divider"
+        },
+        {
+          "vendorToken": "message.success.background",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.status.success.surface"
+        },
+        {
+          "vendorToken": "message.success.border.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.status.success.border"
+        },
+        {
+          "vendorToken": "message.success.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.status.success.text"
+        },
+        {
+          "vendorToken": "message.warn.background",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.status.warning.surface"
+        },
+        {
+          "vendorToken": "message.warn.border.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.status.warning.border"
+        },
+        {
+          "vendorToken": "message.warn.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.status.warning.text"
+        },
+        {
+          "vendorToken": "message.error.background",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.status.error.surface"
+        },
+        {
+          "vendorToken": "message.error.border.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.status.error.border"
+        },
+        {
+          "vendorToken": "message.error.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.status.error.text"
+        },
+        {
+          "vendorToken": "message.info.background",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.status.info.surface"
+        },
+        {
+          "vendorToken": "message.info.border.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.status.info.border"
+        },
+        {
+          "vendorToken": "message.info.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.status.info.text"
+        },
+        {
+          "vendorToken": "badge.border.radius",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.radius.pill"
+        },
+        {
+          "vendorToken": "tag.border.radius",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.radius.xs"
+        },
+        {
+          "vendorToken": "divider.border.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.border.divider"
+        },
+        {
+          "vendorToken": "toolbar.background",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.surface.chrome"
+        },
+        {
+          "vendorToken": "toolbar.border.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.border.default"
+        },
+        {
+          "vendorToken": "tooltip.background",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.surface.elevated"
+        },
+        {
+          "vendorToken": "tooltip.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.text.primary"
+        },
+        {
+          "vendorToken": "panel.background",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "component.capsulePanel.background"
+        },
+        {
+          "vendorToken": "panel.header.background",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "component.capsulePanel.headerBackground"
+        },
+        {
+          "vendorToken": "panel.border.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "component.capsulePanel.borderColor"
+        },
+        {
+          "vendorToken": "splitter.gutter.background",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.border.divider"
+        },
+        {
+          "vendorToken": "splitter.handle.focus.ring.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.focus.ringColor"
+        },
+        {
+          "vendorToken": "tag.background",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.surface.elevated"
+        },
+        {
+          "vendorToken": "tag.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.text.primary"
+        },
+        {
+          "vendorToken": "tag.border.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.border.default"
+        },
+        {
+          "vendorToken": "badge.background",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.accent.primary"
+        },
+        {
+          "vendorToken": "badge.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.accent.primaryContrast"
+        },
+        {
+          "vendorToken": "progressbar.background",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.surface.elevated"
+        },
+        {
+          "vendorToken": "progressbar.value.background",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.accent.primary"
+        },
+        {
+          "vendorToken": "progressbar.border.radius",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.radius.pill"
+        },
+        {
+          "vendorToken": "datatable.header.height",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "component.s1.tableHeaderHeight"
+        },
+        {
+          "vendorToken": "datatable.row.height",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "component.s1.tableRowHeight"
+        },
+        {
+          "vendorToken": "datatable.header.cell.font.size",
+          "status": "mapped",
+          "$type": "dimension",
+          "sourceToken": "semantic.typography.roles.tableHeader.fontSize"
+        },
+        {
+          "vendorToken": "chart.line.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.accent.primary"
+        },
+        {
+          "vendorToken": "chart.line.burn.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.text.disabled"
+        },
+        {
+          "vendorToken": "chart.grid.color",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.border.divider"
+        },
+        {
+          "vendorToken": "terminal.*",
+          "status": "irrelevant",
+          "reason": "OpenVue toy Terminal widget is excluded; capsule-ui-kit uses @xterm/xterm in TerminalView per UI_ARCHITECTURE §3/§7"
+        },
+        {
+          "vendorToken": "dock.*",
+          "status": "irrelevant",
+          "reason": "OpenVue macOS-style icon Dock widget is excluded; capsule-ui-kit uses Dockview in DockWorkspace per UI_ARCHITECTURE §2/§3"
+        },
+        {
+          "vendorToken": "editor.*",
+          "status": "irrelevant",
+          "reason": "Quill rich-text Editor widget is excluded by §7/§9 plain-text composer and no-arbitrary-HTML security rules"
+        },
+        {
+          "vendorToken": "carousel.*",
+          "status": "irrelevant",
+          "reason": "Not in the closed §9 control-family inventory"
+        },
+        {
+          "vendorToken": "galleria.*",
+          "status": "irrelevant",
+          "reason": "Not in the closed §9 control-family inventory"
+        },
+        {
+          "vendorToken": "organizationchart.*",
+          "status": "irrelevant",
+          "reason": "Not in the closed §9 control-family inventory"
+        },
+        {
+          "vendorToken": "speeddial.*",
+          "status": "irrelevant",
+          "reason": "Not in the closed §9 control-family inventory"
+        }
+      ]
+    },
+    "xterm": {
+      "package": "@xterm/xterm",
+      "version": "6.0.0",
+      "inspectedDeclarations": [
+        "node_modules/@xterm/xterm/typings/xterm.d.ts",
+        "node_modules/@xterm/xterm/css/xterm.css"
+      ],
+      "terminalOptionsBindings": {
+        "fontFamily": "semantic.typography.fontFamily.mono",
+        "fontSize": "semantic.typography.fontSize.terminal",
+        "fontWeight": "semantic.typography.fontWeight.regular",
+        "fontWeightBold": "semantic.typography.fontWeight.bold",
+        "lineHeight": "semantic.typography.lineHeight.terminal"
+      },
+      "tokens": [
+        {
+          "vendorToken": "foreground",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.terminal.foreground"
+        },
+        {
+          "vendorToken": "background",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.terminal.background"
+        },
+        {
+          "vendorToken": "cursor",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.terminal.cursor"
+        },
+        {
+          "vendorToken": "cursorAccent",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.terminal.cursorAccent"
+        },
+        {
+          "vendorToken": "selectionBackground",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.terminal.selectionBackground"
+        },
+        {
+          "vendorToken": "selectionForeground",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.terminal.selectionForeground"
+        },
+        {
+          "vendorToken": "selectionInactiveBackground",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.terminal.selectionInactiveBackground"
+        },
+        {
+          "vendorToken": "scrollbarSliderBackground",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.terminal.scrollbarSliderBackground"
+        },
+        {
+          "vendorToken": "scrollbarSliderHoverBackground",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.terminal.scrollbarSliderHoverBackground"
+        },
+        {
+          "vendorToken": "scrollbarSliderActiveBackground",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.terminal.scrollbarSliderActiveBackground"
+        },
+        {
+          "vendorToken": "overviewRulerBorder",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.terminal.overviewRulerBorder"
+        },
+        {
+          "vendorToken": "black",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.terminal.ansi.black"
+        },
+        {
+          "vendorToken": "red",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.terminal.ansi.red"
+        },
+        {
+          "vendorToken": "green",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.terminal.ansi.green"
+        },
+        {
+          "vendorToken": "yellow",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.terminal.ansi.yellow"
+        },
+        {
+          "vendorToken": "blue",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.terminal.ansi.blue"
+        },
+        {
+          "vendorToken": "magenta",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.terminal.ansi.magenta"
+        },
+        {
+          "vendorToken": "cyan",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.terminal.ansi.cyan"
+        },
+        {
+          "vendorToken": "white",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.terminal.ansi.white"
+        },
+        {
+          "vendorToken": "brightBlack",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.terminal.ansi.brightBlack"
+        },
+        {
+          "vendorToken": "brightRed",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.terminal.ansi.brightRed"
+        },
+        {
+          "vendorToken": "brightGreen",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.terminal.ansi.brightGreen"
+        },
+        {
+          "vendorToken": "brightYellow",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.terminal.ansi.brightYellow"
+        },
+        {
+          "vendorToken": "brightBlue",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.terminal.ansi.brightBlue"
+        },
+        {
+          "vendorToken": "brightMagenta",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.terminal.ansi.brightMagenta"
+        },
+        {
+          "vendorToken": "brightCyan",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.terminal.ansi.brightCyan"
+        },
+        {
+          "vendorToken": "brightWhite",
+          "status": "mapped",
+          "$type": "color",
+          "sourceToken": "semantic.terminal.ansi.brightWhite"
+        },
+        {
+          "vendorToken": "extendedAnsi",
+          "status": "approved_default",
+          "$type": "keyword",
+          "defaultValue": null,
+          "reason": "xterm 6.0.0 deterministically computes ANSI 16-255 color cube and grayscale ramp when extendedAnsi is omitted"
+        },
+        {
+          "vendorToken": "--vscode-scrollbar-shadow",
+          "status": "mapped",
+          "$type": "shadow",
+          "sourceToken": "semantic.elevation.scrollbarShadow"
+        }
+      ]
+    }
+  }
+}

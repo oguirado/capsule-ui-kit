@@ -1,0 +1,24 @@
+{
+  "name": "capsule-ui-kit-starter",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "main": "electron/main.js",
+  "description": "Starter skeleton for the capsule-ui-kit repository: two example capsule types plus the kit Terminal capsule.",
+  "license": "UNLICENSED",
+  "scripts": {
+    "dev": "npm run build && electron .",
+    "build": "npm run build:preload && vite build",
+    "build:preload": "esbuild electron/preload.js --bundle --platform=node --format=cjs --external:electron --outfile=dist/preload/preload.cjs",
+    "start": "electron ."
+  },
+  "dependencies": {
+    "vue": "3.5.43",
+    "dockview-core": "8.4.1",
+    "dockview-vue": "8.4.1",
+    "@xterm/xterm": "6.0.0",
+    "@xterm/addon-fit": "0.11.0",
+    "capsule-ui-kit": "file:../packages/capsule-ui-kit"
+  },
+  "devDependencies": {}
+}

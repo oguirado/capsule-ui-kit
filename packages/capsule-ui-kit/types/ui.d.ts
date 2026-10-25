@@ -1,0 +1,10 @@
+import type { DefineComponent, VNode } from 'vue';
+export const UiButton: DefineComponent<any,any,any>;
+export const UiTextInput: DefineComponent<any,any,any>;
+export const UiField: DefineComponent<any,any,any>;
+export const UiPage: DefineComponent<any,any,any>;
+export const UiToolbar: DefineComponent<any,any,any>;
+export const UiTag: DefineComponent<any,any,any>;
+export const AppShell: DefineComponent<any,any,any> & {new(): {$slots: {default(): VNode[]; shortcut(): VNode[]; logo(): VNode[]}}};
+export const TerminalCapsule: DefineComponent<any,any,any>;
+export const LayoutRecipes: DefineComponent<any,any,any>;

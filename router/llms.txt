@@ -1,0 +1,10 @@
+# Capsule UI Kit router
+Entry: ../README.md
+Install and run: ../docs/GETTING_STARTED.md
+Register a capsule: ../docs/REGISTER_CAPSULE_TYPES.md
+Exact file lookup: catalogue/routes.tsv
+Nodes: catalogue/kit.nodes.jsonl
+Coverage and source hashes: catalogue/coverage.json
+Ranked lookup: python3 kit/tools/route_v2.py (see kit/docs/router_web.md)
+Regenerate: python3 ../tools/router_index.py
+Verify: python3 ../tools/router_index.py --check

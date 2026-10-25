@@ -1,0 +1,7 @@
+{
+  "schema": "capsule-ui-kit-source/v1",
+  "version": "0.1.1",
+  "contentHash": "df8b45d9a218cb9d64091c92a09554143ff1edf7498e90682329fe56b2c785ae",
+  "algorithm": "sha256-length-framed-tree",
+  "direction": "repository"
+}

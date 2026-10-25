@@ -1,0 +1,74 @@
+{
+  "name": "capsule-ui-kit",
+  "version": "0.1.1",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": "./index.js",
+    "./projection": "./src/state/publicProjection.js",
+    "./layout": "./src/workspace/layoutProfile.js",
+    "./registry": "./src/agent/controlRegistry.js",
+    "./drawer-model": "./src/orchestrator/drawerModel.js",
+    "./scheduler": "./src/surfaces/presentationScheduler.js",
+    "./tokens": "./src/design/tokens.json",
+    "./token-mappings": "./src/design/tokenMappings.json",
+    "./DockWorkspace": {
+      "types": "./types/DockWorkspace.d.ts",
+      "default": "./src/workspace/DockWorkspace.vue"
+    },
+    "./CapsulePanel": {
+      "types": "./types/CapsulePanel.d.ts",
+      "default": "./src/capsules/CapsulePanel.vue"
+    },
+    "./MultiSlot": {
+      "types": "./types/MultiSlot.d.ts",
+      "default": "./src/capsules/MultiSlot.vue"
+    },
+    "./TerminalView": {
+      "types": "./types/TerminalView.d.ts",
+      "default": "./src/terminal/TerminalView.vue"
+    },
+    "./OrchestratorDrawer": {
+      "types": "./types/OrchestratorDrawer.d.ts",
+      "default": "./src/orchestrator/OrchestratorDrawer.vue"
+    },
+    "./TargetPicker": {
+      "types": "./types/TargetPicker.d.ts",
+      "default": "./src/orchestrator/TargetPicker.vue"
+    },
+    "./DispatchResults": {
+      "types": "./types/DispatchResults.d.ts",
+      "default": "./src/orchestrator/DispatchResults.vue"
+    },
+    "./theme.css": "./src/design/theme.css",
+    "./ui": {
+      "types": "./types/ui.d.ts",
+      "default": "./src/ui/index.js"
+    },
+    "./theme": {
+      "types": "./types/theme.d.ts",
+      "default": "./src/design/aura.js"
+    },
+    "./xterm-csp": "./tools/xterm-csp.js"
+  },
+  "peerDependencies": {
+    "vue": "3.5.43",
+    "dockview-vue": "8.4.1",
+    "dockview-core": "8.4.1",
+    "@xterm/xterm": "6.0.0",
+    "@xterm/addon-fit": "0.11.0",
+    "openvue": "1.0.0",
+    "@openvue/themes": "1.0.0",
+    "@openvue/icons": "1.0.0"
+  },
+  "files": [
+    "index.js",
+    "src",
+    "types",
+    "books",
+    "tools"
+  ],
+  "engines": {
+    "node": ">=24"
+  }
+}

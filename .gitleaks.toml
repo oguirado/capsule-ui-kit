@@ -1,0 +1,7 @@
+# Secret-scan configuration (gitleaks v8.18.4). Default rules stay on for every file and nothing is allowlisted:
+# the tree scans clean as is. The router gate fixture router/kit/tests/fixtures/gates/privacy_path.txt (an intentional
+# must-FAIL privacy input) does not trip any default rule. If a future finding needs an exemption, add only a
+# whole-line anchored regex (regexTarget = "line", ^...$), never a path.
+# CI plants four credentials that must all be detected with this config (see .github/workflows/ci.yml).
+[extend]
+useDefault = true

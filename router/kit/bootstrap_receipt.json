@@ -1,0 +1,117 @@
+{
+  "scope": "portable fixture tests and generic-node build only; not UI integration or canonical TEST",
+  "gates": [
+    {
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_T2_build.py"
+      ],
+      "rc": 0,
+      "log": "gate_0.log"
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_T3_route.py"
+      ],
+      "rc": 0,
+      "log": "gate_1.log"
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_T9_gates.py"
+      ],
+      "rc": 0,
+      "log": "gate_2.log"
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_T10_multimount.py"
+      ],
+      "rc": 0,
+      "log": "gate_3.log"
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_T11_logging.py"
+      ],
+      "rc": 0,
+      "log": "gate_4.log"
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "tools/build_index_v2.py",
+        "--nodes",
+        "tests/fixtures/mounts/sw/nodes.jsonl",
+        "--out",
+        "out/smoke",
+        "--corpus",
+        "ui",
+        "--thesaurus",
+        "tests/fixtures/thesaurus_empty.json"
+      ],
+      "rc": 0,
+      "log": "gate_5.log"
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "tools/build_index_v2.py",
+        "--nodes",
+        "tests/fixtures/mounts/sw/nodes.jsonl",
+        "--out",
+        "out/smoke",
+        "--corpus",
+        "ui",
+        "--thesaurus",
+        "tests/fixtures/thesaurus_empty.json",
+        "--check"
+      ],
+      "rc": 0,
+      "log": "gate_6.log"
+    }
+  ],
+  "vendor_mutant_rejected": true,
+  "vendor_files": 65
+}

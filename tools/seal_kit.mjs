@@ -1,0 +1,11 @@
+import { kitDigest } from './sync_ui_kit.mjs';
+import { readFile,writeFile } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
+import { spawnSync } from 'node:child_process';
+const root=fileURLToPath(new URL('../packages/capsule-ui-kit/',import.meta.url));
+const pkg=JSON.parse(await readFile(new URL('../packages/capsule-ui-kit/package.json',import.meta.url),'utf8'));
+const record={schema:'capsule-ui-kit-source/v1',version:pkg.version,contentHash:await kitDigest(root),algorithm:'sha256-length-framed-tree',direction:'repository'};
+await writeFile(new URL('../packages/capsule-ui-kit/KIT_SOURCE.json',import.meta.url),JSON.stringify(record,null,2)+'\n');
+const child=spawnSync('python3',['tools/router_index.py'],{cwd:fileURLToPath(new URL('../',import.meta.url)),stdio:'inherit'});
+if(child.status!==0) process.exit(child.status??1);
+console.log(JSON.stringify(record));

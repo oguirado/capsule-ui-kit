@@ -1,0 +1,5 @@
+<script setup>
+import UiPage from './UiPage.vue';import UiField from './UiField.vue';import UiTextInput from './UiTextInput.vue';import UiToolbar from './UiToolbar.vue';import UiTag from './UiTag.vue';import UiButton from './UiButton.vue';
+defineProps({recipe:{type:String,default:'resource-list'}});
+</script>
+<template><UiPage v-if="recipe==='resource-list'" title="Resources"><UiToolbar label="Resource actions"><template #start><UiTag label="Ready" /></template><template #end><UiButton label="Add resource" /></template></UiToolbar><table><thead><tr><th>Name</th><th>Status</th></tr></thead><tbody><tr><td>Example resource</td><td>Available</td></tr></tbody></table></UiPage><UiPage v-else-if="recipe==='settings-form'" title="Settings"><UiField label="Workspace name" for-id="recipe-name"><UiTextInput id="recipe-name" label="Workspace name" model-value="Local workspace" /></UiField><UiButton label="Save settings" /></UiPage><UiPage v-else title="Details"><dl><dt>Resource</dt><dd>Example resource</dd><dt>Status</dt><dd><UiTag label="Available" /></dd></dl></UiPage></template>

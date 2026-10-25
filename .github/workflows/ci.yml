@@ -1,0 +1,83 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      # The offline Electron proof is host-only (docs/CI.md): hosted jobs never need the Electron binary.
+      ELECTRON_SKIP_BINARY_DOWNLOAD: "1"
+    steps:
+      # actions are pinned to full commit SHAs (checkout v4.2.2, setup-node v4.4.0, setup-python v5.6.0)
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "24"
+          cache: npm
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: npm ci
+      - name: Kit tests
+        run: npm run test:kit
+      - name: Security and router negative tests
+        run: node --test test/security.test.mjs test/router-negative.test.mjs
+      - name: Type check
+        run: npm run check
+      - name: Build
+        run: npm run build
+      - name: Router index
+        run: npm run router
+      - name: Router kit unit tests
+        working-directory: router/kit
+        run: python3 -I -m unittest discover -s tests -p 'test_*.py'
+      - name: Publication lint tests
+        run: python3 -I -m unittest discover -s test -p 'test_*.py'
+      - name: Publication lint
+        run: npm run lint:publication
+      - name: Documentation claims
+        run: npm run claims
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+      - name: Secret scan (gitleaks v8.18.4, checksum verified)
+        run: |
+          curl -sSfL --retry 3 --retry-all-errors -o "$RUNNER_TEMP/gitleaks.tgz" https://github.com/gitleaks/gitleaks/releases/download/v8.18.4/gitleaks_8.18.4_linux_x64.tar.gz
+          echo "ba6dbb656933921c775ee5a2d1c13a91046e7952e9d919f9bac4cec61d628e7d  $RUNNER_TEMP/gitleaks.tgz" | sha256sum -c -
+          tar -xzf "$RUNNER_TEMP/gitleaks.tgz" -C "$RUNNER_TEMP" gitleaks
+          rc=0; "$RUNNER_TEMP/gitleaks" detect --source . --config .gitleaks.toml --redact --no-banner --exit-code 1 --report-format json --report-path "$RUNNER_TEMP/gl.json" || rc=$?
+          if [ "$rc" != 0 ] && [ -s "$RUNNER_TEMP/gl.json" ]; then
+            python3 -I -c 'import json,sys,collections; r=json.load(open(sys.argv[1])); c=collections.Counter((x["RuleID"], x["File"].split("/")[0]) for x in r); [print(n, k[0], k[1]) for k, n in c.most_common(25)]' "$RUNNER_TEMP/gl.json"
+          fi
+          [ "$rc" = 0 ] || exit "$rc"
+          # Negative controls: the same binary and config must detect each planted credential. Values are random, never committed.
+          rnd() { python3 -I -c 'import secrets,string,sys; print("".join(secrets.choice(string.ascii_letters + string.digits) for _ in range(int(sys.argv[1]))))' "$1"; }
+          mkdir -p "$RUNNER_TEMP/nc/a" "$RUNNER_TEMP/nc/b" "$RUNNER_TEMP/nc/c" "$RUNNER_TEMP/nc/d"
+          # (a) a GitHub-token-shaped value
+          printf 'token = "ghp_%s"\n' "$(rnd 36)" > "$RUNNER_TEMP/nc/a/creds.txt"
+          # (b) a random 64-hex value (entropy >= 3.7, above the rule's 3.5 floor) assigned to secret_key
+          python3 -I -c 'import secrets,math,collections as c; e=lambda h: -sum(v/64*math.log2(v/64) for v in c.Counter(h).values()); print("secret_key = \"%s\"" % next(h for h in iter(lambda: secrets.token_hex(32), None) if e(h) >= 3.7))' > "$RUNNER_TEMP/nc/b/settings.txt"
+          # (c) a token appended to a copy of a real hash-bearing line of the router manifest (the densest hex file of the repository)
+          real=$(head -n1 router/index/manifest.json | cut -c1-200)
+          [ -n "$real" ] || { echo "no manifest line found"; exit 1; }
+          printf '%s ghp_%s\n' "$real" "$(rnd 36)" > "$RUNNER_TEMP/nc/c/appended.txt"
+          # (d) a private-key block with a random body
+          python3 -I -c 'import secrets,base64; b=base64.b64encode(secrets.token_bytes(96)).decode(); p="-----"; print(p+"BEGIN RSA PRIVATE KEY"+p); [print(b[i:i+64]) for i in range(0,len(b),64)]; print(p+"END RSA PRIVATE KEY"+p)' > "$RUNNER_TEMP/nc/d/key.pem"
+          for c in a b c d; do
+            rm -f "$RUNNER_TEMP/nc.json"
+            "$RUNNER_TEMP/gitleaks" detect --no-git --source "$RUNNER_TEMP/nc/$c" --config .gitleaks.toml --redact --no-banner --exit-code 7 --report-format json --report-path "$RUNNER_TEMP/nc.json" || true
+            n=$(python3 -I -c 'import json,os,sys; p = sys.argv[1]; print(len(json.load(open(p))) if os.path.exists(p) else 0)' "$RUNNER_TEMP/nc.json")
+            [ "$n" -ge 1 ] || { echo "negative control $c NOT detected"; exit 1; }
+            echo "negative control $c detected ($n finding(s))"
+            rm -f "$RUNNER_TEMP/nc.json"
+          done

@@ -1,0 +1,6 @@
+node_modules/
+starter/dist/
+.proof/
+__pycache__/
+.kit-sync-*/
+.kit-sync-*.previous/

@@ -1,0 +1,39 @@
+{
+  "name": "capsule-ui-kit-workspace",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=24"
+  },
+  "workspaces": [
+    "packages/capsule-ui-kit",
+    "starter"
+  ],
+  "scripts": {
+    "test": "npm run test:kit && node --test test/security.test.mjs test/router-negative.test.mjs && node --test test/copy-ready.test.mjs",
+    "check": "vue-tsc --noEmit -p starter/tsconfig.json",
+    "build": "npm run build --workspace starter",
+    "router": "python3 tools/router_index.py --check",
+    "proof": "node --test test/copy-ready.test.mjs",
+    "test:kit": "node tools/kit_tests.mjs",
+    "lint:publication": "python3 -I tools/publication_lint.py . --report-only packages/capsule-ui-kit",
+    "claims": "python3 -I tools/claims_check.py"
+  },
+  "dependencies": {
+    "@xterm/addon-fit": "0.11.0",
+    "@xterm/xterm": "6.0.0",
+    "dockview-core": "8.4.1",
+    "dockview-vue": "8.4.1",
+    "electron": "44.9.2",
+    "vue": "3.5.43"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "6.0.9",
+    "esbuild": "0.28.2",
+    "typescript": "5.9.3",
+    "vite": "8.3.4",
+    "vue-tsc": "3.3.12"
+  }
+}

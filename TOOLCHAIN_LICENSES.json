@@ -1,0 +1,38 @@
+[
+  {
+    "package": "electron",
+    "version": "44.9.2",
+    "license": "MIT",
+    "source": "installed package.json; package-lock.json integrity"
+  },
+  {
+    "package": "vite",
+    "version": "8.3.4",
+    "license": "MIT",
+    "source": "installed package.json; package-lock.json integrity"
+  },
+  {
+    "package": "@vitejs/plugin-vue",
+    "version": "6.0.9",
+    "license": "MIT",
+    "source": "installed package.json; package-lock.json integrity"
+  },
+  {
+    "package": "esbuild",
+    "version": "0.28.2",
+    "license": "MIT",
+    "source": "installed package.json; package-lock.json integrity"
+  },
+  {
+    "package": "typescript",
+    "version": "5.9.3",
+    "license": "Apache-2.0",
+    "source": "installed package.json; package-lock.json integrity"
+  },
+  {
+    "package": "vue-tsc",
+    "version": "3.3.12",
+    "license": "MIT",
+    "source": "installed package.json; package-lock.json integrity"
+  }
+]

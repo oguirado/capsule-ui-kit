@@ -1,0 +1,2 @@
+# Capsule UI Kit
+See router/llms.txt for the kit-only index and docs/GETTING_STARTED.md for installation.
