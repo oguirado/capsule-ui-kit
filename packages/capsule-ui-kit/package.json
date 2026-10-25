@@ -8,7 +8,6 @@
     "./projection": "./src/state/publicProjection.js",
     "./layout": "./src/workspace/layoutProfile.js",
     "./registry": "./src/agent/controlRegistry.js",
-    "./drawer-model": "./src/orchestrator/drawerModel.js",
     "./scheduler": "./src/surfaces/presentationScheduler.js",
     "./tokens": "./src/design/tokens.json",
     "./token-mappings": "./src/design/tokenMappings.json",
@@ -27,18 +26,6 @@
     "./TerminalView": {
       "types": "./types/TerminalView.d.ts",
       "default": "./src/terminal/TerminalView.vue"
-    },
-    "./OrchestratorDrawer": {
-      "types": "./types/OrchestratorDrawer.d.ts",
-      "default": "./src/orchestrator/OrchestratorDrawer.vue"
-    },
-    "./TargetPicker": {
-      "types": "./types/TargetPicker.d.ts",
-      "default": "./src/orchestrator/TargetPicker.vue"
-    },
-    "./DispatchResults": {
-      "types": "./types/DispatchResults.d.ts",
-      "default": "./src/orchestrator/DispatchResults.vue"
     },
     "./theme.css": "./src/design/theme.css",
     "./ui": {

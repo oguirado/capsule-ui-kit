@@ -13,7 +13,7 @@ import { dirname, resolve } from 'node:path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const SFC_PATH = resolve(__dirname, '../src/orchestrator/TargetPicker.vue');
+const SFC_PATH = resolve(__dirname, './fixtures/retired/src/orchestrator/TargetPicker.vue');
 
 const require = createRequire(import.meta.url);
 const compilerSfc = require('@vue/compiler-sfc');

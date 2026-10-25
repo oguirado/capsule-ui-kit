@@ -1088,7 +1088,7 @@ export function createTargetPickerState(config = {}) {
       }
 
       const eligibleInWorkspaceCount = getVisibleEligibleWorkspaceIds().length;
-      /** @type {import('../agent/controlRegistry.js').ControlRegistrationInput[]} */
+      /** @type {import('../../../../../src/agent/controlRegistry.js').ControlRegistrationInput[]} */
       const controls = [
         Object.freeze({
           semanticAnchor: 'drawer/targets/all',

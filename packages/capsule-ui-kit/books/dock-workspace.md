@@ -8,8 +8,7 @@ Governing sections in the shared UI architecture document (`docs/UI_ARCHITECTURE
 - **§3 Component inventory and ownership**:
   - `DockWorkspace` owns: `Panel registry, Dockview adapter, presentation moves/tabs/size and restoration barrier`.
   - `DockWorkspace` excludes: `Capsule creation/destruction or authority from add/remove callbacks`.
-  - Closed panel registry covers: `CapsulePanel`, `FleetPanel`, `InspectorPanel`, `AlertBoard`, `TimelinePanel`, `OrchestratorDrawer`, `HelpSettingsPanel`, and `MissingPanel`.
-  - The expanded `OrchestratorDrawer` may dock/tab/float using its singular identity; moving it never creates a second composer or dispatch owner.
+  - Closed panel registry covers: `CapsulePanel`, `FleetPanel`, `InspectorPanel`, `AlertBoard`, `TimelinePanel`, `HelpSettingsPanel`, and `MissingPanel`. Retired types (e.g. the former bottom orchestrator drawer) resolve to `MissingPanel` with `originalPanelType` preserved.
 - **§4 Non-authoritative state and persistence (`UiLayout`)**:
   - Integrates with `layoutProfile.js` (`createLayoutProfileController`, `decodeAndMigrateLayoutProfile`, `resolvePopoutFallbackView`).
   - Enforces the restore barrier: `cold read → closed decode → sequential pure migrations → panel-type/parameter normalization → replace retired types with MissingPanel preserving IDs and structural references → restore presentation → await visible-panel readiness/fonts/final viewport → reveal settled/error wall → enable save-on-gesture-completion`.
@@ -32,7 +31,7 @@ Governing sections in the shared UI architecture document (`docs/UI_ARCHITECTURE
 
 | Symbol | Kind | Purpose |
 |---|---|---|
-| `DOCK_PANEL_REGISTRY_TYPES` | `readonly string[]` | Frozen list of the 8 admitted panel component types. |
+| `DOCK_PANEL_REGISTRY_TYPES` | `readonly string[]` | Frozen list of the 7 admitted panel component types. |
 | `VALID_DOCKVIEW_DIRECTIONS` | `ReadonlySet<string>` | `'left' \| 'right' \| 'above' \| 'below' \| 'within'` (`dockview-core` `Direction`). |
 | `VALID_DOCKVIEW_POSITIONS` | `ReadonlySet<string>` | `'top' \| 'bottom' \| 'left' \| 'right' \| 'center'` (`dockview-core` `Position`). |
 | `VALID_DOCKVIEW_RENDERERS` | `ReadonlySet<string>` | `'onlyWhenVisible' \| 'always'` (`dockview-core` `DockviewPanelRenderer`). |

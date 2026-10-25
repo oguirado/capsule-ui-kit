@@ -10,12 +10,12 @@ import {
   evaluateTargetEligibility,
   validatePromptDraft,
   createDrawerModel
-} from '../src/orchestrator/drawerModel.js';
+} from './fixtures/retired/src/orchestrator/drawerModel.js';
 
 /**
  * Helper to build a valid session target descriptor with overrides.
  *
- * @param {Partial<import('../src/orchestrator/drawerModel.js').SessionTargetDescriptor>} [overrides]
+ * @param {Partial<import('./fixtures/retired/src/orchestrator/drawerModel.js').SessionTargetDescriptor>} [overrides]
  */
 function makeSession(overrides = {}) {
   return {

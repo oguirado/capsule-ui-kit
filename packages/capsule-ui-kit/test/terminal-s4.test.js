@@ -20,15 +20,15 @@ const require = createRequire(import.meta.url);
 const compilerSfc = require('@vue/compiler-sfc');
 
 const TABS_PATH = path.resolve(__dirname, '../src/terminal/TerminalSessionTabs.vue');
-const LAUNCHER_PATH = path.resolve(__dirname, '../src/terminal/TerminalLauncher.vue');
-const COMPOSER_PATH = path.resolve(__dirname, '../src/terminal/TerminalComposer.vue');
+const LAUNCHER_PATH = path.resolve(__dirname, './fixtures/retired/src/terminal/TerminalLauncher.vue');
+const COMPOSER_PATH = path.resolve(__dirname, './fixtures/retired/src/terminal/TerminalComposer.vue');
 const VIEW_PATH = path.resolve(__dirname, '../src/terminal/TerminalView.vue');
 const THEME_PATH = path.resolve(__dirname, '../src/design/theme.css');
 
 import {
   TERMINAL_LAUNCHERS,
   TERMINAL_LAUNCHER_HINTS
-} from '../src/terminal/terminalCapsuleModel.js';
+} from './fixtures/retired/src/terminal/terminalCapsuleModel.js';
 
 /**
  * @param {string} sfcPath

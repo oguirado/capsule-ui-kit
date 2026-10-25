@@ -2,7 +2,7 @@ import OpenVue from 'openvue/config';
 import Aura from '@openvue/themes/aura';
 import tokens from './tokens.json' with {type:'json'};
 import {tokenValue} from './tokenContract.js';
-/** Aura is an adapter. Both schemes consume the same kit semantic authority. */
+/** Aura is an adapter. Every scheme consumes the same kit semantic authority. */
 export function createAuraPreset() {
   const scheme = mode => ({...Aura.semantic.colorScheme[mode],
     surface:Object.fromEntries(Object.keys(tokens.primitive.color.neutral).map(shade=>[shade,tokenValue('primitive.color.neutral.'+shade)])),
@@ -17,8 +17,13 @@ export function installKitTheme(app) {
   if(!nonce)throw new Error('Style nonce unavailable');
   app.use(OpenVue,{csp:{nonce},theme:{preset:createAuraPreset()}});
 }
+export const KIT_SCHEMES = Object.freeze(['light','dark','saas-dark','saas-light']);
+/** Select a kit scheme; S1 dark and S7 light stay the default.
+ * @param {string} scheme
+ * @param {{dataset: DOMStringMap}} [root]
+ */
 export function setKitScheme(scheme, root = document.documentElement) {
-  if (!['light','dark'].includes(scheme)) throw new Error('Unknown scheme');
+  if (!KIT_SCHEMES.includes(scheme)) throw new Error('Unknown scheme');
   root.dataset.themeScheme=scheme; root.dataset.themeContrast='normal';
   root.dataset.density ||= 'compact';root.dataset.themeDensity=root.dataset.density;
 }

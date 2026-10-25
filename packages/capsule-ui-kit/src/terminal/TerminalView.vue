@@ -57,7 +57,7 @@ export const VIEW_RETENTION_STATES = Object.freeze([
 
 export const TERMINAL_MODES = Object.freeze(['structured', 'pty']);
 
-const DEFAULT_MAX_SCROLLBACK_ROWS = 1000;
+const DEFAULT_MAX_SCROLLBACK_ROWS = 2000;
 const DEFAULT_MAX_PENDING_OUTPUT_BYTES = 262144;
 const DEFAULT_MAX_AGGREGATE_OUTPUT_BYTES = 2097152;
 const DEFAULT_MAX_ACCESSIBLE_LINES = 200;
@@ -261,9 +261,9 @@ export function inspectStagedPaste(rawText) {
  */
 const DEFAULT_TERMINAL_THEME = Object.freeze({
   foreground: '#e5e7eb',
-  background: '#0f172a',
+  background: '#0e1014',
   cursor: '#38bdf8',
-  cursorAccent: '#0f172a',
+  cursorAccent: '#0e1014',
   selectionBackground: 'rgba(56, 189, 248, 0.28)',
   selectionForeground: '#f8fafc',
   selectionInactiveBackground: 'rgba(148, 163, 184, 0.2)',
@@ -271,7 +271,7 @@ const DEFAULT_TERMINAL_THEME = Object.freeze({
   scrollbarSliderHoverBackground: 'rgba(148, 163, 184, 0.44)',
   scrollbarSliderActiveBackground: 'rgba(148, 163, 184, 0.6)',
   overviewRulerBorder: '#1e293b',
-  black: '#0f172a',
+  black: '#0e1014',
   red: '#ef4444',
   green: '#22c55e',
   yellow: '#eab308',
@@ -360,7 +360,7 @@ export function buildTerminalOptions(config = {}) {
     cursorInactiveStyle,
     altClickMovesCursor: false,
     reflowCursorLine: false,
-    fontFamily: config.fontFamily ?? 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+    fontFamily: config.fontFamily ?? 'JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
     fontSize: typeof config.fontSize === 'number' ? config.fontSize : 13,
     fontWeight: '400',
     fontWeightBold: '700',
@@ -394,6 +394,68 @@ export function buildTerminalOptions(config = {}) {
       hover() {},
       leave() {}
     }
+  };
+}
+
+/**
+ * Trailing debounce applied to container resize bursts before xterm fit.
+ */
+export const TERMINAL_FIT_DEBOUNCE_MS = 80;
+
+/**
+ * Creates a debounced fit gate: container rects are rounded to whole pixels
+ * (sub-pixel changes never schedule), sterile (zero-area) frames are dropped,
+ * and the latest distinct rect syncs once the burst settles, on an animation
+ * frame. Timers are injectable for deterministic tests.
+ *
+ * @param {{ setTimeoutFn?: any, clearTimeoutFn?: any, rafFn?: any, debounceMs?: number }} [options]
+ * @returns {{ request: (rect: any, sync: (rect: any) => void) => string, cancel: () => void, dispose: () => void }}
+ */
+export function createFitGate(options = {}) {
+  const setTimeoutFn = options.setTimeoutFn ?? setTimeout;
+  const clearTimeoutFn = options.clearTimeoutFn ?? clearTimeout;
+  const rafFn = options.rafFn
+    ?? (typeof requestAnimationFrame === 'function' ? requestAnimationFrame : (/** @type {() => void} */ cb) => setTimeout(cb, 16));
+  const waitMs = typeof options.debounceMs === 'number' && options.debounceMs >= 0
+    ? options.debounceMs
+    : TERMINAL_FIT_DEBOUNCE_MS;
+  /** @type {any} */
+  let timer;
+  /** @type {any} */
+  let frame;
+  let lastKey = '';
+  /** @param {any} rect */
+  function keyOf(rect) {
+    if (!rect || typeof rect.width !== 'number' || typeof rect.height !== 'number') return '';
+    return `${Math.round(rect.width)}x${Math.round(rect.height)}`;
+  }
+  function cancel() {
+    if (timer !== undefined) { clearTimeoutFn(timer); timer = undefined; }
+    if (frame !== undefined && typeof cancelAnimationFrame === 'function') {
+      cancelAnimationFrame(frame);
+      frame = undefined;
+    }
+  }
+  return {
+    /**
+     * @param {any} rect Container rect.
+     * @param {(rect: any) => void} sync Sync callback.
+     * @returns {string} `scheduled`, `ignored` (sub-pixel repeat) or `sterile`.
+     */
+    request(rect, sync) {
+      if (!rect || rect.width <= 0 || rect.height <= 0 || typeof sync !== 'function') return 'sterile';
+      const key = keyOf(rect);
+      if (key === lastKey) return 'ignored';
+      cancel();
+      timer = setTimeoutFn(() => {
+        timer = undefined;
+        lastKey = key;
+        frame = rafFn(() => { frame = undefined; sync(rect); });
+      }, waitMs);
+      return 'scheduled';
+    },
+    cancel,
+    dispose() { cancel(); lastKey = ''; }
   };
 }
 
@@ -1591,6 +1653,9 @@ export function createStreamRegistry(options = {}) {
           rows: proposed.rows
         });
       }
+      if (record.terminal && typeof record.terminal.scrollToBottom === 'function') {
+        record.terminal.scrollToBottom();
+      }
       return { cols: proposed.cols, rows: proposed.rows };
     },
 
@@ -1979,8 +2044,7 @@ function handleCancelStagedPaste() {
 /* DOM handles are created only after the viewport is available. */
 /** @type {ResizeObserver|undefined} */
 let resizeObserver;
-/** @type {number|undefined} */
-let viewportFrame;
+const fitGate = createFitGate();
 function openVisibleViewport(){
   const session=localRegistry.getSession(props.sessionId), host=viewportHostRef.value;
   if(!session || !host || props.folded)return;
@@ -2013,9 +2077,7 @@ onMounted(() => {
   openVisibleViewport();
   if (viewportHostRef.value && typeof ResizeObserver !== 'undefined') {
     resizeObserver = new ResizeObserver(() => {
-      if(viewportFrame!==undefined)cancelAnimationFrame(viewportFrame);
-      viewportFrame=requestAnimationFrame(()=>{
-        viewportFrame=undefined;
+      fitGate.request(viewportHostRef.value?.getBoundingClientRect(), () => {
         openVisibleViewport();
         localRegistry.scheduleRefit({sessionId:props.sessionId,getContainerRect:()=>viewportHostRef.value?.getBoundingClientRect() ?? {width:0,height:0}});
       });
@@ -2052,7 +2114,7 @@ watch(
 
 onBeforeUnmount(() => {
   resizeObserver?.disconnect();
-  if(viewportFrame!==undefined)cancelAnimationFrame(viewportFrame);
+  fitGate.dispose();
   const session = localRegistry.getSession(props.sessionId);
   if (session && props.viewRetention === 'disposed') {
     localRegistry.disposeSession(props.sessionId);

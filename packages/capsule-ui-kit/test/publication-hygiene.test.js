@@ -13,6 +13,8 @@ const forbidden = [
   '\u0054eamWork_Antigravity2',
   '\u0076isual-qa-0',
   '\u0061r_k_',
+  '\u0070apersmath-0',
+  '\u004fRQUESTADOR_WAVEMIND_PROYECTOS',
 ];
 
 function assertPublishable(text, label) {

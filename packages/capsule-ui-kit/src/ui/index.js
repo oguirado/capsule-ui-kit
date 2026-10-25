@@ -5,5 +5,4 @@ export {default as UiPage} from './UiPage.vue';
 export {default as UiToolbar} from './UiToolbar.vue';
 export {default as UiTag} from './UiTag.vue';
 export {default as AppShell} from './AppShell.vue';
-export {default as TerminalCapsule} from './TerminalCapsule.vue';
 export {default as LayoutRecipes} from './LayoutRecipes.vue';

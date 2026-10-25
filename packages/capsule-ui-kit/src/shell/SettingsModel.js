@@ -44,13 +44,16 @@ export const SECTION_LABELS = Object.freeze({
   about: 'About',
 });
 
-/** Storage keys shared with the kit theme adapter. @type {{readonly scheme: string, readonly schemePreference: string, readonly density: string, readonly snap: string, readonly aiTerminal: string}} */
+/** Storage keys shared with the kit theme adapter. @type {{readonly scheme: string, readonly schemePreference: string, readonly density: string, readonly snap: string, readonly aiTerminal: string, readonly sideTerminalOpen: string, readonly sideTerminalWidth: string, readonly sideTerminalCustom: string}} */
 export const SETTINGS_STORAGE_KEYS = Object.freeze({
   scheme: 'capsule-kit-scheme',
   schemePreference: 'capsule-kit-scheme-preference',
   density: 'capsule-kit-density',
   snap: 'capsule-kit-grid-snap',
   aiTerminal: 'capsule-kit-ai-terminal',
+  sideTerminalOpen: 'capsule-kit-side-terminal-open',
+  sideTerminalWidth: 'capsule-kit-side-terminal-width',
+  sideTerminalCustom: 'capsule-kit-side-terminal-custom',
 });
 
 /**

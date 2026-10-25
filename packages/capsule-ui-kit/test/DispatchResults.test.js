@@ -8,8 +8,8 @@ import { createRequire } from 'node:module';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const VUE_SFC_PATH = path.resolve(__dirname, '../src/orchestrator/DispatchResults.vue');
-const BOOK_PATH = path.resolve(__dirname, '../books/dispatch-results.md');
+const VUE_SFC_PATH = path.resolve(__dirname, './fixtures/retired/src/orchestrator/DispatchResults.vue');
+const BOOK_PATH = path.resolve(__dirname, './fixtures/retired/books/dispatch-results.md');
 
 
 const requireFromShell = createRequire(import.meta.url);

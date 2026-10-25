@@ -8,7 +8,7 @@
  * target eligibility and slot lock checks (G3, G4), and review invalidation on any basis/prompt/target/all-scope change.
  */
 
-import { sha256 } from '../agent/sha256.js';
+import { sha256 } from '../../../../../src/agent/sha256.js';
 
 /** @typedef {'collapsed' | 'expanded' | 'maximized'} DrawerPresentationMode */
 
