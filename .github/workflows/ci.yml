@@ -27,12 +27,12 @@ jobs:
         run: npm ci
       - name: Kit tests
         run: npm run test:kit
-      - name: Security and router negative tests
-        run: node --test test/security.test.mjs test/router-negative.test.mjs
       - name: Type check
         run: npm run check
       - name: Build
         run: npm run build
+      - name: Security and router negative tests (need the built starter preload)
+        run: node --test test/security.test.mjs test/router-negative.test.mjs
       - name: Router index
         run: npm run router
       - name: Router kit unit tests
