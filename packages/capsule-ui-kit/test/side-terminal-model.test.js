@@ -13,8 +13,10 @@ import {
   SIDE_TERMINAL_MAX_WIDTH_RATIO,
   SIDE_TERMINAL_RESIZE_STEP_PX,
   SIDE_TERMINAL_MAX_SESSIONS,
+  SIDE_TERMINAL_MENU_EDGE_GAP_PX,
   SIDE_TERMINAL_SYSTEM_ENTRY,
   SIDE_TERMINAL_PROVIDER_COMMAND,
+  capSideTerminalMenuWidth,
   clampSideTerminalWidth,
   maxSideTerminalWidth,
   stepSideTerminalWidth,
@@ -128,6 +130,30 @@ test('width clamps to 420px..75% with a default fallback', () => {
   assert.equal(stepSideTerminalWidth(640, -1, 1280), 632);
   assert.equal(stepSideTerminalWidth(640, 1, 1280, true), 700);
   assert.equal(clampSideTerminalWidth(640, 400), 420);
+});
+
+test('PL2 R7b: menu width cap keeps the right-anchored dialog inside the panel', () => {
+  assert.equal(SIDE_TERMINAL_MENU_EDGE_GAP_PX, 8);
+  // PL1 bench geometry (pl1-020): 640px panel at 1280, 352px dialog, trigger
+  // right edge near the panel edge: the dialog fits, no cap binds.
+  assert.equal(capSideTerminalMenuWidth({ triggerRight: 1223, dialogWidth: 352, panelLeft: 640, viewportWidth: 1280 }), null);
+  // Exact fit leaves the dialog alone.
+  assert.equal(capSideTerminalMenuWidth({ triggerRight: 1000, dialogWidth: 352, panelLeft: 640, viewportWidth: 1280 }), null);
+  // Minimum 420px panel with the trigger further left: the dialog shrinks to
+  // the measured space (1200 - 868 = 332) instead of leaving the panel.
+  assert.equal(capSideTerminalMenuWidth({ triggerRight: 1200, dialogWidth: 352, panelLeft: 860, viewportWidth: 1280 }), 332);
+  // Long provider labels at minimum width: 1223 - 868 = 355.
+  assert.equal(capSideTerminalMenuWidth({ triggerRight: 1223, dialogWidth: 360, panelLeft: 860, viewportWidth: 1280 }), 355);
+  // The viewport bound wins when the trigger sits past it: 1272 - 1008 = 264.
+  assert.equal(capSideTerminalMenuWidth({ triggerRight: 1275, dialogWidth: 352, panelLeft: 1000, viewportWidth: 1280 }), 264);
+  // Panel hanging past the left edge clamps to the viewport: 300 - 8 = 292.
+  assert.equal(capSideTerminalMenuWidth({ triggerRight: 300, dialogWidth: 352, panelLeft: -50, viewportWidth: 1280 }), 292);
+  // Degenerate geometry never caps: the CSS right anchor stays the fallback.
+  assert.equal(capSideTerminalMenuWidth({ triggerRight: 100, dialogWidth: 352, panelLeft: 640, viewportWidth: 1280 }), null);
+  assert.equal(capSideTerminalMenuWidth({ triggerRight: 1223, dialogWidth: 0, panelLeft: 640, viewportWidth: 1280 }), null);
+  assert.equal(capSideTerminalMenuWidth({ triggerRight: 1223, dialogWidth: -5, panelLeft: 640, viewportWidth: 1280 }), null);
+  assert.equal(capSideTerminalMenuWidth({ triggerRight: Number.NaN, dialogWidth: 352, panelLeft: 640, viewportWidth: 1280 }), null);
+  assert.equal(capSideTerminalMenuWidth({ triggerRight: 1223, dialogWidth: 352, panelLeft: 640, viewportWidth: Number.POSITIVE_INFINITY }), null);
 });
 
 test('open state and width persist through the settings seam', () => {

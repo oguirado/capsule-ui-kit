@@ -111,3 +111,22 @@ export function summarizeSlices(label, values) {
   const unit = chartable.length === 1 ? 'slice' : 'slices';
   return `${label}: total ${total} across ${chartable.length} ${unit}`;
 }
+
+/** Max centre-text width in viewBox units: inside the r=40 inner edge. @type {number} */
+export const DONUT_CENTER_TEXT_MAX_WIDTH = 60;
+
+/**
+ * Decide the SVG textLength that keeps one centre line inside the ring.
+ * Only shrinks: lines already within maxWidth keep their natural width,
+ * so short values never stretch. ViewBox units: the fit holds at every
+ * rendered size (PL2: 1920 "Shares charted" ring overlap).
+ * @param {number} naturalWidth Measured unconstrained width (viewBox units).
+ * @param {number} [maxWidth] Override for tests.
+ * @returns {number|null} textLength to set, or null when no shrink is needed.
+ */
+export function centerTextLength(naturalWidth, maxWidth = DONUT_CENTER_TEXT_MAX_WIDTH) {
+  if (typeof naturalWidth !== 'number' || !Number.isFinite(naturalWidth)) return null;
+  if (typeof maxWidth !== 'number' || !Number.isFinite(maxWidth) || maxWidth <= 0) return null;
+  if (naturalWidth <= maxWidth) return null;
+  return Math.floor(maxWidth * 100) / 100;
+}

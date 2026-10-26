@@ -12,10 +12,29 @@ export function createAuraPreset() {
   });
   return {...Aura,semantic:{...Aura.semantic,colorScheme:{light:scheme('light'),dark:scheme('dark')}}};
 }
+/** Marker proving the kit theme was installed on the app instance (PL2 F1). @type {symbol} */
+export const KIT_THEME_INSTALLED = Symbol.for('capsule-ui-kit.theme.installed');
+/**
+ * Install the kit theme exactly once; later calls are no-ops so boot can
+ * safely ensure installation before mount without double registration.
+ * Call before app.mount() so every capsule paints themed (PL2 F1).
+ * @param {*} app Vue app instance.
+ * @returns {*} The app instance.
+ */
 export function installKitTheme(app) {
+  if (app && app[KIT_THEME_INSTALLED]) return app;
   const nonce=document.querySelector('meta[name$="-style-nonce"]')?.getAttribute('content');
   if(!nonce)throw new Error('Style nonce unavailable');
   app.use(OpenVue,{csp:{nonce},theme:{preset:createAuraPreset()}});
+  app[KIT_THEME_INSTALLED]=true;
+  return app;
+}
+/**
+ * @param {*} app Vue app instance or nothing.
+ * @returns {boolean} True when installKitTheme already ran on the instance.
+ */
+export function isKitThemeInstalled(app) {
+  return !!app && app[KIT_THEME_INSTALLED] === true;
 }
 export const KIT_SCHEMES = Object.freeze(['light','dark','saas-dark','saas-light']);
 /** Select a kit scheme; S1 dark and S7 light stay the default.

@@ -1,6 +1,6 @@
 <script setup>
-import { computed, ref } from 'vue';
-import { donutSlices, summarizeSlices, toneFor } from './DonutGeometry.js';
+import { computed, nextTick, onMounted, onUpdated, ref } from 'vue';
+import { centerTextLength, donutSlices, summarizeSlices, toneFor } from './DonutGeometry.js';
 
 /**
  * Generic S1 donut chart card: own SVG on the 120x120 export ring, header
@@ -35,6 +35,27 @@ const props = defineProps({
 const showTable = ref(false);
 /** @returns {void} */
 function toggleTable() { showTable.value = !showTable.value; }
+
+/** @type {import('vue').Ref<any>} */
+const centerValueRef = ref(null);
+/** @type {import('vue').Ref<any>} */
+const centerLabelRef = ref(null);
+/**
+ * Shrink centre lines that would run over the ring (PL2: 1920 "Shares
+ * charted" overlap). Measurement is in viewBox units, so the fit holds at
+ * every rendered size. No-ops without a layout engine (SSR/tests).
+ * @returns {void}
+ */
+function fitCenterText() {
+  for (const node of [centerValueRef.value, centerLabelRef.value]) {
+    if (!node || typeof node.getComputedTextLength !== 'function') continue;
+    const length = centerTextLength(node.getComputedTextLength());
+    if (length === null) node.removeAttribute('textLength');
+    else node.setAttribute('textLength', String(length));
+  }
+}
+onMounted(() => { void nextTick().then(fitCenterText); });
+onUpdated(() => { fitCenterText(); });
 
 /** @type {import('vue').ComputedRef<Array<any>>} */
 const normSlices = computed(() => {
@@ -86,8 +107,8 @@ const summary = computed(() => summarizeSlices(
             :class="'s1-donut-slice s1-donut-slice-' + entry.tone"
           />
         </g>
-        <text v-if="totalValue" x="60" y="58" text-anchor="middle" class="s1-donut-center-value">{{ totalValue }}</text>
-        <text v-if="totalLabel" x="60" y="72" text-anchor="middle" class="s1-donut-center-label">{{ totalLabel }}</text>
+        <text v-if="totalValue" ref="centerValueRef" x="60" y="58" text-anchor="middle" lengthAdjust="spacingAndGlyphs" class="s1-donut-center-value">{{ totalValue }}</text>
+        <text v-if="totalLabel" ref="centerLabelRef" x="60" y="72" text-anchor="middle" lengthAdjust="spacingAndGlyphs" class="s1-donut-center-label">{{ totalLabel }}</text>
       </svg>
     </div>
     <p v-else class="s1-donut-empty" role="status">{{ emptyText }}</p>

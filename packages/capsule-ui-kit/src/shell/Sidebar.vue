@@ -1,3 +1,40 @@
+<script>
+/**
+ * Collapse-choice persistence for the navigation rail. Self-contained (no
+ * imports) so hosts restore the choice and tests reuse it unmounted.
+ */
+export const SIDEBAR_COLLAPSED_STORAGE_KEY = 'capsule-kit-sidebar-collapsed';
+/**
+ * Reads the persisted collapse choice: collapsed unless explicitly '0'.
+ * @param {Pick<Storage, 'getItem'>|null|undefined} storage Web storage or a test double.
+ * @returns {boolean} True (collapsed rail) by default.
+ */
+export function readSidebarCollapsed(storage) {
+  let value = '';
+  try {
+    const raw = storage?.getItem(SIDEBAR_COLLAPSED_STORAGE_KEY);
+    value = typeof raw === 'string' ? raw : '';
+  } catch {
+    value = '';
+  }
+  if (value === '') return true;
+  return value !== '0';
+}
+/**
+ * Persists the collapse choice without ever throwing.
+ * @param {Pick<Storage, 'setItem'>|null|undefined} storage Web storage or a test double.
+ * @param {unknown} collapsed Explicit collapse choice.
+ * @returns {boolean} True when the write succeeded.
+ */
+export function writeSidebarCollapsed(storage, collapsed) {
+  try {
+    storage?.setItem(SIDEBAR_COLLAPSED_STORAGE_KEY, collapsed === true ? '1' : '0');
+    return true;
+  } catch {
+    return false;
+  }
+}
+</script>
 <script setup>
 /**
  * @file Generic S1 navigation rail (Stitch S1 spec section 2).
@@ -10,6 +47,10 @@
  * flow while the expanded panel floats above the dock layer (absolute,
  * drawer z-index, floating shadow) without reflowing siblings. The
  * consumer must give the sidebar's offset parent position:relative.
+ * R4: the rail opens collapsed by default. `collapsed` is tri-state: null
+ * (default) resolves the persisted choice (collapsed rail when nothing was
+ * stored) while an explicit boolean overrides it; every explicit choice
+ * persists under SIDEBAR_COLLAPSED_STORAGE_KEY for hosts to restore.
  * Every surface and text color resolves from scheme tokens.
  * Plain JS + JSDoc, no TypeScript.
  *
@@ -56,7 +97,11 @@ const props = defineProps({
   groups: { type: Array, required: true },
   workspaceLabel: { type: String, default: 'Workspace' },
   workspaceVersion: { type: String, default: '' },
-  collapsed: { type: Boolean, default: false },
+  collapsed: { type: Boolean, default: null },
+  storage: {
+    type: /** @type {import('vue').PropType<Pick<Storage, 'getItem' | 'setItem'>|null|undefined>} */ (Object),
+    default: undefined
+  },
   autoCollapse: { type: Boolean, default: true },
   collapseBreakpoint: { type: Number, default: 1280 },
   overlay: { type: Boolean, default: true },
@@ -68,7 +113,7 @@ const props = defineProps({
 /** 'open' mirrors 'select' for AppShell-compatible consumers. */
 const emit = defineEmits(['select', 'open', 'sync', 'user-menu', 'collapsed-change']);
 
-/** Narrow-viewport probe; collapse stays derived (no internal toggle state). */
+/** Narrow-viewport probe; narrowing only adds collapse, never persists it. */
 const narrow = ref(false);
 /** @type {{ matches: boolean, addEventListener?: Function, removeEventListener?: Function } | null} */
 let media = null;
@@ -87,7 +132,29 @@ onBeforeUnmount(() => {
   if (media && typeof media.removeEventListener === 'function') media.removeEventListener('change', syncNarrow);
   media = null;
 });
-const isCollapsed = computed(() => props.collapsed || (props.autoCollapse && narrow.value));
+/**
+ * @returns {Pick<Storage, 'getItem' | 'setItem'>|null}
+ */
+function resolveStorage() {
+  if (props.storage !== undefined && props.storage !== null) return props.storage;
+  try {
+    const candidate = globalThis?.localStorage ?? null;
+    if (candidate && typeof candidate.getItem === 'function' && typeof candidate.setItem === 'function') {
+      return candidate;
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+const storageRef = resolveStorage();
+/** Uncontrolled collapse choice: explicit prop wins, otherwise the persisted choice (collapsed rail by default). */
+const collapsedState = ref(typeof props.collapsed === 'boolean' ? props.collapsed : readSidebarCollapsed(storageRef));
+/** Explicit collapse choice before viewport narrowing. */
+const explicitCollapsed = computed(() => (typeof props.collapsed === 'boolean' ? props.collapsed : collapsedState.value));
+const isCollapsed = computed(() => explicitCollapsed.value || (props.autoCollapse && narrow.value));
+watch(explicitCollapsed, (value) => { writeSidebarCollapsed(storageRef, value); });
 watch(isCollapsed, (value) => emit('collapsed-change', value));
 
 /** OpenVue Menu model: one submenu per group, separators between groups. */

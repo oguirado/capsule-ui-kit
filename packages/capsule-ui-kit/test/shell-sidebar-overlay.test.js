@@ -108,3 +108,48 @@ test('overlay keeps the stable rail contract: ids, collapse state and slots', ()
     assert.ok(source.includes(slot), 'slot/' + slot);
   }
 });
+
+// R4: the rail opens collapsed by default; `collapsed` overrides; choice persists.
+test('R4: collapsed is tri-state (null resolves the persisted choice, boolean overrides)', () => {
+  assert.ok(source.includes('collapsed: { type: Boolean, default: null }'), 'tri-state collapsed prop');
+  assert.ok(source.includes("typeof props.collapsed === 'boolean'"), 'controlled-vs-uncontrolled resolution');
+  assert.ok(source.includes('collapsedState'), 'uncontrolled state');
+  assert.ok(source.includes('explicitCollapsed'), 'explicit choice before narrowing');
+  assert.ok(source.includes('readSidebarCollapsed(storageRef)'), 'uncontrolled default reads storage');
+});
+
+test('R4: persisted collapse helpers default to the rail and round-trip', async () => {
+  assert.ok(descriptor.script, 'plain script block required');
+  assert.ok(descriptor.script.content.includes("SIDEBAR_COLLAPSED_STORAGE_KEY = 'capsule-kit-sidebar-collapsed'"), 'storage key');
+  const encoded = Buffer.from(descriptor.script.content, 'utf8').toString('base64');
+  const helpers = await import(`data:text/javascript;base64,${encoded}`);
+  assert.equal(helpers.SIDEBAR_COLLAPSED_STORAGE_KEY, 'capsule-kit-sidebar-collapsed');
+  assert.equal(helpers.readSidebarCollapsed(null), true, 'missing storage collapses');
+  assert.equal(helpers.readSidebarCollapsed(undefined), true, 'undefined storage collapses');
+  assert.equal(helpers.readSidebarCollapsed({ getItem() { throw new Error('denied'); } }), true, 'throwing storage collapses');
+  assert.equal(helpers.readSidebarCollapsed({ getItem: () => '' }), true, 'empty value collapses');
+  assert.equal(helpers.readSidebarCollapsed({ getItem: () => 'nope' }), true, 'foreign value collapses');
+  assert.equal(helpers.readSidebarCollapsed({ getItem: () => '0' }), false, 'explicit 0 expands');
+  assert.equal(helpers.readSidebarCollapsed({ getItem: () => '1' }), true, 'explicit 1 collapses');
+  const store = new Map();
+  const storage = {
+    getItem: (key) => (store.has(key) ? store.get(key) : null),
+    setItem: (key, value) => { store.set(key, value); },
+  };
+  assert.equal(helpers.writeSidebarCollapsed(storage, false), true);
+  assert.equal(store.get('capsule-kit-sidebar-collapsed'), '0');
+  assert.equal(helpers.readSidebarCollapsed(storage), false);
+  assert.equal(helpers.writeSidebarCollapsed(storage, true), true);
+  assert.equal(helpers.readSidebarCollapsed(storage), true);
+  assert.equal(helpers.writeSidebarCollapsed(null, true), true, 'missing storage never throws');
+  assert.equal(helpers.writeSidebarCollapsed({ setItem() { throw new Error('denied'); } }, true), false);
+});
+
+test('R4: explicit choice persists on change; narrowing never persists; change still emits', () => {
+  assert.ok(source.includes('watch(explicitCollapsed'), 'persist watcher');
+  assert.ok(source.includes('writeSidebarCollapsed(storageRef, value)'), 'persist write');
+  assert.ok(source.includes('explicitCollapsed.value || (props.autoCollapse && narrow.value)'), 'narrow only adds collapse');
+  assert.ok(source.includes("emit('collapsed-change'"), 'change event kept');
+  assert.ok(source.includes('props.storage'), 'storage prop override');
+  assert.ok(source.includes('globalThis?.localStorage'), 'localStorage fallback');
+});

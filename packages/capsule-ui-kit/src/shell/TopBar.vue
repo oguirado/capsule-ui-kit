@@ -196,11 +196,12 @@ defineExpose({ openPalette: showPalette, closePalette });
           data-semantic-anchor="shell/navigation/new"
           :label="newLabel"
           :aria-label="newLabel"
+          :title="newLabel"
           class="s1-topbar-new"
           @click="emit('new-capsule')"
         >
           <PlusIcon aria-hidden="true" />
-          <span>{{ newLabel }}</span>
+          <span class="s1-topbar-new-label">{{ newLabel }}</span>
         </UiButton>
       </slot>
     </div>
@@ -247,7 +248,8 @@ defineExpose({ openPalette: showPalette, closePalette });
   background: var(--cuk-semantic-surface-sunken);
   border-bottom: var(--cuk-semantic-border-width) solid var(--cuk-semantic-border-subtle);
   z-index: var(--cuk-primitive-z-index-panel);
-  overflow-x: auto;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 .s1-topbar-left,.s1-topbar-center,.s1-topbar-right{display:flex;align-items:center;flex:none;}
 .s1-topbar-left,.s1-topbar-right{gap: var(--cuk-semantic-spacing-xl);}
@@ -274,7 +276,7 @@ defineExpose({ openPalette: showPalette, closePalette });
   color: var(--cuk-semantic-text-primary);
 }
 .s1-topbar .s1-topbar-search{
-  width: var(--s1-topbar-search-width); max-width: 100%;
+  width: var(--s1-topbar-search-width); max-width: 100%; min-width: 0;
   height: var(--cuk-component-app-shell-status-height);
   display: inline-flex; align-items: center;
   gap: var(--cuk-semantic-spacing-md);
@@ -405,4 +407,16 @@ defineExpose({ openPalette: showPalette, closePalette });
   padding-top: var(--cuk-semantic-spacing-sm);
 }
 .s1-topbar-palette-empty{color: var(--cuk-semantic-text-muted);}
+/* Narrow viewports (pl1-008): collapse labels to icons instead of
+   overflowing. 80em tracks the 1280-wide bench viewport at the default root
+   size; em units keep the breakpoint root-relative (var() is invalid in
+   media queries). Accessible names stay on the controls. */
+@media (max-width: 80em){
+  .s1-topbar-left,.s1-topbar-right{gap: var(--cuk-semantic-spacing-md);}
+  .s1-topbar-left{flex: 0 1 auto; min-width: 0;}
+  .s1-topbar-identity{min-width: 0;}
+  .s1-topbar-wordmark{overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+  .s1-topbar-kbd{display: none;}
+  .s1-topbar-new-label{display: none;}
+}
 </style>

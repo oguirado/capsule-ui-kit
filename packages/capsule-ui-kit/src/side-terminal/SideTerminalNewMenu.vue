@@ -5,6 +5,7 @@
  * host-supplied provider entries, then a custom executable dialog. The menu
  * starts closed and a launch emits only from an explicit option click or an
  * explicit custom-dialog confirm; Escape, Cancel and outside pointer close it.
+ * Entries render one line each (icon, label, hint) inside a token-width dialog.
  * The kit holds no provider names: every provider entry arrives via props.
  * Plain JavaScript with JSDoc; no authored TypeScript, no product imports.
  */
@@ -19,13 +20,14 @@ export {
 } from './sideTerminalModel.js';
 </script>
 <script setup>
-import { shallowRef, computed, nextTick } from 'vue';
+import { shallowRef, computed, nextTick, onBeforeUnmount } from 'vue';
 import {
   SIDE_TERMINAL_MAX_SESSIONS,
   SIDE_TERMINAL_SYSTEM_ENTRY,
   SIDE_TERMINAL_PROVIDER_COMMAND,
   SIDE_TERMINAL_CUSTOM_MAX_ARGS,
-  SIDE_TERMINAL_CUSTOM_MAX_ARG_BYTES
+  SIDE_TERMINAL_CUSTOM_MAX_ARG_BYTES,
+  capSideTerminalMenuWidth
 } from './sideTerminalModel.js';
 
 const props = defineProps({
@@ -120,6 +122,7 @@ function canLaunch(entry) {
 function commitLaunch(spec) {
   open.value = false;
   customOpen.value = false;
+  stopResizeWatch();
   emit('closed');
   emit('launch', {
     entryId: spec.entryId,
@@ -158,17 +161,80 @@ function focusTrigger() {
   if (trigger && typeof trigger.focus === 'function') trigger.focus();
 }
 
+/**
+ * @returns {number} Viewport width in pixels, defaulting to the 1280 reference.
+ */
+function viewportWidth() {
+  try {
+    const width = globalThis?.window?.innerWidth ?? 0;
+    return typeof width === 'number' && width > 0 ? width : 1280;
+  } catch {
+    return 1280;
+  }
+}
+
+/**
+ * Shrinks the right-anchored dialog when its natural width would push it
+ * past the panel's left edge (pl1-020..025): the dialog keeps its right edge
+ * at the trigger while long hints ellipsize. Best-effort: when measurement
+ * is unavailable the CSS right anchor stands alone.
+ */
+function fitDialogToPanel() {
+  const dialog = customOpen.value ? customDialogRef.value : dialogRef.value;
+  const trigger = triggerRef.value;
+  if (!dialog || !trigger) return;
+  try {
+    if (typeof dialog.getBoundingClientRect !== 'function' || typeof trigger.getBoundingClientRect !== 'function') return;
+    dialog.style.maxWidth = '';
+    dialog.style.minWidth = '';
+    const naturalWidth = dialog.offsetWidth;
+    const triggerRight = trigger.getBoundingClientRect().right;
+    let panelLeft = 0;
+    const panel = trigger.closest('[data-semantic-anchor="terminal/side/panel"]');
+    if (panel && typeof panel.getBoundingClientRect === 'function') {
+      panelLeft = panel.getBoundingClientRect().left;
+    }
+    const cap = capSideTerminalMenuWidth({ triggerRight, dialogWidth: naturalWidth, panelLeft, viewportWidth: viewportWidth() });
+    if (cap !== null) {
+      dialog.style.maxWidth = `${cap}px`;
+      dialog.style.minWidth = '0px';
+    }
+  } catch {
+    /* Measurement is best-effort: the CSS right anchor still holds. */
+  }
+}
+
+function onWindowResize() {
+  if (open.value) fitDialogToPanel();
+}
+
+function stopResizeWatch() {
+  try {
+    globalThis?.window?.removeEventListener?.('resize', onWindowResize);
+  } catch {
+    /* Listener teardown is best-effort. */
+  }
+}
+
+onBeforeUnmount(stopResizeWatch);
+
 function onOpen() {
   if (open.value) return;
   open.value = true;
   emit('opened');
-  nextTick(() => focusFirstOption());
+  try {
+    globalThis?.window?.addEventListener?.('resize', onWindowResize);
+  } catch {
+    /* Resize refit is best-effort outside a browser window. */
+  }
+  nextTick(() => { focusFirstOption(); fitDialogToPanel(); });
 }
 
 function onClose() {
   if (!open.value) return;
   open.value = false;
   customOpen.value = false;
+  stopResizeWatch();
   emit('closed');
   focusTrigger();
 }
@@ -192,13 +258,13 @@ function onOpenCustom() {
   if (props.launching || full.value) return;
   customOpen.value = true;
   customErrorRef.value = '';
-  nextTick(() => focusFirstOption());
+  nextTick(() => { focusFirstOption(); fitDialogToPanel(); });
 }
 
 function onBackToMenu() {
   customOpen.value = false;
   customErrorRef.value = '';
-  nextTick(() => focusFirstOption());
+  nextTick(() => { focusFirstOption(); fitDialogToPanel(); });
 }
 
 /**
@@ -290,12 +356,22 @@ function onConfirmCustom() {
             role="button"
             data-semantic-anchor="terminal/launch/shell"
             :aria-label="`Launch ${SIDE_TERMINAL_SYSTEM_ENTRY.label} session${canLaunch(SIDE_TERMINAL_SYSTEM_ENTRY) ? '' : ' (unavailable)'}`"
+            :title="SIDE_TERMINAL_SYSTEM_ENTRY.hint"
             :disabled="!canLaunch(SIDE_TERMINAL_SYSTEM_ENTRY)"
             :aria-disabled="!canLaunch(SIDE_TERMINAL_SYSTEM_ENTRY) ? 'true' : 'false'"
             @click="onLaunchOption(SIDE_TERMINAL_SYSTEM_ENTRY)"
           >
-            <span class="cui-side-terminal-new__option-label">{{ SIDE_TERMINAL_SYSTEM_ENTRY.label }}</span>
-            <span class="cui-side-terminal-new__option-hint">{{ SIDE_TERMINAL_SYSTEM_ENTRY.hint }}</span>
+            <span class="cui-side-terminal-new__option-icon" aria-hidden="true">
+              <svg viewBox="0 0 16 16" focusable="false" fill="none" stroke="currentColor"
+                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="3.6" width="12" height="8.8" rx="1" />
+                <path d="M5.4 6.6l1.9 1.7-1.9 1.7M8.6 10.6h2.4" />
+              </svg>
+            </span>
+            <span class="cui-side-terminal-new__option-text">
+              <span class="cui-side-terminal-new__option-label">{{ SIDE_TERMINAL_SYSTEM_ENTRY.label }}</span>
+              <span class="cui-side-terminal-new__option-hint">{{ SIDE_TERMINAL_SYSTEM_ENTRY.hint }}</span>
+            </span>
           </button>
         </li>
         <li v-for="provider in validProviders" :key="provider.id" class="cui-side-terminal-new__item">
@@ -306,12 +382,22 @@ function onConfirmCustom() {
             role="button"
             :data-semantic-anchor="`terminal/launch/${'provider/' + provider.id}`"
             :aria-label="`Launch ${provider.label} session${canLaunch(provider) ? '' : ' (unavailable)'}`"
+            :title="provider.hint || provider.label"
             :disabled="!canLaunch(provider)"
             :aria-disabled="!canLaunch(provider) ? 'true' : 'false'"
             @click="onLaunchOption(provider)"
           >
-            <span class="cui-side-terminal-new__option-label">{{ provider.label }}</span>
-            <span v-if="provider.hint" class="cui-side-terminal-new__option-hint">{{ provider.hint }}</span>
+            <span class="cui-side-terminal-new__option-icon" aria-hidden="true">
+              <svg viewBox="0 0 16 16" focusable="false" fill="none" stroke="currentColor"
+                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="3.6" width="12" height="8.8" rx="1" />
+                <path d="M5.4 6.6l1.9 1.7-1.9 1.7M8.6 10.6h2.4" />
+              </svg>
+            </span>
+            <span class="cui-side-terminal-new__option-text">
+              <span class="cui-side-terminal-new__option-label">{{ provider.label }}</span>
+              <span v-if="provider.hint" class="cui-side-terminal-new__option-hint">{{ provider.hint }}</span>
+            </span>
           </button>
         </li>
         <li class="cui-side-terminal-new__item">
@@ -322,12 +408,22 @@ function onConfirmCustom() {
             role="button"
             data-semantic-anchor="terminal/side/custom-open"
             aria-label="Run a custom command"
+            title="Executable plus arguments, typed by you"
             :disabled="launching || full"
             :aria-disabled="launching || full ? 'true' : 'false'"
             @click="onOpenCustom"
           >
-            <span class="cui-side-terminal-new__option-label">Custom…</span>
-            <span class="cui-side-terminal-new__option-hint">Executable plus arguments, typed by you</span>
+            <span class="cui-side-terminal-new__option-icon" aria-hidden="true">
+              <svg viewBox="0 0 16 16" focusable="false" fill="none" stroke="currentColor"
+                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="3.6" width="12" height="8.8" rx="1" />
+                <path d="M5.4 6.6l1.9 1.7-1.9 1.7M8.6 10.6h2.4" />
+              </svg>
+            </span>
+            <span class="cui-side-terminal-new__option-text">
+              <span class="cui-side-terminal-new__option-label">Custom…</span>
+              <span class="cui-side-terminal-new__option-hint">Executable plus arguments, typed by you</span>
+            </span>
           </button>
         </li>
       </ul>
@@ -466,13 +562,18 @@ function onConfirmCustom() {
 .cui-side-terminal-new__dialog {
   position: absolute;
   top: calc(100% + var(--cuk-semantic-spacing-xs));
-  left: 0;
+  /* PL2 R7b (pl1-020..025): right-anchored so the dialog grows left into the
+     panel instead of clipping ~220px past the viewport's right edge. */
+  right: 0;
+  left: auto;
   z-index: var(--cuk-semantic-z-index-overlay);
   display: flex;
   flex-direction: column;
   gap: var(--cuk-semantic-spacing-sm);
   width: max-content;
-  max-width: 100%;
+  /* R7: comfortable token width for one-line entries; never wider than the viewport. */
+  min-width: calc(var(--cuk-primitive-space-16) * 11);
+  max-width: calc(100vw - var(--cuk-semantic-spacing-xl));
   padding: var(--cuk-semantic-spacing-md);
   background-color: var(--cuk-semantic-surface-elevated);
   color: var(--cuk-semantic-text-primary);
@@ -501,9 +602,9 @@ function onConfirmCustom() {
 }
 .cui-side-terminal-new__option {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--cuk-semantic-spacing-xxs);
+  flex-direction: row;
+  align-items: center;
+  gap: var(--cuk-semantic-spacing-sm);
   width: 100%;
   padding: var(--cuk-semantic-size-control-padding-ysm) var(--cuk-semantic-size-control-padding-xmd);
   background-color: var(--cuk-primitive-color-alpha-transparent);
@@ -520,11 +621,38 @@ function onConfirmCustom() {
   opacity: var(--cuk-semantic-opacity-disabled);
   cursor: not-allowed;
 }
+.cui-side-terminal-new__option-icon {
+  display: inline-flex;
+  flex: none;
+  width: var(--cuk-primitive-space-8);
+  height: var(--cuk-primitive-space-8);
+  color: var(--cuk-semantic-text-muted);
+}
+.cui-side-terminal-new__option-icon svg {
+  width: 100%;
+  height: 100%;
+}
+.cui-side-terminal-new__option-text {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: baseline;
+  gap: var(--cuk-semantic-spacing-xs);
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+}
 .cui-side-terminal-new__option-label {
+  flex: none;
+  white-space: nowrap;
   font-size: var(--cuk-semantic-typography-roles-body-sm-font-size);
   font-weight: var(--cuk-semantic-typography-font-weight-medium);
 }
 .cui-side-terminal-new__option-hint {
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   color: var(--cuk-semantic-text-muted);
   font-size: var(--cuk-semantic-typography-roles-label-sm-font-size);
 }
