@@ -16,6 +16,7 @@ const css=text('src/design/theme.css');
 const snapshot=JSON.parse(text('test/design-saas-legacy-snapshot.json'));
 // Exact additive inventory: legacy values remain pinned by the original snapshot.
 const multislotPaths=JSON.parse(text('test/design-multislot-paths.json'));
+const mvPaths=JSON.parse(text('test/design-mv-paths.json'));
 const leaf=path=>path.split('.').reduce((value,key)=>value?.[key],tokens);
 function resolveToken(path,mode='dark.normal',seen=new Set()){
   if(seen.has(path))throw new Error('Token cycle: '+path);
@@ -29,7 +30,7 @@ function luminance(hex){const a=hex.slice(1).match(/../g).map(x=>parseInt(x,16)/
 function contrast(a,b){const x=luminance(a),y=luminance(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05);}
 
 test('saas contract validates and pins the new primitives',()=>{
-  assert.equal(validateTokenContract(tokens).leaves,723);
+  assert.equal(validateTokenContract(tokens).leaves,793);
   const saas={canvas:'#0b0f19',well:'#070a11',indigo500:'#6366f1',indigo600:'#4f46e5',indigo700:'#4338ca',indigo50:'#eef2ff',sky500:'#0ea5e9',sky600:'#0284c7',sky50:'#f0f9ff',errorWash1:'#2d1217',errorWash2:'#1f1318',errorWash3:'#140b0f',errorWash4:'#0c0608'};
   for(const [key,hex] of Object.entries(saas)){
     assert.equal(tokenValue('primitive.color.saas.'+key,'saas-dark.normal'),hex,key);
@@ -102,12 +103,14 @@ test('S1 dark and S7 light computed values match the qualified legacy snapshot',
   const allowed=['primitive.color.saas.','primitive.radius.xxs','semantic.text.secondary','semantic.radius.xxs','semantic.typography.fontSize.saas_9','component.saas.'];
   const multislot=new Set(multislotPaths);
   assert.deepEqual(added.filter(path=>path.startsWith('component.aiMultiSlot.')).sort(),multislotPaths);
-  for(const path of added)assert.ok(multislot.has(path)||allowed.some(prefix=>path===prefix||path.startsWith(prefix)),'unexpected new path '+path);
-  assert.equal(added.length,265);
+  const mv=new Set(mvPaths);
+  assert.deepEqual(added.filter(path=>mv.has(path)).sort(),mvPaths);
+  for(const path of added)assert.ok(multislot.has(path)||mv.has(path)||allowed.some(prefix=>path===prefix||path.startsWith(prefix)),'unexpected new path '+path);
+  assert.equal(added.length,335);
 });
 
 test('setKitScheme selects the scheme pair next to S1 dark and S7 light',()=>{
-  assert.deepEqual([...KIT_SCHEMES],['light','dark','saas-dark','saas-light']);
+  assert.deepEqual([...KIT_SCHEMES],['light','dark','saas-dark','saas-light','mv-light','mv-dark']);
   assert.ok(Object.isFrozen(KIT_SCHEMES));
   for(const scheme of KIT_SCHEMES){
     const root={dataset:{}};

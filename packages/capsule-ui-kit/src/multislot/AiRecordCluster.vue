@@ -1,11 +1,12 @@
 <script>
 /**
  * Generic AI multislot record cluster (record-for-AI / record-to-disk /
- * screenshot). Plain JavaScript with JSDoc; no imports; no product names.
- * Contract-compatible with the kit intent vocabulary: emits `submit-intent`
- * with `{ type, capsuleId, ... }` built by `multislotIntents.js`.
- * The kit renders host projections only; it performs no disk, network or
- * clipboard writes itself.
+ * screenshot / export). Plain JavaScript with JSDoc; no imports; no product
+ * names. Contract-compatible with the kit intent vocabulary: emits
+ * `submit-intent` with `{ type, capsuleId, ... }` built by
+ * `multislotIntents.js` (export intents use the local `buildExportIntent`,
+ * same frozen shape). The kit renders host projections only; it performs no
+ * disk, network or clipboard writes itself.
  * @module multislot/AiRecordCluster
  */
 
@@ -232,9 +233,104 @@ export function screenshotAnchor(capsuleId) {
 }
 
 /**
+ * Literal reason shown when export has no host destination.
+ * @type {string}
+ */
+export const EXPORT_DESTINATION_REASON = 'No export destination advertised by the host';
+
+/**
+ * @returns {string} Generic export button label.
+ */
+export function exportLabel() {
+  return 'Export';
+}
+
+/**
+ * @param {{ capsuleLabel?: string, capsuleId: string }} input
+ * @returns {string} Stable accessible name (agent_lane/v1).
+ */
+export function exportAccessibleName(input) {
+  return `Export ${clusterLabel(input)}`;
+}
+
+/**
+ * @param {string} capsuleId
+ * @returns {string} Stable DOM id for the export control.
+ */
+export function exportDomId(capsuleId) {
+  return `cuk-multislot-export-${capsuleId}`;
+}
+
+/**
+ * @param {string} capsuleId
+ * @returns {string} Semantic anchor for the export control.
+ */
+export function exportAnchor(capsuleId) {
+  return `capsule/${capsuleId}/export`;
+}
+
+/**
+ * Creates a coded error for deterministic gate assertions.
+ * @param {string} code
+ * @param {string} message
+ * @returns {Error & { code: string }}
+ */
+function exportIntentError(code, message) {
+  const err = /** @type {Error & { code: string }} */ (new Error(`${code}: ${message}`));
+  err.code = code;
+  return err;
+}
+
+/**
+ * Requires a host-issued capsule id or throws the coded validation error.
+ * The kit never invents one.
+ * @param {unknown} value
+ * @returns {string}
+ */
+function requireExportCapsuleId(value) {
+  if (typeof value !== 'string' || value.trim().length === 0 || value !== value.trim() || /\s/.test(value)) {
+    throw exportIntentError(
+      'ERR_INVENTED_CAPSULE_ID',
+      'capsuleId must be provided by the host; the kit never invents one',
+    );
+  }
+  if (/^\d+$/.test(value)) {
+    throw exportIntentError(
+      'ERR_NUMERIC_INDEX_ID',
+      `capsuleId must not be a bare numeric index: "${value}"`,
+    );
+  }
+  return value;
+}
+
+/**
+ * Requires a usable export destination or throws the refusal code.
+ * @param {unknown} destination
+ * @returns {string}
+ */
+function requireExportDestination(destination) {
+  if (typeof destination !== 'string' || destination.length === 0 || destination !== destination.trim()) {
+    throw exportIntentError('ERR_EXPORT_WITHOUT_DESTINATION', EXPORT_DESTINATION_REASON);
+  }
+  return destination;
+}
+
+/**
+ * Builds an export intent. Refused when the host advertises no destination
+ * (`ERR_EXPORT_WITHOUT_DESTINATION`).
+ * @param {{ capsuleId: string, destination: unknown }} input
+ * @returns {{ type: string, capsuleId: string, destination: string }}
+ */
+export function buildExportIntent(input) {
+  const capsuleId = requireExportCapsuleId(input.capsuleId);
+  const destination = requireExportDestination(input.destination);
+  return Object.freeze({ type: 'export', capsuleId, destination });
+}
+
+/**
  * Generic fixture-driven demo props; neutral labels only.
  * @param {Record<string, any>} [overrides]
- * @returns {{ capsuleId: string, capsuleLabel: string, aiPhase: string, diskPhase: string, screenshotState: string, elapsedAi: null, elapsedDisk: null, diskDestination: null, captureTarget: string, disabled: boolean, unavailableReason: string }}
+ * @returns {{ capsuleId: string, capsuleLabel: string, aiPhase: string, diskPhase: string, screenshotState: string, elapsedAi: null, elapsedDisk: null, diskDestination: null, exportDestination: null, captureTarget: string, disabled: boolean, unavailableReason: string }}
  */
 export function aiRecordClusterFixture(overrides = {}) {
   return {
@@ -246,6 +342,7 @@ export function aiRecordClusterFixture(overrides = {}) {
     elapsedAi: null,
     elapsedDisk: null,
     diskDestination: null,
+    exportDestination: null,
     captureTarget: 'ram',
     disabled: false,
     unavailableReason: '',
@@ -273,6 +370,7 @@ const props = defineProps({
   elapsedAi: { type: Number, default: null },
   elapsedDisk: { type: Number, default: null },
   diskDestination: { type: String, default: null },
+  exportDestination: { type: String, default: null },
   captureTarget: { type: String, default: 'ram' },
   disabled: { type: Boolean, default: false },
   unavailableReason: { type: String, default: '' },
@@ -293,6 +391,12 @@ const hasDestination = computed(
     typeof props.diskDestination === 'string' &&
     props.diskDestination.length > 0 &&
     props.diskDestination === props.diskDestination.trim(),
+);
+const hasExportDestination = computed(
+  () =>
+    typeof props.exportDestination === 'string' &&
+    props.exportDestination.length > 0 &&
+    props.exportDestination === props.exportDestination.trim(),
 );
 const shotTarget = computed(() => (props.captureTarget === 'disk' ? 'disk' : 'ram'));
 
@@ -321,6 +425,9 @@ const shotName = computed(() =>
     state: props.screenshotState,
   }),
 );
+const exportName = computed(() =>
+  exportAccessibleName({ capsuleLabel: props.capsuleLabel, capsuleId: props.capsuleId }),
+);
 const clusterName = computed(() => {
   const label = (props.capsuleLabel || '').trim() || props.capsuleId;
   return `Record controls for ${label}`;
@@ -330,10 +437,12 @@ const clusterId = computed(() => recordClusterDomId(props.capsuleId));
 const aiId = computed(() => aiRecordDomId(props.capsuleId));
 const diskId = computed(() => diskRecordDomId(props.capsuleId));
 const shotId = computed(() => screenshotDomId(props.capsuleId));
+const exportId = computed(() => exportDomId(props.capsuleId));
 
 const aiAnchor = computed(() => aiRecordAnchor(props.capsuleId));
 const diskAnchor = computed(() => diskRecordAnchor(props.capsuleId));
 const shotAnchor = computed(() => screenshotAnchor(props.capsuleId));
+const exportAnchorValue = computed(() => exportAnchor(props.capsuleId));
 
 const aiElapsedLabel = computed(() => formatElapsed(props.elapsedAi));
 const diskElapsedLabel = computed(() => formatElapsed(props.elapsedDisk));
@@ -343,6 +452,7 @@ const diskDisabled = computed(() => props.disabled || diskBusy.value || !hasDest
 const shotDisabled = computed(
   () => props.disabled || shotBusy.value || (shotTarget.value === 'disk' && !hasDestination.value),
 );
+const exportDisabled = computed(() => props.disabled || !hasExportDestination.value);
 
 const aiReason = computed(() => {
   if (props.unavailableReason) return props.unavailableReason;
@@ -359,6 +469,11 @@ const shotReason = computed(() => {
   if (props.unavailableReason) return props.unavailableReason;
   if (shotTarget.value === 'disk' && !hasDestination.value) return DISK_DESTINATION_REASON;
   if (shotBusy.value) return 'Screenshot capture is pending';
+  return '';
+});
+const exportReason = computed(() => {
+  if (props.unavailableReason) return props.unavailableReason;
+  if (!hasExportDestination.value) return EXPORT_DESTINATION_REASON;
   return '';
 });
 
@@ -391,6 +506,14 @@ function onShotClick() {
       target: shotTarget.value,
       destination: props.diskDestination,
     }),
+  );
+}
+
+function onExportClick() {
+  if (exportDisabled.value) return;
+  emit(
+    'submit-intent',
+    buildExportIntent({ capsuleId: props.capsuleId, destination: props.exportDestination }),
   );
 }
 </script>
@@ -459,6 +582,25 @@ function onShotClick() {
       <span class="ms-record-label">{{ shotLabel }}</span>
       <span class="ms-record-store" aria-hidden="true">{{ shotTarget === 'disk' ? 'DISK' : 'RAM' }}</span>
     </button>
+    <button
+      :id="exportId"
+      type="button"
+      role="button"
+      class="ms-record ms-record-export"
+      :data-semantic-anchor="exportAnchorValue"
+      :aria-label="exportName"
+      :title="exportReason || exportName"
+      :disabled="exportDisabled"
+      :data-unavailable-reason="exportReason || undefined"
+      @pointerdown.prevent
+      @mousedown.prevent
+      @click="onExportClick"
+    >
+      <span class="ms-record-label">Export</span>
+      <span v-if="hasExportDestination" class="ms-record-destination" aria-hidden="true">{{
+        exportDestination
+      }}</span>
+    </button>
   </div>
 </template>
 
@@ -503,6 +645,14 @@ function onShotClick() {
 .ms-record-recording .ms-record-dot,
 .ms-record-capturing .ms-record-dot {
   background: var(--cuk-primitive-color-neutral-0);
+}
+.ms-record-export {
+  border-color: var(--cuk-semantic-border-default);
+  background: var(--cuk-semantic-surface-panel);
+  color: var(--cuk-semantic-text-primary);
+}
+.ms-record-export:hover {
+  background: var(--cuk-semantic-surface-chrome);
 }
 .ms-record-dot {
   width: var(--cuk-primitive-space-3);

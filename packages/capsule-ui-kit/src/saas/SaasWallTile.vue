@@ -166,6 +166,41 @@ export function buildWallControlPayload(input) {
 }
 
 /**
+ * @param {unknown} controlHeld
+ * @returns {string} Control verb for the header button (`release-control` when
+ *   the operator holds the lease, else `take-control`).
+ */
+export function wallControlVerb(controlHeld) {
+  return controlHeld === true ? 'release-control' : 'take-control';
+}
+
+/**
+ * @param {unknown} controlHeld
+ * @returns {string} Visible label of the header control button.
+ */
+export function wallControlLabel(controlHeld) {
+  return controlHeld === true ? 'Release Control' : 'Take Control';
+}
+
+/**
+ * @param {{ capsuleTitle?: string, capsuleId: string, controlHeld?: unknown }} input
+ * @returns {string} Stable accessible name (agent_lane/v1).
+ */
+export function wallControlAccessibleName(input) {
+  const label = (input.capsuleTitle || '').trim() || input.capsuleId;
+  if (input.controlHeld === true) return `Release control of ${label}`;
+  return `Take control of ${label}`;
+}
+
+/**
+ * @param {string} capsuleId
+ * @returns {string} Semantic anchor of the release-control button.
+ */
+export function wallReleaseControlAnchor(capsuleId) {
+  return `capsule/${capsuleId}/release-control`;
+}
+
+/**
  * @param {{ type: string, capsuleId: string }} input
  * @returns {{ type: string, capsuleId: string }} Intent payload (CapsulePanel shape).
  */
@@ -214,6 +249,7 @@ export function saasWallTileFixture(overrides = {}) {
     recordReason: '',
     takeControlDisabled: false,
     takeControlReason: '',
+    controlHeld: false,
     popoutDisabled: true,
     popoutReason: 'Policy: window open disabled',
     sessions: [
@@ -258,6 +294,7 @@ const props = defineProps({
   recordReason: { type: String, default: '' },
   takeControlDisabled: { type: Boolean, default: false },
   takeControlReason: { type: String, default: '' },
+  controlHeld: { type: Boolean, default: false },
   popoutDisabled: { type: Boolean, default: true },
   popoutReason: { type: String, default: 'Policy: window open disabled' },
   sessions: { type: Array, default: () => [] },
@@ -277,6 +314,20 @@ const emit = defineEmits([
 
 const domIds = computed(() => wallTileDomIds(props.capsuleId));
 const anchors = computed(() => wallTileAnchors(props.capsuleId));
+const controlVerb = computed(() => wallControlVerb(props.controlHeld));
+const controlLabel = computed(() => wallControlLabel(props.controlHeld));
+const controlName = computed(() =>
+  wallControlAccessibleName({
+    capsuleTitle: props.capsuleTitle,
+    capsuleId: props.capsuleId,
+    controlHeld: props.controlHeld,
+  }),
+);
+const controlAnchor = computed(() =>
+  props.controlHeld === true
+    ? wallReleaseControlAnchor(props.capsuleId)
+    : anchors.value.control,
+);
 const phaseChip = computed(() => wallPhaseChip(props.phase));
 const dotTone = computed(() => wallStatusDotTone(props.phase));
 const recordPhase = computed(() =>
@@ -329,9 +380,9 @@ function close() {
   emit('close-panel', buildWallClosePayload({ capsuleId: props.capsuleId }));
 }
 
-function takeControl() {
+function requestControl() {
   if (props.takeControlDisabled) return;
-  emit('control-request', buildWallControlPayload({ capsuleId: props.capsuleId, verb: 'take-control' }));
+  emit('control-request', buildWallControlPayload({ capsuleId: props.capsuleId, verb: controlVerb.value }));
 }
 
 function selectSession(sessionId) {
@@ -369,13 +420,13 @@ function selectSession(sessionId) {
           type="button"
           role="button"
           class="saas-take-control"
-          :data-semantic-anchor="anchors.control"
-          :aria-label="'Take control of ' + capsuleTitle"
-          :title="takeControlReason || ('Take control of ' + capsuleTitle)"
+          :data-semantic-anchor="controlAnchor"
+          :aria-label="controlName"
+          :title="takeControlReason || controlName"
           :disabled="takeControlDisabled"
           :data-unavailable-reason="takeControlReason || undefined"
-          @click="takeControl"
-        >Take Control</button>
+          @click="requestControl"
+        >{{ controlLabel }}</button>
         <span class="saas-divider" aria-hidden="true"></span>
         <span class="saas-popout-wrap">
           <button

@@ -128,6 +128,9 @@ function assertSafeNonNegativeInt(value, label, errCode = 'ERR_INVALID_INTEGER')
  * extend existing rows without changing the 13-row shape; pl3 R9 likewise
  * admits dialog control roles on row 12 (dialog/{id}/{action} plus one
  * legacy palette-search anchor) without changing the 13-row shape.
+ * mv2 lane G likewise admits the wall/multislot/recordings/audit/surface
+ * additive families on rows 3, 5, 9 and 10 (plus the `group` role on the
+ * row-12 settings family) without changing the 13-row shape.
  * @type {readonly ControlFamilyRule[]}
  */
 const FAMILY_RULES = Object.freeze([
@@ -363,7 +366,8 @@ const FAMILY_RULES = Object.freeze([
     rowIndex: 12,
     template: 'settings/{key}',
     pattern: /^settings\/([A-Za-z0-9._-]+)$/,
-    allowedRoles: Object.freeze(['textbox', 'combobox', 'checkbox', 'switch', 'spinbutton', 'button']),
+    // mv2 lane G: `group` admitted for the providers settings section.
+    allowedRoles: Object.freeze(['textbox', 'combobox', 'checkbox', 'switch', 'spinbutton', 'button', 'group']),
     requiresReasonWhenDisabled: false,
     forbidsZeroWhenUnknown: false,
   }),
@@ -450,6 +454,176 @@ const FAMILY_RULES = Object.freeze([
     requiresReasonWhenDisabled: false,
     forbidsZeroWhenUnknown: false,
   }),
+  // mv2 lane G: wall release-control, veil retry/export and the multislot
+  // L2/L3 button slots share one row-3 rule (button-only, disabled needs a
+  // reason, like the other capsule action rules above).
+  Object.freeze({
+    rowIndex: 3,
+    template: 'capsule/{id}/{release-control,retry,export,record-ai,record-disk,screenshot,copy-id,hide-surface,hide-terminal}',
+    pattern: /^capsule\/([A-Za-z0-9._-]+)\/(release-control|retry|export|record-ai|record-disk|screenshot|copy-id|hide-surface|hide-terminal)$/,
+    allowedRoles: Object.freeze(['button']),
+    requiresReasonWhenDisabled: true,
+    forbidsZeroWhenUnknown: false,
+  }),
+  // mv2 lane G: multislot input-mode toggle (switch, never a button).
+  Object.freeze({
+    rowIndex: 3,
+    template: 'capsule/{id}/input-mode',
+    pattern: /^capsule\/([A-Za-z0-9._-]+)\/input-mode$/,
+    allowedRoles: Object.freeze(['switch']),
+    requiresReasonWhenDisabled: false,
+    forbidsZeroWhenUnknown: false,
+  }),
+  // mv2 lane G: multislot slot splitter.
+  Object.freeze({
+    rowIndex: 3,
+    template: 'capsule/{id}/splitter',
+    pattern: /^capsule\/([A-Za-z0-9._-]+)\/splitter$/,
+    allowedRoles: Object.freeze(['separator']),
+    requiresReasonWhenDisabled: false,
+    forbidsZeroWhenUnknown: false,
+  }),
+  // mv2 lane G: multislot operator-guidance host event (status, never a button).
+  Object.freeze({
+    rowIndex: 3,
+    template: 'capsule/{id}/operator-guidance',
+    pattern: /^capsule\/([A-Za-z0-9._-]+)\/operator-guidance$/,
+    allowedRoles: Object.freeze(['status']),
+    requiresReasonWhenDisabled: false,
+    forbidsZeroWhenUnknown: false,
+  }),
+  // mv2 lane G: recordings control-bar actions (per-capsule, row 3 like record/destroy).
+  Object.freeze({
+    rowIndex: 3,
+    template: 'recording/{id}/{toggle,screenshot}',
+    pattern: /^recording\/([A-Za-z0-9._-]+)\/(toggle|screenshot)$/,
+    allowedRoles: Object.freeze(['button']),
+    requiresReasonWhenDisabled: true,
+    forbidsZeroWhenUnknown: false,
+  }),
+  Object.freeze({
+    rowIndex: 3,
+    template: 'recording/{id}/{phase,store-chip}',
+    pattern: /^recording\/([A-Za-z0-9._-]+)\/(phase|store-chip)$/,
+    allowedRoles: Object.freeze(['status']),
+    requiresReasonWhenDisabled: false,
+    forbidsZeroWhenUnknown: false,
+  }),
+  // mv2 lane G: recordings manifest (row 10, mirrors fleet/{id}/row).
+  Object.freeze({
+    rowIndex: 10,
+    template: 'recording/{rid}/row',
+    pattern: /^recording\/([A-Za-z0-9._-]+)\/row$/,
+    allowedRoles: Object.freeze(['row']),
+    requiresReasonWhenDisabled: false,
+    forbidsZeroWhenUnknown: true,
+  }),
+  Object.freeze({
+    rowIndex: 10,
+    template: 'recording/{rid}/{select,export}',
+    pattern: /^recording\/([A-Za-z0-9._-]+)\/(select|export)$/,
+    allowedRoles: Object.freeze(['button']),
+    requiresReasonWhenDisabled: false,
+    forbidsZeroWhenUnknown: false,
+  }),
+  Object.freeze({
+    rowIndex: 10,
+    template: 'recording/{rid}/export-gate',
+    pattern: /^recording\/([A-Za-z0-9._-]+)\/export-gate$/,
+    allowedRoles: Object.freeze(['status']),
+    requiresReasonWhenDisabled: false,
+    forbidsZeroWhenUnknown: false,
+  }),
+  // mv2 lane G: audit trail (row 9, the dispatch-review row).
+  Object.freeze({
+    rowIndex: 9,
+    template: 'audit/stream/{stream}/tab',
+    pattern: /^audit\/stream\/([A-Za-z0-9._-]+)\/tab$/,
+    allowedRoles: Object.freeze(['tab']),
+    requiresReasonWhenDisabled: false,
+    forbidsZeroWhenUnknown: false,
+  }),
+  Object.freeze({
+    rowIndex: 9,
+    template: 'audit/filter/capsule',
+    pattern: /^audit\/filter\/capsule$/,
+    allowedRoles: Object.freeze(['searchbox']),
+    requiresReasonWhenDisabled: false,
+    forbidsZeroWhenUnknown: false,
+  }),
+  Object.freeze({
+    rowIndex: 9,
+    template: 'audit/filter/verdict',
+    pattern: /^audit\/filter\/verdict$/,
+    allowedRoles: Object.freeze(['combobox']),
+    requiresReasonWhenDisabled: false,
+    forbidsZeroWhenUnknown: false,
+  }),
+  Object.freeze({
+    rowIndex: 9,
+    template: 'audit/filter/clear',
+    pattern: /^audit\/filter\/clear$/,
+    allowedRoles: Object.freeze(['button']),
+    requiresReasonWhenDisabled: false,
+    forbidsZeroWhenUnknown: false,
+  }),
+  Object.freeze({
+    rowIndex: 9,
+    template: 'audit/timeline/list',
+    pattern: /^audit\/timeline\/list$/,
+    allowedRoles: Object.freeze(['list']),
+    requiresReasonWhenDisabled: false,
+    forbidsZeroWhenUnknown: false,
+  }),
+  Object.freeze({
+    rowIndex: 9,
+    template: 'audit/record/{rid}/select',
+    pattern: /^audit\/record\/([A-Za-z0-9._-]+)\/select$/,
+    allowedRoles: Object.freeze(['button']),
+    requiresReasonWhenDisabled: false,
+    forbidsZeroWhenUnknown: false,
+  }),
+  Object.freeze({
+    rowIndex: 9,
+    template: 'audit/receipt/{rid}/counts',
+    pattern: /^audit\/receipt\/([A-Za-z0-9._-]+)\/counts$/,
+    allowedRoles: Object.freeze(['region']),
+    requiresReasonWhenDisabled: false,
+    forbidsZeroWhenUnknown: false,
+  }),
+  Object.freeze({
+    rowIndex: 9,
+    template: 'audit/receipt/{rid}/gate',
+    pattern: /^audit\/receipt\/([A-Za-z0-9._-]+)\/gate$/,
+    allowedRoles: Object.freeze(['status']),
+    requiresReasonWhenDisabled: false,
+    forbidsZeroWhenUnknown: false,
+  }),
+  // mv2 lane G: frame-canvas tile surfaces (row 5, the slot/detail row).
+  Object.freeze({
+    rowIndex: 5,
+    template: 'surface/{id}/tile',
+    pattern: /^surface\/([A-Za-z0-9._-]+)\/tile$/,
+    allowedRoles: Object.freeze(['region']),
+    requiresReasonWhenDisabled: false,
+    forbidsZeroWhenUnknown: false,
+  }),
+  Object.freeze({
+    rowIndex: 5,
+    template: 'surface/{id}/canvas',
+    pattern: /^surface\/([A-Za-z0-9._-]+)\/canvas$/,
+    allowedRoles: Object.freeze(['img']),
+    requiresReasonWhenDisabled: false,
+    forbidsZeroWhenUnknown: false,
+  }),
+  Object.freeze({
+    rowIndex: 5,
+    template: 'surface/{id}/{scaled-badge,stale}',
+    pattern: /^surface\/([A-Za-z0-9._-]+)\/(scaled-badge|stale)$/,
+    allowedRoles: Object.freeze(['status']),
+    requiresReasonWhenDisabled: false,
+    forbidsZeroWhenUnknown: false,
+  }),
 ]);
 
 /**
@@ -468,8 +642,8 @@ export const CONTROL_FAMILY_INVENTORY = Object.freeze([
   }),
   Object.freeze({
     row: 3,
-    templates: Object.freeze(['capsule/{id}/{fold,pin,control,close,popout,dock-back,float,maximize,hide,show}', 'capsule/{id}/{record,destroy}']),
-    roles: Object.freeze(['button']),
+    templates: Object.freeze(['capsule/{id}/{fold,pin,control,close,popout,dock-back,float,maximize,hide,show}', 'capsule/{id}/{record,destroy}', 'capsule/{id}/{release-control,retry,export,record-ai,record-disk,screenshot,copy-id,hide-surface,hide-terminal}', 'capsule/{id}/input-mode', 'capsule/{id}/splitter', 'capsule/{id}/operator-guidance', 'recording/{id}/{toggle,screenshot}', 'recording/{id}/{phase,store-chip}']),
+    roles: Object.freeze(['button', 'switch', 'separator', 'status']),
   }),
   Object.freeze({
     row: 4,
@@ -478,8 +652,8 @@ export const CONTROL_FAMILY_INVENTORY = Object.freeze([
   }),
   Object.freeze({
     row: 5,
-    templates: Object.freeze(['capsule/{id}/slot', 'capsule/{id}/session/{sid}/tab', 'detail/{id}/stepper-{w,h}', 'detail/{id}/pty-toggle', 'detail/{id}/scaled-badge']),
-    roles: Object.freeze(['region', 'tab', 'spinbutton', 'switch', 'status']),
+    templates: Object.freeze(['capsule/{id}/slot', 'capsule/{id}/session/{sid}/tab', 'detail/{id}/stepper-{w,h}', 'detail/{id}/pty-toggle', 'detail/{id}/scaled-badge', 'surface/{id}/tile', 'surface/{id}/canvas', 'surface/{id}/{scaled-badge,stale}']),
+    roles: Object.freeze(['region', 'tab', 'spinbutton', 'switch', 'status', 'img']),
   }),
   Object.freeze({
     row: 6,
@@ -498,13 +672,13 @@ export const CONTROL_FAMILY_INVENTORY = Object.freeze([
   }),
   Object.freeze({
     row: 9,
-    templates: Object.freeze(['dispatch/{did}/target/{sid}/{result,retry,cancel}', 'dispatch/{did}/review-confirm']),
-    roles: Object.freeze(['region', 'button']),
+    templates: Object.freeze(['dispatch/{did}/target/{sid}/{result,retry,cancel}', 'dispatch/{did}/review-confirm', 'audit/stream/{stream}/tab', 'audit/filter/capsule', 'audit/filter/verdict', 'audit/filter/clear', 'audit/timeline/list', 'audit/record/{rid}/select', 'audit/receipt/{rid}/counts', 'audit/receipt/{rid}/gate']),
+    roles: Object.freeze(['region', 'button', 'tab', 'searchbox', 'combobox', 'list', 'status']),
   }),
   Object.freeze({
     row: 10,
-    templates: Object.freeze(['fleet/{id}/row', 'inspector/{id}/field']),
-    roles: Object.freeze(['row', 'region', 'group', 'definition']),
+    templates: Object.freeze(['fleet/{id}/row', 'inspector/{id}/field', 'recording/{rid}/row', 'recording/{rid}/{select,export}', 'recording/{rid}/export-gate']),
+    roles: Object.freeze(['row', 'region', 'group', 'definition', 'button', 'status']),
   }),
   Object.freeze({
     row: 11,
@@ -514,7 +688,7 @@ export const CONTROL_FAMILY_INVENTORY = Object.freeze([
   Object.freeze({
     row: 12,
     templates: Object.freeze(['settings/{key}', 'dialog/{id}/{action}', 'shell/navigation/palette-search']),
-    roles: Object.freeze(['textbox', 'combobox', 'checkbox', 'switch', 'spinbutton', 'button', 'dialog', 'listbox', 'option']),
+    roles: Object.freeze(['textbox', 'combobox', 'checkbox', 'switch', 'spinbutton', 'button', 'dialog', 'listbox', 'option', 'group']),
   }),
   Object.freeze({
     row: 13,

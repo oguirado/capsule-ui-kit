@@ -3,7 +3,7 @@ import { computed, nextTick, ref } from 'vue';
 import InfoIcon from '@openvue/icons/infocircle';
 import UiButton from '../ui/UiButton.vue';
 import UiField from '../ui/UiField.vue';
-import { DENSITY_OPTIONS, SCHEME_OPTIONS, SECTION_LABELS, SETTINGS_SECTIONS } from './SettingsModel.js';
+import { DENSITY_OPTIONS, SCHEME_OPTIONS, SECTION_LABELS, SETTINGS_SECTIONS, normalizeRecordDestination, normalizeSettingsLimit, resolveSettingsOptionId } from './SettingsModel.js';
 
 /**
  * Generic S1 settings panel (Stitch S6 settings workspace). No application
@@ -39,12 +39,31 @@ const props = defineProps({
   section: { type: String, default: 'appearance' },
   schemeOptions: { type: Array, default: () => SCHEME_OPTIONS },
   densityOptions: { type: Array, default: () => DENSITY_OPTIONS },
+  theme: { type: String, default: '' },
+  themeOptions: { type: Array, default: () => [] },
+  themeLabel: { type: String, default: 'Theme' },
+  provider: { type: String, default: '' },
+  providerOptions: { type: Array, default: () => [] },
+  providerLabel: { type: String, default: 'Provider' },
+  recordDestination: { type: String, default: '' },
+  recordDestinationOptions: { type: Array, default: () => [] },
+  recordDestinationLabel: { type: String, default: 'Record destination' },
+  recordDestinationHelp: { type: String, default: 'Destinations come from the host recording capability.' },
+  limit: { type: Number, default: undefined },
+  limitMin: { type: Number, default: 1 },
+  limitMax: { type: Number, default: 100 },
+  limitStep: { type: Number, default: 1 },
+  limitLabel: { type: String, default: 'Limits' },
 });
 const emit = defineEmits([
   'update:scheme',
   'update:density',
   'update:snap-to-grid',
   'update:ai-terminal',
+  'update:theme',
+  'update:provider',
+  'update:record-destination',
+  'update:limit',
   'restore-layout',
   'reset-layout',
   'check-updates',
@@ -61,6 +80,15 @@ const schemes = computed(() => /** @type {SettingsOption[]} */ (/** @type {unkno
 const densities = computed(() => /** @type {SettingsOption[]} */ (/** @type {unknown} */ (props.densityOptions)));
 /** @type {import('vue').ComputedRef<AboutFacts>} */
 const facts = computed(() => /** @type {AboutFacts} */ (/** @type {unknown} */ (props.about ?? {})));
+/** @type {import('vue').ComputedRef<SettingsOption[]>} */
+const themeList = computed(() => /** @type {SettingsOption[]} */ (/** @type {unknown} */ (props.themeOptions)));
+const themeValue = computed(() => resolveSettingsOptionId(themeList.value, props.theme));
+/** @type {import('vue').ComputedRef<SettingsOption[]>} */
+const providerList = computed(() => /** @type {SettingsOption[]} */ (/** @type {unknown} */ (props.providerOptions)));
+/** @type {import('vue').ComputedRef<SettingsOption[]>} */
+const recordDestinationList = computed(() => /** @type {SettingsOption[]} */ (/** @type {unknown} */ (props.recordDestinationOptions)));
+const recordDestinationVisible = computed(() => normalizeRecordDestination(props.recordDestination) !== '' || recordDestinationList.value.length > 0);
+const limitShown = computed(() => typeof props.limit === 'number' && Number.isFinite(props.limit));
 
 /** @param {string} id */
 function goto(id) {
@@ -77,6 +105,34 @@ async function changeToggle(event, kind) {
   else emit('update:ai-terminal', input.checked);
   await nextTick();
   input.checked = kind === 'snap' ? props.snapToGrid : props.aiTerminal;
+}
+/** Commit a host-supplied select/text control; restore the DOM value when
+ * the host refuses the update (controlled props).
+ * @param {Event} event Change event from the control.
+ * @param {'theme'|'record-destination'} name Which control.
+ */
+async function changeHostSetting(event, name) {
+  const input = /** @type {HTMLSelectElement|HTMLInputElement} */ (event.target);
+  if (name === 'theme') emit('update:theme', input.value);
+  else emit('update:record-destination', input.value);
+  await nextTick();
+  input.value = name === 'theme' ? themeValue.value : props.recordDestination;
+}
+/** Commit the numeric limit clamped to the host bounds; restore the DOM
+ * value when the input is not a number or the host refuses the update.
+ * @param {Event} event Change event from the control.
+ */
+async function changeLimit(event) {
+  const input = /** @type {HTMLInputElement} */ (event.target);
+  const next = normalizeSettingsLimit(input.valueAsNumber, { min: props.limitMin, max: props.limitMax });
+  if (next === null) {
+    await nextTick();
+    input.value = limitShown.value ? String(props.limit) : '';
+    return;
+  }
+  emit('update:limit', next);
+  await nextTick();
+  input.value = limitShown.value ? String(props.limit) : String(next);
 }
 </script>
 <template>
@@ -137,6 +193,19 @@ async function changeToggle(event, kind) {
             </span>
           </label>
         </fieldset>
+        <div v-if="themeList.length > 0" class="s1-set-card">
+          <UiField :label="themeLabel" for-id="shell/settings/theme">
+            <select
+              id="shell/settings/theme"
+              data-semantic-anchor="settings/theme"
+              :value="themeValue"
+              :aria-label="themeLabel"
+              @change="changeHostSetting($event, 'theme')"
+            >
+              <option v-for="option in themeList" :key="option.id" :value="option.id">{{ option.label }}</option>
+            </select>
+          </UiField>
+        </div>
         <p class="s1-set-note">Affects data row height, typography leading, and padding across all operational capsules.</p>
       </section>
       <section v-if="active === 'workspace'" id="shell/settings/section-workspace" aria-labelledby="shell/settings/heading-workspace" class="s1-set-section">
@@ -190,6 +259,56 @@ async function changeToggle(event, kind) {
             />
           </UiField>
           <p class="s1-set-warning" role="note">{{ aiWarning }}</p>
+        </div>
+        <div v-if="providerList.length > 0" class="s1-set-card">
+          <fieldset id="shell/settings/providers" data-semantic-anchor="settings/providers" class="s1-set-group">
+            <legend class="s1-set-legend">{{ providerLabel }}</legend>
+            <label v-for="option in providerList" :key="option.id" class="s1-set-option" :class="{ 's1-set-option-active': provider === option.id }">
+              <input
+                type="radio"
+                name="settings-provider"
+                :aria-label="option.label"
+                :value="option.id"
+                :checked="provider === option.id"
+                @change="emit('update:provider', option.id)"
+              />
+              <span class="s1-set-option-text">
+                <span class="s1-set-option-label">{{ option.label }}</span>
+                <span v-if="option.detail" class="s1-set-option-detail">{{ option.detail }}</span>
+              </span>
+            </label>
+          </fieldset>
+        </div>
+        <div v-if="recordDestinationVisible" class="s1-set-card">
+          <UiField :label="recordDestinationLabel" for-id="shell/settings/record-destination" :help="recordDestinationHelp">
+            <input
+              type="text"
+              id="shell/settings/record-destination"
+              data-semantic-anchor="settings/record-destination"
+              :value="recordDestination"
+              :aria-label="recordDestinationLabel"
+              :list="recordDestinationList.length > 0 ? 'shell/settings/record-destination-list' : undefined"
+              @change="changeHostSetting($event, 'record-destination')"
+            />
+            <datalist v-if="recordDestinationList.length > 0" id="shell/settings/record-destination-list">
+              <option v-for="option in recordDestinationList" :key="option.id" :value="option.id">{{ option.label }}</option>
+            </datalist>
+          </UiField>
+        </div>
+        <div v-if="limitShown" class="s1-set-card">
+          <UiField :label="limitLabel" for-id="shell/settings/limits">
+            <input
+              type="number"
+              id="shell/settings/limits"
+              data-semantic-anchor="settings/limits"
+              :value="limit"
+              :aria-label="limitLabel"
+              :min="limitMin"
+              :max="limitMax"
+              :step="limitStep"
+              @change="changeLimit"
+            />
+          </UiField>
         </div>
       </section>
       <section v-if="active === 'shortcuts'" id="shell/settings/section-shortcuts" aria-labelledby="shell/settings/heading-shortcuts" class="s1-set-section">
@@ -340,6 +459,17 @@ async function changeToggle(event, kind) {
   width: var(--cuk-semantic-size-control-icon-size);
   height: var(--cuk-semantic-size-control-icon-size);
   accent-color: var(--cuk-semantic-accent-primary);
+}
+.s1-set .s1-set-card select,
+.s1-set .s1-set-card input[type="text"],
+.s1-set .s1-set-card input[type="number"]{
+  width: 100%;
+  padding: var(--cuk-primitive-space-2);
+  background: var(--cuk-semantic-surface-elevated);
+  border: var(--cuk-semantic-border-width) solid var(--cuk-semantic-border-subtle);
+  border-radius: var(--cuk-semantic-radius-sm);
+  font-size: var(--cuk-semantic-typography-roles-body-md-font-size);
+  color: var(--cuk-semantic-text-primary);
 }
 .s1-set .s1-set-warning{
   margin: 0; padding: var(--cuk-semantic-spacing-md);
