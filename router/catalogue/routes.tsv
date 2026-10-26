@@ -1,4 +1,5 @@
 file:a60feb0fb1fbbf63dc8e	packages/capsule-ui-kit/AGENTS.md
+file:3ece81f32dedfa3e31da	packages/capsule-ui-kit/CHANGELOG.md
 file:ac8a66572fcb5d5c2547	packages/capsule-ui-kit/KIT_SOURCE.json
 file:a7b1022eb7ccd19b16ee	packages/capsule-ui-kit/books/capsule-panel.md
 file:b53415115ece8d7827c6	packages/capsule-ui-kit/books/control-registry.md
@@ -74,6 +75,7 @@ file:22b36b9fb30e87fac495	packages/capsule-ui-kit/src/shell/SettingsPanel.vue
 file:228ae5c8af05f20e4966	packages/capsule-ui-kit/src/shell/ShellWorkspace.vue
 file:dc11da10b8fa6db8befa	packages/capsule-ui-kit/src/shell/Sidebar.vue
 file:bfa0fd84796a2ea80243	packages/capsule-ui-kit/src/shell/SidebarIcon.vue
+file:088b866168b92749202d	packages/capsule-ui-kit/src/shell/SkipLink.vue
 file:1a17d629997f885c3bde	packages/capsule-ui-kit/src/shell/StatusBar.vue
 file:a324a569a95ab849deac	packages/capsule-ui-kit/src/shell/TopBar.vue
 file:af5e80e6647dea2c0b5b	packages/capsule-ui-kit/src/side-terminal/SideTerminalNewMenu.vue
@@ -114,13 +116,16 @@ file:7a4a4c4a3df9e4cff467	packages/capsule-ui-kit/test/DockWorkspace.test.js
 file:ab21957b56c6df3d5d18	packages/capsule-ui-kit/test/MultiSlot.test.js
 file:3ac96589709004b74a59	packages/capsule-ui-kit/test/TargetPicker.test.js
 file:061296317ee1af550cab	packages/capsule-ui-kit/test/TerminalView.test.js
+file:33ee8da848a6865f3861	packages/capsule-ui-kit/test/agent-dialog-families.test.js
 file:52273062b5f824c28162	packages/capsule-ui-kit/test/capsule-chrome-s1.test.js
 file:905c3433e5f960aa1cf7	packages/capsule-ui-kit/test/controlRegistry.test.js
+file:b776eb84e325f2d28617	packages/capsule-ui-kit/test/design-contrast-pl2.test.js
 file:3866515ee4813a49af44	packages/capsule-ui-kit/test/design-light.test.js
 file:4ff46fd02fe2c1c60f82	packages/capsule-ui-kit/test/design-multislot-paths.json
 file:9c7225ecc59259e8dda8	packages/capsule-ui-kit/test/design-s1-tokens.test.js
 file:a30b7180fe9023eb7d7d	packages/capsule-ui-kit/test/design-saas-legacy-snapshot.json
 file:c8e8a3a78888fe16c537	packages/capsule-ui-kit/test/design-saas-schemes.test.js
+file:7b0a36dd839c811fdd6e	packages/capsule-ui-kit/test/design-theme-order-pl2.test.js
 file:adfa971f18aeb81fb368	packages/capsule-ui-kit/test/fixtures/retired/README.md
 file:1386afaec1fea2d3ba78	packages/capsule-ui-kit/test/fixtures/retired/books/dispatch-results.md
 file:20b0e844ead3d6647287	packages/capsule-ui-kit/test/fixtures/retired/books/drawer-model.md
@@ -163,12 +168,15 @@ file:a98135b3d9b6254652d2	packages/capsule-ui-kit/test/shell-settings.test.js
 file:89f7bd314e6ef6b8e583	packages/capsule-ui-kit/test/shell-sidebar-navigation.test.js
 file:3d04d22bc63e357e8673	packages/capsule-ui-kit/test/shell-sidebar-overlay.test.js
 file:d60f57d4310d5d48c511	packages/capsule-ui-kit/test/shell-sidebar.test.js
+file:fb344298f4674210ab26	packages/capsule-ui-kit/test/shell-topbar.test.js
 file:3e28f9d6f5fd43142ef9	packages/capsule-ui-kit/test/side-terminal-keys.test.js
+file:7ed09556fe79e914c06f	packages/capsule-ui-kit/test/side-terminal-menu.test.js
 file:3bc06b4c7253d1dfbdf8	packages/capsule-ui-kit/test/side-terminal-model.test.js
 file:69924bd900937487733b	packages/capsule-ui-kit/test/side-terminal-view.test.js
 file:519cd891f18ced9ce27e	packages/capsule-ui-kit/test/terminal-capsule-removal.test.js
 file:f7bdd9263fae706b2e6a	packages/capsule-ui-kit/test/terminal-s4.test.js
 file:246d5c19003a383ee77a	packages/capsule-ui-kit/test/ui-policy.test.js
+file:79f71654cdf44d7657c0	packages/capsule-ui-kit/test/widgets-donut-pl2.test.js
 file:7d3bf3b48149fa8b909a	packages/capsule-ui-kit/test/widgets-donut.test.js
 file:e860283125e246cd6407	packages/capsule-ui-kit/test/widgets-inspector.test.js
 file:211778bb234d10fe4dda	packages/capsule-ui-kit/test/widgets.test.js

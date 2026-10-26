@@ -29,3 +29,6 @@ Install gitleaks v8.18.4 for your platform and run `gitleaks detect --source . -
 ## Kit tests that need the host application
 
 `npm run test:kit` runs `tools/kit_tests.mjs`, which runs every `packages/capsule-ui-kit/test/*.test.js` except `capsule-chrome-s1.test.js` and `shell-sidebar-navigation.test.js`. Those two read `app/shell/src/renderer-v2/` of the owner's host application, which this repository does not contain. They stay in the package untouched and run in the owner's repository.
+
+
+Host-coupled kit tests skipped in this repository (they read app/shell/..., which is not shipped): whole files capsule-chrome-s1.test.js and shell-sidebar-navigation.test.js, and the single case "consumer boot installs the kit theme before mount (H1 surface)" of design-theme-order-pl2.test.js (tools/kit_tests.mjs). They run in the owner's source repository.
