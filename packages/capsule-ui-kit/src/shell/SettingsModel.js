@@ -101,3 +101,65 @@ export function writeStoredSetting(storage, key, value) {
     return false;
   }
 }
+
+/**
+ * Host-supplied settings keys for consumers that manage their own theme,
+ * provider, record-destination and limit values. Anchors live in the
+ * EXISTING `settings/{key}` family; the host supplies every value and
+ * applies every change, the kit only renders and emits.
+ * @type {{readonly theme: string, readonly providers: string, readonly recordDestination: string, readonly limits: string}}
+ */
+export const SETTINGS_KEY_ANCHORS = Object.freeze({
+  theme: 'settings/theme',
+  providers: 'settings/providers',
+  recordDestination: 'settings/record-destination',
+  limits: 'settings/limits',
+});
+
+/**
+ * Bounds for the generic numeric limit control.
+ * @typedef {object} SettingsLimitBounds
+ * @property {number} [min] Inclusive minimum.
+ * @property {number} [max] Inclusive maximum.
+ */
+
+/**
+ * Resolve a host-supplied option value to a listed option id so a
+ * controlled select never renders a blank mismatch.
+ * @param {SettingsOption[]} options Candidate options in host order.
+ * @param {unknown} value Requested option id.
+ * @returns {string} The value when listed, else the first option id, else ''.
+ */
+export function resolveSettingsOptionId(options, value) {
+  const list = Array.isArray(options) ? options : [];
+  if (typeof value === 'string' && value !== '' && list.some((option) => option?.id === value)) return value;
+  const first = list.find((option) => typeof option?.id === 'string' && option.id !== '');
+  return first?.id ?? '';
+}
+
+/**
+ * Normalize a record-destination value. The kit never enumerates
+ * destinations itself: the value always arrives from the host capability.
+ * @param {unknown} value Raw host value.
+ * @returns {string} Trimmed destination or ''.
+ */
+export function normalizeRecordDestination(value) {
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+/**
+ * Normalize a numeric limit to a finite value inside the host bounds.
+ * @param {unknown} value Raw control value.
+ * @param {SettingsLimitBounds} [bounds] Inclusive host bounds.
+ * @returns {number|null} Clamped finite number or null when not numeric.
+ */
+export function normalizeSettingsLimit(value, bounds = {}) {
+  if (typeof value === 'string' && value.trim() === '') return null;
+  const numeric = typeof value === 'number' ? value : Number(value);
+  if (!Number.isFinite(numeric)) return null;
+  const raw = bounds ?? {};
+  const min = typeof raw.min === 'number' && Number.isFinite(raw.min) ? raw.min : Number.NEGATIVE_INFINITY;
+  const max = typeof raw.max === 'number' && Number.isFinite(raw.max) ? raw.max : Number.POSITIVE_INFINITY;
+  if (min > max) return numeric;
+  return Math.min(Math.max(numeric, min), max);
+}

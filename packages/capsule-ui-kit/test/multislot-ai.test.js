@@ -736,8 +736,7 @@ test('INV-4: anchors cover every multislot id; hidden controls report no geometr
     );
     assert.equal(/\/\d+\//.test(row.anchorExample), false, `no numeric ids ${row.agentLaneId}`);
   }
-  // Existing-family rows resolve in the kit control registry; new families are
-  // additive follow-up work for the conductor (controlRegistry.js untouched).
+  // Both original and additive families are integrated in the control registry.
   const registry = await importKitModule(path.join(KIT_ROOT, 'src', 'agent', 'controlRegistry.js'));
   for (const row of rows.filter((r) => r.anchorStatus === 'existing')) {
     const rule = registry.matchControlFamily(row.anchorExample);
@@ -746,11 +745,16 @@ test('INV-4: anchors cover every multislot id; hidden controls report no geometr
     assert.ok(rule.allowedRoles.includes(row.role), `role ${row.role} for ${row.agentLaneId}`);
   }
   for (const row of rows.filter((r) => r.anchorStatus === 'new')) {
-    assert.equal(
-      registry.matchControlFamily(row.anchorExample),
-      null,
-      `new family pending for ${row.agentLaneId} (conductor follow-up)`,
-    );
+    const rule = registry.matchControlFamily(row.anchorExample);
+    assert.ok(rule, `integrated family for ${row.agentLaneId}`);
+    assert.equal(rule.template, row.role === 'button'
+      ? 'capsule/{id}/{release-control,retry,export,record-ai,record-disk,screenshot,copy-id,hide-surface,hide-terminal}'
+      : row.anchorTemplate);
+    assert.deepEqual(rule.allowedRoles, [row.role], `role for ${row.agentLaneId}`);
+  }
+  for (const anchor of ['capsule/cap-01/record-invented', 'capsule/1/input-mode',
+    'capsule/cap-01/operator-guidance/invented']) {
+    assert.equal(registry.matchControlFamily(anchor), null, anchor);
   }
   assert.equal(
     mod.multislotAnchorFor('multislot.fold', { id: 'cap-09' }),

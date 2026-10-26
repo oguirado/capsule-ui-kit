@@ -36,7 +36,7 @@ export function installKitTheme(app) {
 export function isKitThemeInstalled(app) {
   return !!app && app[KIT_THEME_INSTALLED] === true;
 }
-export const KIT_SCHEMES = Object.freeze(['light','dark','saas-dark','saas-light']);
+export const KIT_SCHEMES = Object.freeze(['light','dark','saas-dark','saas-light','mv-light','mv-dark']);
 /** Select a kit scheme; S1 dark and S7 light stay the default.
  * @param {string} scheme
  * @param {{dataset: DOMStringMap}} [root]
