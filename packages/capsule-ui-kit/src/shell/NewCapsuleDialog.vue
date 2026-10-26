@@ -77,10 +77,18 @@ function selectName(type) {
 }
 /** @param {string} id */
 function categoryAnchor(id) {
-  return `shell/navigation/new-capsule-category-${id}`;
+  return `dialog/new-capsule/category-${id}`;
 }
 /** @param {string} id */
 function typeAnchor(id) {
+  return `dialog/new-capsule/type-${id}`;
+}
+/** Legacy lane anchors, kept one release in `data-anchor-alias` (pl3 R9). @param {string} id */
+function categoryAnchorAlias(id) {
+  return `shell/navigation/new-capsule-category-${id}`;
+}
+/** Legacy lane anchors, kept one release in `data-anchor-alias` (pl3 R9). @param {string} id */
+function typeAnchorAlias(id) {
   return `shell/navigation/new-capsule-type-${id}`;
 }
 
@@ -200,7 +208,8 @@ defineExpose({ openDialog: showDialog, closeDialog });
       </span>
       <UiButton
         id="shell/new-capsule/close"
-        data-semantic-anchor="shell/navigation/new-capsule-close"
+        data-semantic-anchor="dialog/new-capsule/close"
+        data-anchor-alias="shell/navigation/new-capsule-close"
         label="Close (Esc)"
         aria-label="Close (Esc)"
         class="s8n-esc"
@@ -214,7 +223,8 @@ defineExpose({ openDialog: showDialog, closeDialog });
       <SearchIcon aria-hidden="true" />
       <UiTextInput
         id="shell/new-capsule/search"
-        data-semantic-anchor="shell/navigation/new-capsule-search"
+        data-semantic-anchor="dialog/new-capsule/search"
+        data-anchor-alias="shell/navigation/new-capsule-search"
         v-model="query"
         :label="searchLabel"
         :placeholder="placeholder"
@@ -229,7 +239,8 @@ defineExpose({ openDialog: showDialog, closeDialog });
         <button
           id="shell/new-capsule/category-all"
           type="button"
-          data-semantic-anchor="shell/navigation/new-capsule-category-all"
+          data-semantic-anchor="dialog/new-capsule/category-all"
+          data-anchor-alias="shell/navigation/new-capsule-category-all"
           :aria-label="`${allLabel}, ${catalog.length} types`"
           :aria-pressed="categoryId === null"
           class="s8n-cat"
@@ -244,6 +255,7 @@ defineExpose({ openDialog: showDialog, closeDialog });
           :id="`shell/new-capsule/category-${category.id}`"
           type="button"
           :data-semantic-anchor="categoryAnchor(category.id)"
+          :data-anchor-alias="categoryAnchorAlias(category.id)"
           :aria-label="`${category.label}, ${category.count} types`"
           :aria-pressed="categoryId === category.id"
           class="s8n-cat"
@@ -261,6 +273,7 @@ defineExpose({ openDialog: showDialog, closeDialog });
             :id="`shell/new-capsule/card-${type.id}`"
             type="button"
             :data-semantic-anchor="typeAnchor(type.id)"
+            :data-anchor-alias="typeAnchorAlias(type.id)"
             :aria-label="selectName(type)"
             :aria-pressed="selectedId === type.id"
             class="s8n-card"
@@ -300,7 +313,8 @@ defineExpose({ openDialog: showDialog, closeDialog });
                 :key="mode"
                 :id="`shell/new-capsule/mode-${mode}`"
                 type="button"
-                :data-semantic-anchor="`shell/navigation/new-capsule-mode-${mode}`"
+                :data-semantic-anchor="`dialog/new-capsule/mode-${mode}`"
+                :data-anchor-alias="`shell/navigation/new-capsule-mode-${mode}`"
                 :aria-label="`Open as ${modeLabel(mode)}`"
                 :aria-pressed="placement === mode"
                 class="s8n-mode"
@@ -323,7 +337,8 @@ defineExpose({ openDialog: showDialog, closeDialog });
       <div class="s8n-actions">
         <UiButton
           id="shell/new-capsule/cancel"
-          data-semantic-anchor="shell/navigation/new-capsule-cancel"
+          data-semantic-anchor="dialog/new-capsule/cancel"
+          data-anchor-alias="shell/navigation/new-capsule-cancel"
           :label="cancelLabel"
           :aria-label="cancelLabel"
           class="s8n-cancel"
@@ -331,7 +346,8 @@ defineExpose({ openDialog: showDialog, closeDialog });
         />
         <UiButton
           id="shell/new-capsule/create"
-          data-semantic-anchor="shell/navigation/new-capsule-create"
+          data-semantic-anchor="dialog/new-capsule/create"
+          data-anchor-alias="shell/navigation/new-capsule-create"
           :label="createLabel"
           :aria-label="createLabel"
           intent="primary"
@@ -354,6 +370,21 @@ defineExpose({ openDialog: showDialog, closeDialog });
   border-radius: var(--cuk-component-dialog-host-border-radius);
   box-shadow: var(--cuk-semantic-elevation-s1-floating);
 }
+/* Viewport-capped panel (pl1-029..032, pl1-038/039): the panel never
+   exceeds the viewport; scrolling happens in the rail/grid regions below
+   while head, search and footer stay pinned. Doubled specificity beats the
+   vendor .p-dialog rule regardless of style order. */
+.p-dialog.s8n-dialog{
+  max-height: 92vh;
+  max-height: 92dvh;
+  overflow: hidden;
+}
+.s8n-dialog .p-dialog-content{
+  display: flex; flex-direction: column;
+  flex: 1 1 auto; min-height: 0;
+  overflow: hidden;
+}
+.s8n-head,.s8n-search,.s8n-foot{flex: none;}
 .s8n-dialog button{font-family: var(--cuk-semantic-typography-font-family-sans);}
 .s8n-head{
   display: flex; align-items: center;
@@ -404,14 +435,16 @@ defineExpose({ openDialog: showDialog, closeDialog });
   line-height: var(--cuk-semantic-typography-roles-body-md-line-height);
   color: var(--cuk-semantic-text-primary);
 }
-.s8n-body{display: flex; min-height: 0;}
+.s8n-body{display: flex; flex: 1 1 auto; min-height: 0;}
 .s8n-rail{
   flex: 0 0 26%; display: flex; flex-direction: column;
   gap: var(--cuk-primitive-space-1);
   padding: var(--cuk-semantic-spacing-sm);
   border-right: var(--cuk-semantic-border-width) solid var(--cuk-semantic-border-subtle);
   overflow-y: auto;
-  max-height: calc(var(--cuk-component-app-shell-palette-width) * 0.9);
+  max-height: 100%;
+  min-height: 0;
+  overscroll-behavior: contain;
 }
 .s8n-rail-label{
   margin: 0; padding: var(--cuk-primitive-space-2) var(--cuk-primitive-space-3) 0;
@@ -450,7 +483,9 @@ defineExpose({ openDialog: showDialog, closeDialog });
   padding: var(--cuk-semantic-spacing-md);
   background: var(--cuk-semantic-surface-canvas);
   overflow-y: auto;
-  max-height: calc(var(--cuk-component-app-shell-palette-width) * 0.9);
+  max-height: 100%;
+  min-height: 0;
+  overscroll-behavior: contain;
 }
 .s8n-grid{
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));

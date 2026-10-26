@@ -1,7 +1,7 @@
 {
   "schema": "capsule-ui-kit-source/v1",
-  "version": "0.1.1",
-  "contentHash": "91b5f3a3ffab8b62a790d273830d23016d9f6d1b4275795991a69ad1488a8e4a",
+  "version": "0.2.0",
+  "contentHash": "6b2857f330936e8e60fa3ba62e92840b0e8bf03283f8217bbc3e421744ec9bbe",
   "algorithm": "sha256-length-framed-tree",
   "direction": "export"
 }

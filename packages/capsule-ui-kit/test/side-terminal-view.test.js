@@ -214,6 +214,19 @@ test('panel keeps every session view mounted and overlays without reflow', () =>
   assert.ok(source.includes('640') === false || true, 'geometry constants live in the model');
 });
 
+test('PL2 edge tab (pl1-001..003,027,028): compact tab parked clear of capsule controls', () => {
+  const { descriptor } = parseSfc(PANEL_PATH, 'SideTerminalPanel.vue');
+  const style = descriptor.styles.map((block) => block.content).join('\n');
+  const edge = style.match(/\.cui-side-terminal__edge\s*\{[^}]*\}/);
+  assert.ok(edge, 'edge rule required');
+  const bare = edge[0].replace(/\/\*[\s\S]*?\*\//g, '');
+  assert.ok(!bare.includes('stretch'), 'tab no longer spans the full viewport height');
+  assert.ok(edge[0].includes('position: fixed'), 'viewport-anchored parking');
+  assert.ok(edge[0].includes('top: calc(var(--cuk-primitive-space-16) * 5)'), 'parked below the capsule header row');
+  assert.ok(edge[0].includes('right: 0'), 'docked to the right edge');
+  assert.ok(edge[0].includes('min-height: calc(var(--cuk-primitive-space-16) * 4)'), 'compact minimum touch target');
+});
+
 test('panel persists geometry, toggles on Ctrl+Backquote and focuses on expand', () => {
   const { source } = parseSfc(PANEL_PATH, 'SideTerminalPanel.vue');
   assert.ok(source.includes('readSideTerminalWidth'));

@@ -125,7 +125,9 @@ function assertSafeNonNegativeInt(value, label, errCode = 'ERR_INVALID_INTEGER')
 /**
  * Allowed control-family inventory from UI_ARCHITECTURE.md §9 (13 normative rows, expanded into pattern rules).
  * Additive SaaS rows (record/destroy, layout-save, detail steppers/pty/scaled-badge, review-confirm)
- * extend existing rows without changing the 13-row shape.
+ * extend existing rows without changing the 13-row shape; pl3 R9 likewise
+ * admits dialog control roles on row 12 (dialog/{id}/{action} plus one
+ * legacy palette-search anchor) without changing the 13-row shape.
  * @type {readonly ControlFamilyRule[]}
  */
 const FAMILY_RULES = Object.freeze([
@@ -222,6 +224,18 @@ const FAMILY_RULES = Object.freeze([
     template: 'shell/fullscreen',
     pattern: /^shell\/fullscreen$/,
     allowedRoles: Object.freeze(['button']),
+    requiresReasonWhenDisabled: false,
+    forbidsZeroWhenUnknown: false,
+  }),
+  // pl3 R9 legacy anchor (narrow, order-sensitive: must precede the generic
+  // shell/navigation rule below): the command palette search field keeps
+  // validating as a textbox until CommandPalette.vue re-anchors to
+  // dialog/palette/*. Single anchor, single role; nothing else widens.
+  Object.freeze({
+    rowIndex: 12,
+    template: 'shell/navigation/palette-search',
+    pattern: /^shell\/navigation\/palette-search$/,
+    allowedRoles: Object.freeze(['textbox']),
     requiresReasonWhenDisabled: false,
     forbidsZeroWhenUnknown: false,
   }),
@@ -357,7 +371,10 @@ const FAMILY_RULES = Object.freeze([
     rowIndex: 12,
     template: 'dialog/{id}/{action}',
     pattern: /^dialog\/([A-Za-z0-9._-]+)\/([A-Za-z0-9._-]+)$/,
-    allowedRoles: Object.freeze(['button', 'dialog']),
+    // pl3 R9: the shared dialog/popover family admits dialog control roles
+    // (search fields, lists, options) so an open dialog never fails the
+    // lane snapshot closed with ERR_INVALID_ROLE.
+    allowedRoles: Object.freeze(['button', 'dialog', 'textbox', 'listbox', 'option']),
     requiresReasonWhenDisabled: false,
     forbidsZeroWhenUnknown: false,
   }),
@@ -496,8 +513,8 @@ export const CONTROL_FAMILY_INVENTORY = Object.freeze([
   }),
   Object.freeze({
     row: 12,
-    templates: Object.freeze(['settings/{key}', 'dialog/{id}/{action}']),
-    roles: Object.freeze(['textbox', 'combobox', 'checkbox', 'switch', 'spinbutton', 'button', 'dialog']),
+    templates: Object.freeze(['settings/{key}', 'dialog/{id}/{action}', 'shell/navigation/palette-search']),
+    roles: Object.freeze(['textbox', 'combobox', 'checkbox', 'switch', 'spinbutton', 'button', 'dialog', 'listbox', 'option']),
   }),
   Object.freeze({
     row: 13,

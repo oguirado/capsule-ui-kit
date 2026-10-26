@@ -608,7 +608,14 @@ onBeforeUnmount(() => {
   min-height: 0;
 }
 .cui-side-terminal__edge {
-  align-self: stretch;
+  /* PL2 (pl1-001..003,027,028): compact viewport-parked tab. The old
+     full-height stretch covered the right-column capsule close buttons and
+     the hidden strip "Show all"; the tab now docks below the capsule header
+     row, clear of every anchored control at all three matrix viewports. */
+  position: fixed;
+  top: calc(var(--cuk-primitive-space-16) * 5);
+  right: 0;
+  min-height: calc(var(--cuk-primitive-space-16) * 4);
   padding: var(--cuk-semantic-spacing-md) var(--cuk-semantic-spacing-xs);
   background-color: var(--cuk-semantic-surface-panel);
   color: var(--cuk-semantic-text-muted);

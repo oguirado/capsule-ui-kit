@@ -33,6 +33,9 @@ export const SIDE_TERMINAL_RESIZE_LARGE_STEP_PX = 60;
 /** Maximum live PTY sessions (broker cap). */
 export const SIDE_TERMINAL_MAX_SESSIONS = 8;
 
+/** Minimum gap between the right-anchored new-menu dialog and the panel or viewport edges. */
+export const SIDE_TERMINAL_MENU_EDGE_GAP_PX = 8;
+
 /** Maximum total session views (live plus exited) kept mounted. */
 export const SIDE_TERMINAL_MAX_VIEWS = 8;
 
@@ -90,6 +93,27 @@ export function clampSideTerminalWidth(px, viewportWidth) {
 export function stepSideTerminalWidth(current, direction, viewportWidth, large = false) {
   const step = large === true ? SIDE_TERMINAL_RESIZE_LARGE_STEP_PX : SIDE_TERMINAL_RESIZE_STEP_PX;
   return clampSideTerminalWidth(current + direction * step, viewportWidth);
+}
+
+/**
+ * Caps the right-anchored new-menu dialog so it stays inside the panel and
+ * the viewport (pl1-020..025): the dialog's right edge sits at the trigger's
+ * right edge, so when its natural width would push its left edge past the
+ * panel (or viewport) bound the dialog shrinks and long hints ellipsize.
+ * @param {{triggerRight:number, dialogWidth:number, panelLeft:number, viewportWidth:number}} args Measured geometry in CSS pixels.
+ * @returns {number|null} Max dialog width in pixels, or null when the dialog fits or the geometry is unusable.
+ */
+export function capSideTerminalMenuWidth({ triggerRight, dialogWidth, panelLeft, viewportWidth }) {
+  const values = [triggerRight, dialogWidth, panelLeft, viewportWidth];
+  if (values.some((n) => typeof n !== 'number' || !Number.isFinite(n))) return null;
+  if (dialogWidth <= 0) return null;
+  const gap = SIDE_TERMINAL_MENU_EDGE_GAP_PX;
+  const left = Math.max(panelLeft, 0) + gap;
+  const right = Math.min(triggerRight, viewportWidth - gap);
+  const available = Math.floor(right - left);
+  if (available <= 0) return null;
+  if (dialogWidth <= available) return null;
+  return available;
 }
 
 /**

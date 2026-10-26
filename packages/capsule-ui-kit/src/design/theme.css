@@ -912,9 +912,9 @@
   --cuk-semantic-surface-hover-s1: var(--cuk-primitive-color-neutral-50);
   --cuk-semantic-text-primary: var(--cuk-primitive-color-neutral-900);
   --cuk-semantic-text-muted: var(--cuk-primitive-color-neutral-600);
-  --cuk-semantic-text-disabled: var(--cuk-primitive-color-neutral-400);
+  --cuk-semantic-text-disabled: var(--cuk-primitive-color-neutral-600);
   --cuk-semantic-text-inverse: var(--cuk-primitive-color-neutral-0);
-  --cuk-semantic-text-accent: var(--cuk-primitive-color-accent-600);
+  --cuk-semantic-text-accent: var(--cuk-primitive-color-accent-700);
   --cuk-semantic-text-secondary: var(--cuk-primitive-color-neutral-600);
   --cuk-semantic-border-default: var(--cuk-primitive-color-neutral-300);
   --cuk-semantic-border-subtle: var(--cuk-primitive-color-neutral-200);
@@ -935,14 +935,14 @@
   --cuk-semantic-accent-on-secondary: var(--cuk-primitive-color-neutral-0);
   --cuk-semantic-accent-secondary-container: var(--cuk-primitive-color-s1-secondary);
   --cuk-semantic-accent-on-secondary-container: var(--cuk-primitive-color-s1-on-secondary);
-  --cuk-semantic-accent-tertiary: var(--cuk-primitive-color-s1-tertiary-container);
+  --cuk-semantic-accent-tertiary: var(--cuk-primitive-color-cyan-700);
   --cuk-semantic-accent-on-tertiary: var(--cuk-primitive-color-neutral-0);
   --cuk-semantic-accent-tertiary-container: var(--cuk-primitive-color-s1-tertiary);
   --cuk-semantic-accent-on-tertiary-container: var(--cuk-primitive-color-s1-on-tertiary);
   --cuk-semantic-status-success-surface: var(--cuk-primitive-color-emerald-50);
   --cuk-semantic-status-success-border: var(--cuk-primitive-color-emerald-600);
   --cuk-semantic-status-success-text: var(--cuk-primitive-color-emerald-900);
-  --cuk-semantic-status-success-icon: var(--cuk-primitive-color-emerald-600);
+  --cuk-semantic-status-success-icon: var(--cuk-primitive-color-emerald-700);
   --cuk-semantic-status-warning-surface: var(--cuk-primitive-color-amber-50);
   --cuk-semantic-status-warning-border: var(--cuk-primitive-color-amber-600);
   --cuk-semantic-status-warning-text: var(--cuk-primitive-color-amber-900);
@@ -1870,4 +1870,16 @@
   --dv-tabs-container-scrollbar-color: var(--cuk-semantic-terminal-scrollbar-slider-background);
   --dv-transition-duration: var(--cuk-semantic-motion-duration-fast);
   --dv-wrap-vertical-tab-height: var(--cuk-semantic-size-tab-height);
+}
+/* PL2 K3: global keyboard focus ring (pl1-017). Hand-maintained; token
+ * references only, no independent values. Per-component :focus-visible
+ * rules keep precedence by specificity. */
+:focus-visible {
+  outline: var(--cuk-semantic-focus-ring-width) solid var(--cuk-semantic-focus-ring-color);
+  outline-offset: var(--cuk-semantic-focus-ring-offset);
+}
+@media (forced-colors: active) {
+  :focus-visible {
+    outline-color: Highlight;
+  }
 }

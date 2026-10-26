@@ -5,7 +5,8 @@ import {tokenValue,validateTokenContract} from '../src/design/tokenContract.js';
 import {KIT_SCHEMES,setKitScheme} from '../src/design/aura.js';
 
 // Additive saas-dark / saas-light schemes: new bindings resolve exactly while
-// every S1 dark and S7 light computed value stays byte-identical.
+// S1 dark and S7 light values stay pinned to the qualified snapshot,
+// including the admitted PL2 light-scheme contrast corrections.
 
 const root=new URL('../',import.meta.url);
 const text=path=>readFileSync(new URL(path,root),'utf8');
@@ -87,7 +88,7 @@ test('component.saas chrome, chips and motion resolve exactly',()=>{
   }
 });
 
-test('S1 dark and S7 light computed values are identical before and after',()=>{
+test('S1 dark and S7 light computed values match the qualified legacy snapshot',()=>{
   for(const [mode,paths] of Object.entries(snapshot.modes)){
     for(const [path,value] of Object.entries(paths))assert.equal(resolveToken(path,mode),value,mode+'/'+path);
   }

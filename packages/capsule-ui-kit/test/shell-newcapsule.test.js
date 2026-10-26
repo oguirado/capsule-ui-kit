@@ -220,6 +220,33 @@ test('launcher category filter returns all for null and narrows for slugs', () =
   assert.deepEqual(filterCapsuleTypesByCategory(types, 'missing'), []);
 });
 
+test('launcher panel is capped to the viewport with pinned chrome (pl1-029..032, pl1-038/039)', () => {
+  const { parse } = loadCompilerSfc();
+  const { descriptor } = parse(dialogSource, { filename: 'NewCapsuleDialog.vue' });
+  const css = descriptor.styles.map((style) => style.content).join('\n');
+  const panel = css.match(/\.p-dialog\.s8n-dialog\s*\{[^}]*\}/)?.[0] ?? '';
+  assert.ok(panel.includes('max-height: 92vh'), 'vh fallback cap');
+  assert.ok(panel.includes('max-height: 92dvh'), 'dynamic viewport cap');
+  assert.ok(panel.includes('overflow: hidden'), 'panel clips to its rounded frame');
+  const content = css.match(/\.s8n-dialog \.p-dialog-content\s*\{[^}]*\}/)?.[0] ?? '';
+  assert.ok(content.includes('display: flex') && content.includes('flex-direction: column'), 'content is a flex column');
+  assert.ok(content.includes('min-height: 0') && content.includes('overflow: hidden'), 'content yields to the scroll regions');
+  assert.ok(/\.s8n-head,\s*\.s8n-search,\s*\.s8n-foot\s*\{\s*flex:\s*none/.test(css), 'head, search and footer stay pinned');
+});
+
+test('launcher body scrolls internally instead of growing past the fold (pl1-029..032, pl1-038/039)', () => {
+  const { parse } = loadCompilerSfc();
+  const { descriptor } = parse(dialogSource, { filename: 'NewCapsuleDialog.vue' });
+  const css = descriptor.styles.map((style) => style.content).join('\n');
+  const body = css.match(/\.s8n-body\s*\{[^}]*\}/)?.[0] ?? '';
+  assert.ok(body.includes('flex: 1 1 auto') && body.includes('min-height: 0'), 'body takes the free panel height');
+  for (const region of ['s8n-rail', 's8n-main']) {
+    const rule = css.match(new RegExp(`\\.${region}\\s*\\{[^}]*\\}`))?.[0] ?? '';
+    assert.ok(rule.includes('overflow-y: auto'), `${region} scrolls`);
+    assert.ok(rule.includes('max-height: 100%'), `${region} is bounded by the body`);
+  }
+});
+
 test('launcher card index moves on a two-column grid with wraparound', () => {
   assert.equal(moveCapsuleCardIndex(0, 0, 'ArrowRight'), -1);
   assert.equal(moveCapsuleCardIndex(4, -1, 'ArrowRight'), 0);
