@@ -127,7 +127,7 @@ const groupName = computed(() => {
 .saas-viewer-chip {
   display: inline-flex;
   align-items: center;
-  padding: 1px var(--cuk-primitive-space-3);
+  padding: var(--cuk-semantic-border-width) var(--cuk-primitive-space-3);
   border-radius: var(--cuk-semantic-radius-sm);
   font-family: var(--cuk-semantic-typography-font-family-mono);
   font-size: var(--cuk-semantic-typography-font-size-s1_10);
@@ -136,27 +136,30 @@ const groupName = computed(() => {
 }
 .saas-viewer-live {
   font-weight: var(--cuk-primitive-font-weight-bold);
-  color: var(--cuk-primitive-color-emerald-500);
-  background: color-mix(in srgb, var(--cuk-primitive-color-emerald-500) 15%, transparent);
+  color: var(--cuk-semantic-text-primary);
+  background: var(--cuk-semantic-status-success-surface);
+  border: var(--cuk-semantic-border-width) solid var(--cuk-semantic-status-success-border);
 }
 .saas-viewer-resolution {
   font-family: var(--cuk-semantic-typography-font-family-mono);
   font-size: var(--cuk-semantic-typography-font-size-xs);
-  color: var(--cuk-primitive-color-neutral-500);
+  color: var(--cuk-semantic-text-muted);
   white-space: nowrap;
 }
 .saas-viewer-elapsed {
   font-family: var(--cuk-semantic-typography-font-family-mono);
   font-size: var(--cuk-semantic-typography-font-size-xs);
-  color: var(--cuk-primitive-color-neutral-500);
+  color: var(--cuk-semantic-text-muted);
   white-space: nowrap;
 }
 .saas-viewer-scaled {
-  background: var(--cuk-primitive-color-neutral-800);
-  color: var(--cuk-primitive-color-neutral-400);
+  background: var(--cuk-semantic-surface-elevated);
+  color: var(--cuk-semantic-text-muted);
+  border: var(--cuk-semantic-border-width) solid var(--cuk-semantic-border-subtle);
 }
 .saas-viewer-endpoint {
-  background: var(--cuk-primitive-color-neutral-800);
-  color: var(--cuk-primitive-color-saas-indigo500, var(--cuk-primitive-color-accent-400));
+  background: var(--cuk-semantic-status-info-surface);
+  color: var(--cuk-semantic-text-primary);
+  border: var(--cuk-semantic-border-width) solid var(--cuk-semantic-status-info-border);
 }
 </style>

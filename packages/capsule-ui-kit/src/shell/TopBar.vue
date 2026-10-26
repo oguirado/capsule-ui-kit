@@ -361,9 +361,11 @@ defineExpose({ openPalette: showPalette, closePalette });
   background: var(--cuk-primitive-color-s1-primary);
   box-shadow: 0 0 0 var(--cuk-primitive-space-1) var(--cuk-semantic-surface-sunken);
 }
+/* P5: decorative divider keeps the muted text tone so it holds >= 3:1
+   on the sunken bar in every scheme (border-subtle is 1:1 in light). */
 .s1-topbar-divider{
   width: var(--cuk-semantic-border-width); height: var(--cuk-primitive-space-8);
-  background: var(--cuk-semantic-border-subtle); flex: none;
+  background: var(--cuk-semantic-text-muted); flex: none;
 }
 .s1-topbar-pill{
   display: inline-flex; align-items: center;

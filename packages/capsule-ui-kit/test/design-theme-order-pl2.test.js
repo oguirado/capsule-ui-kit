@@ -1,10 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
 
 // PL2 K3 (+H1 boot): kit/theme CSS installed before first paint for every
 // capsule (F1 styling race). Kit side: synchronous, idempotent installer.
-// Consumer side (H1 surface, asserted here): install in main.js pre-mount.
+// Consumer side (H1 surface) moved to app/shell/test/tp-pl4-theme-order.test.js (R17).
 
 test('theme preset resolves synchronously for every scheme', async () => {
   const { createAuraPreset } = await import('../src/design/aura.js');
@@ -14,7 +13,15 @@ test('theme preset resolves synchronously for every scheme', async () => {
     const scheme = preset.semantic.colorScheme[mode];
     assert.ok(scheme.text.color && scheme.text.mutedColor, mode);
     assert.ok(scheme.primary.color && scheme.primary.contrastColor, mode);
-    assert.ok(scheme.content.background && scheme.content.color, mode);
+    assert.equal(scheme.content.background, 'var(--cuk-semantic-surface-panel)', mode);
+    assert.equal(scheme.content.color, 'var(--cuk-semantic-text-primary)', mode);
+    assert.equal(scheme.text.color, 'var(--cuk-semantic-text-primary)', mode);
+    assert.equal(scheme.text.mutedColor, 'var(--cuk-semantic-text-muted)', mode);
+    assert.equal(scheme.primary.color, 'var(--cuk-semantic-text-accent)', mode);
+    for (const kind of ['select', 'popover', 'modal']) {
+      assert.equal(scheme.overlay[kind].background, 'var(--cuk-semantic-surface-elevated)', mode + kind);
+      assert.equal(scheme.overlay[kind].color, 'var(--cuk-semantic-text-primary)', mode + kind);
+    }
   }
 });
 
@@ -34,6 +41,7 @@ test('installKitTheme is synchronous, idempotent and nonce-gated', async () => {
     assert.equal(calls.length, 1);
     assert.equal(calls[0][1].csp.nonce, 'pl2-test-nonce');
     assert.ok(calls[0][1].theme.preset);
+    assert.equal(calls[0][1].theme.options.darkModeSelector, ':root[data-theme-scheme$="dark"]');
     assert.equal(isKitThemeInstalled(fakeApp), true);
     installKitTheme(fakeApp);
     assert.equal(calls.length, 1);
@@ -48,14 +56,4 @@ test('installKitTheme is synchronous, idempotent and nonce-gated', async () => {
   } finally {
     delete globalThis.document;
   }
-});
-
-test('consumer boot installs the kit theme before mount (H1 surface)', () => {
-  const main = readFileSync(new URL('../../../app/shell/src/renderer-v2/main.js', import.meta.url), 'utf8');
-  assert.ok(main.includes("import 'capsule-ui-kit/theme.css'"), 'theme.css in module graph');
-  const install = main.indexOf('installKitTheme(');
-  const mount = main.indexOf('.mount(');
-  assert.ok(install >= 0, 'installKitTheme called in main.js');
-  assert.ok(mount >= 0, 'app mount present in main.js');
-  assert.ok(install < mount, 'theme installed before mount');
 });

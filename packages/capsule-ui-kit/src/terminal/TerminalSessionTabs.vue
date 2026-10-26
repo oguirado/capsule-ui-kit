@@ -282,7 +282,7 @@ function onTablistKeydown(event) {
 .cui-terminal-tabs__close {
   padding: var(--cuk-semantic-spacing-xxs);
   background-color: var(--cuk-primitive-color-alpha-transparent);
-  color: var(--cuk-semantic-text-disabled);
+  color: var(--cuk-semantic-text-secondary);
   border: var(--cuk-semantic-border-width) solid var(--cuk-primitive-color-alpha-transparent);
   border-radius: var(--cuk-semantic-radius-xs);
   font-size: var(--cuk-semantic-typography-roles-body-sm-font-size);
@@ -296,7 +296,7 @@ function onTablistKeydown(event) {
 .cui-terminal-tabs__empty {
   margin: var(--cuk-semantic-spacing-none);
   padding: var(--cuk-semantic-spacing-md);
-  color: var(--cuk-semantic-text-disabled);
+  color: var(--cuk-semantic-text-secondary);
   font-size: var(--cuk-semantic-typography-roles-body-sm-font-size);
 }
 </style>

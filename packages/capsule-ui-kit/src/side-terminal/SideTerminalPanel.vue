@@ -456,6 +456,7 @@ onBeforeUnmount(() => {
         </p>
         <div class="cui-side-terminal__views">
           <div v-for="session in view.sessions" :key="session.sessionId" v-show="session.sessionId === view.selected" class="cui-side-terminal__session">
+          <div class="cui-side-terminal__viewport">
           <TerminalView
             embedded
             :session-id="session.sessionId"
@@ -470,6 +471,7 @@ onBeforeUnmount(() => {
             :folded="session.sessionId !== view.selected"
             :stream-registry="model.registry"
           />
+          </div>
             <details class="cui-side-terminal__transcript">
               <summary :data-semantic-anchor="`terminal/session/${session.sessionId}/output`" role="button" :aria-label="`Read output for ${session.title}`">Accessible terminal output</summary>
               <div :data-semantic-anchor="`output/${session.sessionId}/text`" role="region" :aria-label="`Accessible output for ${session.title}`" tabindex="0"><pre>{{ session.accessibleText }}</pre></div>
@@ -496,6 +498,9 @@ onBeforeUnmount(() => {
 </template>
 <style scoped>
 .cui-side-terminal__session { display: flex; flex-direction: column; min-height: 0; height: 100%; }
+/* P4: the live view takes only the room left by the transcript, so the
+   fitted terminal plus transcript always end at or above the panel edge. */
+.cui-side-terminal__viewport { display: flex; flex-direction: column; flex: 1 1 auto; min-width: 0; min-height: 0; overflow: hidden; }
 .cui-side-terminal__transcript { flex: none; max-height: 25%; overflow: auto; }
 .cui-side-terminal__transcript pre { white-space: pre-wrap; overflow-wrap: anywhere; }
 .cui-side-terminal {

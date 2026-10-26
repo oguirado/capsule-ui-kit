@@ -47,6 +47,7 @@ export function writeSidebarCollapsed(storage, collapsed) {
  * flow while the expanded panel floats above the dock layer (absolute,
  * drawer z-index, floating shadow) without reflowing siblings. The
  * consumer must give the sidebar's offset parent position:relative.
+ * P3: the expanded panel pins the rail token width with an opaque token surface.
  * R4: the rail opens collapsed by default. `collapsed` is tri-state: null
  * (default) resolves the persisted choice (collapsed rail when nothing was
  * stored) while an explicit boolean overrides it; every explicit choice
@@ -304,20 +305,29 @@ function itemDescription(nav) {
 /* Overlay mode (default): the expanded panel floats above the dock layer
    while the collapsed rail stays in flow, so expanding never reflows
    siblings. Requires a positioned offset parent (see file docs). */
+/* P3: the expanded overlay pins the rail token width so its edge never
+   slices a content label beneath it, and restates its opaque token
+   surface beside the shadow that lifts it above the dock layer. */
 .cuk-sidebar--overlay:not(.cuk-sidebar--collapsed) {
   position: absolute;
   top: 0;
   bottom: 0;
   left: 0;
+  width: var(--cuk-semantic-size-rail-expanded-width);
+  background: var(--cuk-semantic-surface-panel);
   z-index: var(--cuk-semantic-z-index-drawer);
   box-shadow: var(--cuk-semantic-elevation-s1-floating);
 }
-.cuk-sidebar :deep(.p-menu) { min-width: 0; width: 100%; max-width: 100%; }
-/* R1: vendor-owned menu nodes stay transparent so every sidebar surface
-   resolves from scheme tokens in every scheme (no dark vendor default
-   under light-scheme text). */
+.cuk-sidebar :deep(.p-menu) { min-width: 0; width: 100%; max-width: 100%; background: transparent; color: var(--cuk-semantic-text-primary); }
+/* R1 + PL6 NEW-2: vendor-owned menu nodes stay transparent so every
+   sidebar surface resolves from scheme tokens in every scheme (no light
+   vendor default under dark-scheme text). Covers the item content
+   wrappers that paint the vendor menu fill, not just the list, the
+   submenu labels and the separators. */
 .cuk-sidebar :deep(.p-menu-list),
-.cuk-sidebar :deep(.p-menu-submenu-label) {
+.cuk-sidebar :deep(.p-menu-submenu-label),
+.cuk-sidebar :deep(.p-menu-item-content),
+.cuk-sidebar :deep(.p-menu-separator) {
   background: transparent;
 }
 .cuk-sidebar__item { box-sizing: border-box; max-width: 100%; }
@@ -337,6 +347,8 @@ function itemDescription(nav) {
   gap: var(--cuk-primitive-space-4);
   padding: var(--cuk-primitive-space-3) var(--cuk-primitive-space-6);
 }
+/* PL6: captions keep the muted text tone so they hold 4.5:1 on the
+   panel in every scheme (the disabled tone drops to 1.8:1). */
 .cuk-sidebar__workspace-label {
   font-size: var(--cuk-semantic-typography-font-size-xs);
   font-family: var(--cuk-semantic-typography-font-family-sans);
@@ -344,7 +356,7 @@ function itemDescription(nav) {
   line-height: var(--cuk-semantic-typography-roles-label-sm-line-height);
   letter-spacing: var(--cuk-semantic-typography-roles-table-header-letter-spacing);
   text-transform: uppercase;
-  color: var(--cuk-semantic-text-disabled);
+  color: var(--cuk-semantic-text-muted);
   white-space: nowrap;
 }
 .cuk-sidebar__version {
@@ -376,8 +388,10 @@ function itemDescription(nav) {
   margin: 0;
   padding: 0;
 }
+/* PL6 P5: the group divider keeps the muted text tone so it holds
+   >= 3:1 on the panel in every scheme (border-subtle is 1.2-1.8:1). */
 .cuk-sidebar :deep(.cuk-sidebar__separator) {
-  border-top: var(--cuk-semantic-border-width) solid var(--cuk-semantic-border-subtle);
+  border-top: var(--cuk-semantic-border-width) solid var(--cuk-semantic-text-muted);
   margin-block: calc(var(--cuk-primitive-space-4) - var(--cuk-primitive-space-1));
   margin-inline: var(--cuk-primitive-space-4);
   list-style: none;
@@ -391,7 +405,7 @@ function itemDescription(nav) {
   line-height: var(--cuk-semantic-typography-roles-table-header-line-height);
   letter-spacing: var(--cuk-semantic-typography-roles-table-header-letter-spacing);
   text-transform: uppercase;
-  color: var(--cuk-semantic-text-disabled);
+  color: var(--cuk-semantic-text-muted);
   white-space: nowrap;
 }
 .cuk-sidebar__item {
@@ -414,9 +428,12 @@ function itemDescription(nav) {
   background: var(--cuk-semantic-surface-chrome);
   color: var(--cuk-semantic-text-primary);
 }
+/* PL6: the active label keeps the primary text tone so it holds
+   4.5:1 on the elevated row in every scheme; the accent edge stays the
+   current-section indicator. */
 .cuk-sidebar__item--active {
   background: var(--cuk-semantic-surface-elevated);
-  color: var(--cuk-semantic-accent-primary);
+  color: var(--cuk-semantic-text-primary);
   border-left-color: var(--cuk-semantic-accent-primary);
 }
 .cuk-sidebar__item:focus-visible {
@@ -429,6 +446,13 @@ function itemDescription(nav) {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+/* P3: expanded labels wrap instead of ellipsizing, so long consumer
+   labels stay fully legible in the overlay panel. */
+.cuk-sidebar:not(.cuk-sidebar--collapsed) .cuk-sidebar__label {
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: clip;
 }
 .cuk-sidebar__active-dot {
   width: var(--cuk-primitive-space-3);
@@ -464,7 +488,7 @@ function itemDescription(nav) {
   padding: var(--cuk-semantic-border-width) var(--cuk-primitive-space-3);
   border-radius: var(--cuk-semantic-radius-xs);
   background: color-mix(in srgb, var(--cuk-semantic-accent-tertiary-container) 30%, transparent);
-  color: var(--cuk-semantic-accent-tertiary);
+  color: var(--cuk-semantic-text-accent);
   border: var(--cuk-semantic-border-width) solid color-mix(in srgb, var(--cuk-semantic-accent-tertiary) 40%, transparent);
 }
 .cuk-sidebar__price {
