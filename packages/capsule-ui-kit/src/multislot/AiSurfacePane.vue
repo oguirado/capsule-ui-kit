@@ -68,14 +68,6 @@ export function surfacePaneDomIds(capsuleId, presentationInstance = '') {
 
 /**
  * @param {string} capsuleId
- * @returns {string} Semantic anchor (existing `capsule/{id}/slot` family).
- */
-export function surfacePaneAnchor(capsuleId) {
-  return `capsule/${capsuleId}/slot`;
-}
-
-/**
- * @param {string} capsuleId
  * @param {unknown} inputKind
  * @returns {{ capsuleId: string, inputKind: string|null }} Frozen input payload.
  */
@@ -110,6 +102,8 @@ import SaasSurfaceView from '../saas/SaasSurfaceView.vue';
 /* Plain-<script> helpers above share this module scope (kit SFC convention). */
 
 const props = defineProps({
+  /** The enclosing AiMultiSlot owns the slot anchor when embedded. */
+  embedded: { type: Boolean, default: false },
   capsuleId: { type: String, required: true },
   capsuleLabel: { type: String, default: '' },
   presentationInstance: { type: String, default: '' },
@@ -123,7 +117,6 @@ const emit = defineEmits(['activate-surface', 'surface-input']);
 const normalizedState = computed(() => normalizeSurfacePaneState(props.state));
 const readMode = computed(() => normalizeInputMode(props.inputMode) === 'read');
 const domIds = computed(() => surfacePaneDomIds(props.capsuleId, props.presentationInstance));
-const anchor = computed(() => surfacePaneAnchor(props.capsuleId));
 
 /**
  * @param {unknown} payload
@@ -161,7 +154,6 @@ function onWheelInput(event) {
     v-show="!hidden"
     :id="domIds.host"
     class="ai-surface-pane"
-    :data-semantic-anchor="anchor"
     :data-surface-state="normalizedState"
     :data-input-mode="readMode ? 'read' : 'write'"
     @pointerdown="onPointerInput"
@@ -169,6 +161,7 @@ function onWheelInput(event) {
     @wheel="onWheelInput"
   >
     <SaasSurfaceView
+      v-bind="embedded ? { 'data-semantic-anchor': null } : {}"
       :capsule-id="capsuleId"
       :capsule-label="capsuleLabel"
       :presentation-instance="presentationInstance"

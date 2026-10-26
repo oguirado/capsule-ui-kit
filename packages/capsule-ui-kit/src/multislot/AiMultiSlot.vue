@@ -447,6 +447,7 @@ onBeforeUnmount(() => refocus.cancel());
 
     <div v-show="!folded" :id="domIds.body" class="ai-slot__body">
       <AiSurfacePane
+        embedded
         v-show="surfaceVisible"
         :capsule-id="capsuleId"
         :capsule-label="capsuleLabel"

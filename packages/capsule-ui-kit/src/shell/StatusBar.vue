@@ -188,14 +188,16 @@ defineExpose({ openShortcuts, closeShortcuts });
   white-space: nowrap;
 }
 .s1-statusbar-crumbs li{display: flex; align-items: center; gap: var(--cuk-primitive-space-3);}
-.s1-statusbar-sep{color: var(--cuk-semantic-border-subtle);}
+/* P5: decorative separators keep the muted text tone so they hold >= 3:1
+   on the sunken bar in every scheme (border-subtle is 1:1 in light). */
+.s1-statusbar-sep{color: var(--cuk-semantic-text-muted);}
 .s1-statusbar-crumb-dim{color: var(--cuk-semantic-text-disabled);}
 .s1-statusbar-crumb-strong{color: var(--cuk-semantic-text-primary);font-weight:var(--cuk-semantic-typography-font-weight-medium);}
 .s1-statusbar-crumb-accent{color: var(--cuk-semantic-text-accent);font-weight:var(--cuk-semantic-typography-font-weight-medium);}
 .s1-statusbar-telemetry{display:flex;align-items:center;gap:var(--cuk-primitive-space-8);}
 .s1-statusbar-layout{color:var(--cuk-semantic-text-disabled);white-space:nowrap;}
 .s1-statusbar-metric{display:flex;align-items:center;gap:var(--cuk-primitive-space-3);white-space:nowrap;}
-.s1-statusbar-bullet{color: var(--cuk-semantic-text-disabled);}
+.s1-statusbar-bullet{color: var(--cuk-semantic-text-muted);}
 .s1-statusbar-live{
   width: var(--cuk-primitive-space-3); height: var(--cuk-primitive-space-3);
   border-radius: var(--cuk-semantic-radius-pill);

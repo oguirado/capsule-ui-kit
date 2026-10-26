@@ -2,13 +2,16 @@ import OpenVue from 'openvue/config';
 import Aura from '@openvue/themes/aura';
 import tokens from './tokens.json' with {type:'json'};
 import {tokenValue} from './tokenContract.js';
-/** Aura is an adapter. Every scheme consumes the same kit semantic authority. */
+/** Aura is an adapter. Semantic values remain CSS references so mounted
+ * vendor surfaces (including body-teleported overlays) follow the kit root
+ * on every scheme change instead of retaining the preset's initial colours. */
 export function createAuraPreset() {
   const scheme = mode => ({...Aura.semantic.colorScheme[mode],
     surface:Object.fromEntries(Object.keys(tokens.primitive.color.neutral).map(shade=>[shade,tokenValue('primitive.color.neutral.'+shade)])),
-    primary:{color:tokenValue('semantic.text.accent',mode+'.normal'),contrastColor:tokenValue('semantic.surface.canvas',mode+'.normal')},
-    text:{color:tokenValue('semantic.text.primary',mode+'.normal'),mutedColor:tokenValue('semantic.text.muted',mode+'.normal')},
-    content:{background:tokenValue('semantic.surface.panel',mode+'.normal'),borderColor:tokenValue('semantic.border.default',mode+'.normal'),color:tokenValue('semantic.text.primary',mode+'.normal')}
+    primary:{color:'var(--cuk-semantic-text-accent)',contrastColor:'var(--cuk-semantic-surface-canvas)'},
+    text:{color:'var(--cuk-semantic-text-primary)',mutedColor:'var(--cuk-semantic-text-muted)'},
+    overlay:Object.fromEntries(['select','popover','modal'].map(kind=>[kind,{...Aura.semantic.colorScheme[mode].overlay[kind],background:'var(--cuk-semantic-surface-elevated)',borderColor:'var(--cuk-semantic-border-default)',color:'var(--cuk-semantic-text-primary)'}])),
+    content:{background:'var(--cuk-semantic-surface-panel)',borderColor:'var(--cuk-semantic-border-default)',color:'var(--cuk-semantic-text-primary)'}
   });
   return {...Aura,semantic:{...Aura.semantic,colorScheme:{light:scheme('light'),dark:scheme('dark')}}};
 }
@@ -25,7 +28,7 @@ export function installKitTheme(app) {
   if (app && app[KIT_THEME_INSTALLED]) return app;
   const nonce=document.querySelector('meta[name$="-style-nonce"]')?.getAttribute('content');
   if(!nonce)throw new Error('Style nonce unavailable');
-  app.use(OpenVue,{csp:{nonce},theme:{preset:createAuraPreset()}});
+  app.use(OpenVue,{csp:{nonce},theme:{preset:createAuraPreset(),options:{darkModeSelector:':root[data-theme-scheme$="dark"]'}}});
   app[KIT_THEME_INSTALLED]=true;
   return app;
 }

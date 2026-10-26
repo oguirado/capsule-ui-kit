@@ -384,6 +384,13 @@ defineExpose({ openDialog: showDialog, closeDialog });
   flex: 1 1 auto; min-height: 0;
   overflow: hidden;
 }
+/* NEW-1: paint the vendor content region with the kit dialog surface.
+   The vendor preset keeps its light scheme while the kit runs dark, so
+   without this the dark dialog shows light text on a white panel.
+   Triple specificity beats the vendor content rule regardless of order. */
+.p-dialog.s8n-dialog .p-dialog-content{
+  background: var(--cuk-component-dialog-host-surface);
+}
 .s8n-head,.s8n-search,.s8n-foot{flex: none;}
 .s8n-dialog button{font-family: var(--cuk-semantic-typography-font-family-sans);}
 .s8n-head{
@@ -467,9 +474,14 @@ defineExpose({ openDialog: showDialog, closeDialog });
 .s8n-cat:hover{background: var(--cuk-semantic-surface-hover-s1); color: var(--cuk-semantic-text-primary);}
 .s8n-cat[aria-pressed="true"]{
   background: var(--cuk-semantic-selection-background);
-  color: var(--cuk-semantic-text-primary);
+  color: var(--cuk-semantic-selection-text);
   font-weight: var(--cuk-semantic-typography-font-weight-medium);
   box-shadow: inset calc(var(--cuk-semantic-border-width) * 2) 0 0 var(--cuk-semantic-accent-primary);
+}
+/* NEW-1: the selected-row count sits on the selection fill, so it keeps
+   the selection pair instead of the rail muted tone (PL5 contrast). */
+.s8n-cat[aria-pressed="true"] .s8n-count{
+  color: var(--cuk-semantic-selection-text);
 }
 .s8n-count{
   font-family: var(--cuk-semantic-typography-font-family-mono);
