@@ -18,6 +18,7 @@ file:a7dc0fd7f1dac043180c	packages/capsule-ui-kit/index.js
 file:8d0a8c3ffd9b6391fdb6	packages/capsule-ui-kit/package.json
 file:3c65f2796673a208527e	packages/capsule-ui-kit/src/agent/controlRegistry.js
 file:6dbfb312d3844b520bdb	packages/capsule-ui-kit/src/agent/mvRegistryRows.js
+file:1f86996d5dc89d15c1c6	packages/capsule-ui-kit/src/agent/pl6RegistryRows.js
 file:333123ca4dca6e8eafc0	packages/capsule-ui-kit/src/agent/sha256.js
 file:140367a27cda2c7bf5b3	packages/capsule-ui-kit/src/audit/AuditReceipt.vue
 file:dc81b3a42b5ada722655	packages/capsule-ui-kit/src/audit/AuditRow.vue
@@ -152,6 +153,8 @@ file:d59564147754bfeb61fd	packages/capsule-ui-kit/test/audit-timeline.test.js
 file:52273062b5f824c28162	packages/capsule-ui-kit/test/capsule-chrome-s1.test.js
 file:905c3433e5f960aa1cf7	packages/capsule-ui-kit/test/controlRegistry.test.js
 file:b776eb84e325f2d28617	packages/capsule-ui-kit/test/design-contrast-pl2.test.js
+file:2d8b5e6b66b5b701a19b	packages/capsule-ui-kit/test/design-contrast-pl5.test.js
+file:f7a9b7718b89496a1f89	packages/capsule-ui-kit/test/design-contrast-pl6.test.js
 file:3866515ee4813a49af44	packages/capsule-ui-kit/test/design-light.test.js
 file:4ff46fd02fe2c1c60f82	packages/capsule-ui-kit/test/design-multislot-paths.json
 file:98ef2fe28568f2c3c65a	packages/capsule-ui-kit/test/design-mv-legacy-snapshot.json
@@ -177,6 +180,7 @@ file:dd78402af979a3a61fd4	packages/capsule-ui-kit/test/fixtures/retired/src/term
 file:166d88a9d8944512275e	packages/capsule-ui-kit/test/fixtures/retired/src/ui/TerminalCapsule.vue
 file:20e15a067b8b9b36a19b	packages/capsule-ui-kit/test/fleet-overview.test.js
 file:223e995f5d581a69755f	packages/capsule-ui-kit/test/health-board.test.js
+file:2d7ca2cfb89945383e0f	packages/capsule-ui-kit/test/kit-boundary-pl4.test.js
 file:ffdaa5f99e5b4574e53c	packages/capsule-ui-kit/test/layout-default-profile.test.js
 file:6b70d959b47eddc977ef	packages/capsule-ui-kit/test/layoutProfile.test.js
 file:f821337553842532ad0b	packages/capsule-ui-kit/test/legacy-drawer-model.test.js
@@ -186,6 +190,7 @@ file:2c1667d7ce8c9b76222b	packages/capsule-ui-kit/test/lists-s1.test.js
 file:3000816a1c3199092497	packages/capsule-ui-kit/test/multislot-ai-input-mode.test.js
 file:66e0e8db4d154e7d36fb	packages/capsule-ui-kit/test/multislot-ai.test.js
 file:1e2f3800157a8a0a215d	packages/capsule-ui-kit/test/multislot-mv.test.js
+file:5a6f44c8358d1471f2e4	packages/capsule-ui-kit/test/multislot-pl6.test.js
 file:5e60bf3f43eac4fde719	packages/capsule-ui-kit/test/nonce-document.test.js
 file:e48c09e8ea5d9a885241	packages/capsule-ui-kit/test/overlays-confirm.test.js
 file:612ccf24a70061c924f1	packages/capsule-ui-kit/test/package-isolation.test.js
@@ -209,14 +214,17 @@ file:81996b3cf0dd2412e5dd	packages/capsule-ui-kit/test/shell-settings-mv.test.js
 file:a98135b3d9b6254652d2	packages/capsule-ui-kit/test/shell-settings.test.js
 file:89f7bd314e6ef6b8e583	packages/capsule-ui-kit/test/shell-sidebar-navigation.test.js
 file:3d04d22bc63e357e8673	packages/capsule-ui-kit/test/shell-sidebar-overlay.test.js
+file:2d42f0cab895a0b563f5	packages/capsule-ui-kit/test/shell-sidebar-pl4.test.js
 file:d60f57d4310d5d48c511	packages/capsule-ui-kit/test/shell-sidebar.test.js
 file:fb344298f4674210ab26	packages/capsule-ui-kit/test/shell-topbar.test.js
 file:3e28f9d6f5fd43142ef9	packages/capsule-ui-kit/test/side-terminal-keys.test.js
 file:7ed09556fe79e914c06f	packages/capsule-ui-kit/test/side-terminal-menu.test.js
 file:3bc06b4c7253d1dfbdf8	packages/capsule-ui-kit/test/side-terminal-model.test.js
+file:ede8eef8d02265412e01	packages/capsule-ui-kit/test/side-terminal-pl4.test.js
 file:69924bd900937487733b	packages/capsule-ui-kit/test/side-terminal-view.test.js
 file:bf19b85f5f07510319f4	packages/capsule-ui-kit/test/surfaces-frame-tile.test.js
 file:519cd891f18ced9ce27e	packages/capsule-ui-kit/test/terminal-capsule-removal.test.js
+file:cb513cdbce5aba04483b	packages/capsule-ui-kit/test/terminal-pl6.test.js
 file:f7bdd9263fae706b2e6a	packages/capsule-ui-kit/test/terminal-s4.test.js
 file:246d5c19003a383ee77a	packages/capsule-ui-kit/test/ui-policy.test.js
 file:79f71654cdf44d7657c0	packages/capsule-ui-kit/test/widgets-donut-pl2.test.js
