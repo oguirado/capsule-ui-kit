@@ -1,6 +1,6 @@
 # Contributing
 
-The source of truth for the kit is the owner's package. Never edit `packages/capsule-ui-kit/` in this repository: it is replaced wholesale by the owner's export (`tools/sync_ui_kit.mjs`), so local edits are lost and break the sealed hashes. Everything else (starter, docs, router tooling, tests, CI, root `package.json`) is edited here.
+The source of truth for the kit is the owner's package. Never edit `packages/capsule-ui-kit/` in this repository: it is replaced wholesale by the owner's export, so local edits are lost and break the recorded digest (`npm run digest` checks the package against `packages/capsule-ui-kit/KIT_SOURCE.json`). Everything else (starter, docs, router tooling, tests, CI, root `package.json`) is edited here.
 
 ## Flow
 
@@ -13,8 +13,9 @@ The source of truth for the kit is the owner's package. Never edit `packages/cap
 
 ```sh
 npm ci
+npm run digest
 npm run test:kit
-node --test test/security.test.mjs test/router-negative.test.mjs
+node --test test/security.test.mjs test/router-negative.test.mjs test/kit-digest.test.mjs
 npm run check
 npm run build
 npm run router
@@ -28,10 +29,10 @@ npm run claims
 
 ## Local guard
 
-Install the pre-push hook once per clone: `install -m 755 tools/hooks/pre-push .git/hooks/pre-push`. It runs the publication lint, the claims check and gitleaks, and blocks the push when gitleaks is not installed.
+Install the pre-push hook once per clone: `install -m 755 tools/hooks/pre-push .git/hooks/pre-push`. It runs the publication lint, the claims check and gitleaks, and blocks the push when gitleaks is not installed. To add a private deny-list, set `PUBLICATION_PRIVATE_TERMS` to a policy file kept outside the repository (format in `tools/publication_lint.py`).
 
 ## Rules for contributed content
 
 - English only. No absolute host paths, user or machine names, credentials or e-mail addresses.
 - Machine-specific settings go in an ignored `local/` folder, never in tracked files.
-- Licence stays UNLICENSED until the owner decides; this repository is private.
+- Licence stays UNLICENSED until the owner decides.

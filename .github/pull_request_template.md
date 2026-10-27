@@ -3,8 +3,9 @@
 ## Checks (run from the repository root; same commands as CONTRIBUTING.md)
 
 - [ ] `npm ci`
+- [ ] `npm run digest`
 - [ ] `npm run test:kit`
-- [ ] `node --test test/security.test.mjs test/router-negative.test.mjs`
+- [ ] `node --test test/security.test.mjs test/router-negative.test.mjs test/kit-digest.test.mjs`
 - [ ] `npm run check`
 - [ ] `npm run build`
 - [ ] `npm run router`
