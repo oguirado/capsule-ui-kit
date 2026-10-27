@@ -200,8 +200,8 @@ test('panel exposes the overlay contract: stable ids, roles, anchors', () => {
 test('panel keeps every session view mounted and overlays without reflow', () => {
   const { source, descriptor } = parseSfc(PANEL_PATH, 'SideTerminalPanel.vue');
   const tpl = descriptor.template.content;
-  assert.ok(tpl.includes('v-show="isOpen"'), 'open body stays mounted while collapsed');
-  assert.ok(tpl.includes('v-show="!isOpen"'), 'edge tab reopens the collapsed panel');
+  assert.ok(tpl.includes("'cuk-csp-hidden': !(isOpen)"), 'open body stays mounted while collapsed');
+  assert.ok(tpl.includes("'cuk-csp-hidden': !(!isOpen)"), 'edge tab reopens the collapsed panel');
   assert.ok(tpl.includes('<TerminalView'), 'panel renders the terminal view');
   assert.ok(tpl.includes('v-for="session in view.sessions"'), 'one view per session');
   assert.ok(tpl.includes(':folded="session.sessionId !== view.selected"'), 'inactive views fold, never unmount');

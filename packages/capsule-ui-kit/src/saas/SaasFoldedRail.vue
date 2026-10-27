@@ -181,7 +181,7 @@ function dock() {
     <div class="saas-rail-head">
       <span class="saas-rail-title">{{ railTitle }}</span>
       <button
-        id="cuk-saas-folded-unfold"
+        id="cuk-saas-folded-unfold" data-semantic-anchor="shell/navigation/folded-unfold"
         type="button"
         role="button"
         class="saas-rail-unfold"
@@ -227,7 +227,7 @@ function dock() {
     </div>
     <div class="saas-rail-foot">
       <button
-        id="cuk-saas-folded-dock"
+        id="cuk-saas-folded-dock" data-semantic-anchor="shell/navigation/folded-dock"
         type="button"
         role="button"
         class="saas-rail-dock"

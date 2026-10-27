@@ -452,10 +452,10 @@ test('focus guard on every multislot control surface', { skip: skipIntegration }
 test('INV-1: fold/hide/float keep live hosts mounted with zero spawn/kill (ERR_MULTISLOT_*)', { skip: skipIntegration }, () => {
   for (const name of ['AiMultiSlot.vue', 'AiSurfacePane.vue', 'AiTerminalPane.vue']) {
     const source = read(path.join(MULTISLOT_DIR, name));
-    assert.ok(source.includes('v-show'), `${name}: hide via v-show, never unmount (ERR_MULTISLOT_UNMOUNT_ON_HIDE)`);
+    assert.ok(source.includes("'cuk-csp-hidden':"), `${name}: hide via a mounted hidden class, never unmount (ERR_MULTISLOT_UNMOUNT_ON_HIDE)`);
   }
   const shell = read(path.join(MULTISLOT_DIR, 'AiMultiSlot.vue'));
-  assert.ok((shell.match(/v-show/g) || []).length >= 2, 'shell v-show covers fold + per-half hide');
+  assert.ok((shell.match(/cuk-csp-hidden/g) || []).length >= 2, 'shell hidden classes cover fold + per-half hide');
   assert.ok(shell.includes('float') && shell.includes('dock-back'), 'shell offers float + dock-back');
   const all = [...ALL_SFC, ...EXPECTED_JS].map((n) => read(path.join(MULTISLOT_DIR, n))).join('\n');
   for (const verb of ['ClosePTY', 'killTree', 'process.kill', 'spawn(', "from 'node:", 'from "node:']) {
@@ -503,7 +503,7 @@ test('shell: attach sides, presentation, 3-pass refocus, geometry truth', { skip
   const ids = shell.multislotDomIds('cap-01');
   assert.ok(ids.root.includes('cap-01') && ids.fold.includes('cap-01'), 'stable DOM ids');
   const anchors = shell.multislotAnchors('cap-01');
-  assert.equal(anchors.fold, 'capsule/cap-01/fold');
+  assert.equal(anchors.fold, 'capsule/cap-01/ai-slot/fold');
   assert.equal(anchors.slot, 'capsule/cap-01/slot');
   assert.ok(['idle', 'busy', 'attention', 'error'].includes(shell.railCardState('live', 'ready')));
 });
@@ -758,7 +758,7 @@ test('INV-4: anchors cover every multislot id; hidden controls report no geometr
   }
   assert.equal(
     mod.multislotAnchorFor('multislot.fold', { id: 'cap-09' }),
-    'capsule/cap-09/fold',
+    'capsule/cap-09/multislot/fold',
   );
   assert.throws(() => mod.multislotAnchorFor('multislot.nope'), /Unknown multislot agent_lane id/);
   const shellSource = read(path.join(MULTISLOT_DIR, 'AiMultiSlot.vue'));

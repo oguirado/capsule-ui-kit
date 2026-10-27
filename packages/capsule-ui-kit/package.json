@@ -1,6 +1,6 @@
 {
   "name": "capsule-ui-kit",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "type": "module",
   "private": true,
   "exports": {
@@ -57,5 +57,8 @@
   ],
   "engines": {
     "node": ">=24"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js"
   }
 }

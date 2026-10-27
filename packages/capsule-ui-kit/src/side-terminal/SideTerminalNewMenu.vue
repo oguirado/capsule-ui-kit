@@ -20,6 +20,7 @@ export {
 } from './sideTerminalModel.js';
 </script>
 <script setup>
+import { setKitGeometryRule, clearKitGeometryRule } from '../workspace/kitGeometrySheet.js';
 import { shallowRef, computed, nextTick, onBeforeUnmount } from 'vue';
 import {
   SIDE_TERMINAL_MAX_SESSIONS,
@@ -185,8 +186,7 @@ function fitDialogToPanel() {
   if (!dialog || !trigger) return;
   try {
     if (typeof dialog.getBoundingClientRect !== 'function' || typeof trigger.getBoundingClientRect !== 'function') return;
-    dialog.style.maxWidth = '';
-    dialog.style.minWidth = '';
+    clearKitGeometryRule(dialog.ownerDocument, `side-menu:${dialog.id}`);
     const naturalWidth = dialog.offsetWidth;
     const triggerRight = trigger.getBoundingClientRect().right;
     let panelLeft = 0;
@@ -196,8 +196,7 @@ function fitDialogToPanel() {
     }
     const cap = capSideTerminalMenuWidth({ triggerRight, dialogWidth: naturalWidth, panelLeft, viewportWidth: viewportWidth() });
     if (cap !== null) {
-      dialog.style.maxWidth = `${cap}px`;
-      dialog.style.minWidth = '0px';
+      setKitGeometryRule(dialog.ownerDocument, `side-menu:${dialog.id}`, dialog.id, { maxWidth: `${cap}px`, minWidth: '0px' });
     }
   } catch {
     /* Measurement is best-effort: the CSS right anchor still holds. */

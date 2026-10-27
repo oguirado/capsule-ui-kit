@@ -190,14 +190,24 @@ export function createSideTerminalModel({
   let optedIn = false, disposed = false, launching = false;
   /** @type {string|null} */
   let selected = null;
-  let error = '', earlyBytes = 0;
+  let error = '', errorCode = '', diagnosticCode = '', earlyBytes = 0;
   /** @type {any[]} */
   let early = [];
   /** @type {ReturnType<typeof setTimeout>|undefined} */
   let outputTimer;
   let earlyOverflow = false;
-  /** @param {any} e */
-  const report = (e) => { error = String(e?.message ?? e); publish(); };
+  /** Fixed copy only: broker exception messages can contain private host data.
+   * @param {any} e Diagnostic data, never rendered.
+   * @param {string} [code] Kit-owned error category.
+   */
+  const report = (e, code = 'TERMINAL_OPERATION_FAILED') => {
+    errorCode = code;
+    diagnosticCode = typeof e?.code === 'string' ? e.code : '';
+    error = code === 'TERMINAL_CAPABILITIES_UNAVAILABLE' ? 'Terminal capabilities unavailable'
+      : code === 'TERMINAL_OUTPUT_INVALID' ? 'Invalid terminal frame or sequence gap'
+      : 'Terminal operation unavailable';
+    publish();
+  };
   const registry = createRegistry({
     ...registryOptions,
     /** @param {{sessionId:string,acknowledgedSeq:number}} event */
@@ -236,6 +246,8 @@ export function createSideTerminalModel({
       commands: capabilities?.commands ?? [],
       launching,
       error,
+      errorCode,
+      diagnosticCode,
       selected,
       liveCount: liveSessions().length,
       sessions: Array.from(sessions.values(), (s) => ({
@@ -292,7 +304,7 @@ export function createSideTerminalModel({
       s.activity = 'failed'; s.attachment = 'disconnected';
       registry.setControlLease({ sessionId: s.id, epoch: 1, hasControlLease: false });
       void Promise.resolve(facade.close({ session: s.id })).catch(report);
-      report(e);
+      report(e, 'TERMINAL_OUTPUT_INVALID');
     }
   }
   /** @param {any} event */
@@ -331,7 +343,7 @@ export function createSideTerminalModel({
     registry.beginAttach({ sessionId: id, epoch: 1, attachmentId: id });
     registry.applyRestoreSnapshot({ sessionId: id, epoch: 1, attachmentId: id, snapshotCursorSeq: seq, snapshotData: Uint8Array.from(replay) });
   }
-  const offData = facade?.onData(receive), offExit = facade?.onExit(exit);
+  const offData = facade?.onData?.(receive), offExit = facade?.onExit?.(exit);
   return {
     registry,
     snapshot,
@@ -355,7 +367,7 @@ export function createSideTerminalModel({
       const rowsValue = spec?.rows;
       const cols = typeof colsValue === 'number' && Number.isInteger(colsValue) && colsValue >= 2 && colsValue <= 1000 ? colsValue : 80;
       const rows = typeof rowsValue === 'number' && Number.isInteger(rowsValue) && rowsValue >= 2 && rowsValue <= 1000 ? rowsValue : 24;
-      launching = true; error = ''; publish();
+      launching = true; error = ''; errorCode = ''; diagnosticCode = ''; publish();
       try {
         const reply = await facade.open({ command, args, cols, rows });
         if (disposed) { await facade.close({ session: reply.session }); return ''; }
@@ -416,12 +428,18 @@ export function createSideTerminalModel({
     },
     async initialize() {
       try {
+        if (typeof facade?.capabilities !== 'function') {
+          capabilities = null;
+          report(null, 'TERMINAL_CAPABILITIES_UNAVAILABLE');
+          return;
+        }
         const c = await facade.capabilities();
         if (disposed) return;
         if (typeof c?.developerMode !== 'boolean' || !Array.isArray(c.commands) || c.commands.some((/** @type {string} */ x) => typeof x !== 'string')) {
           throw new Error('Terminal capabilities unavailable');
         }
         capabilities = { developerMode: c.developerMode, commands: c.commands };
+        error = ''; errorCode = ''; diagnosticCode = '';
         if (typeof facade.attach === 'function') {
           launching = true;
           try {
@@ -438,7 +456,7 @@ export function createSideTerminalModel({
           } finally { launching = false; early = []; earlyBytes = 0; }
         }
         publish();
-      } catch (e) { capabilities = null; report(e); }
+      } catch (e) { capabilities = null; report(e, 'TERMINAL_CAPABILITIES_UNAVAILABLE'); }
     },
     /** @param {boolean} value */
     async optIn(value) {

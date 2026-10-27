@@ -134,7 +134,7 @@ test('PL6 viewer elapsed/resolution pair reaches 4.5:1 in every scheme', () => {
   }
 });
 
-test('PL6 close/empty keep the secondary tone (coupling)', () => {
+test('PL6 close keeps secondary and MV-4 empty text uses AA primary (coupling)', () => {
   const source = text('src/terminal/TerminalSessionTabs.vue');
   const { descriptor } = parse(source, { filename: 'TerminalSessionTabs.vue' });
   const styles = descriptor.styles.map((style) => style.content).join('\n');
@@ -142,8 +142,8 @@ test('PL6 close/empty keep the secondary tone (coupling)', () => {
     const rule = styles.match(new RegExp(`\\.${cls}\\s*\\{([^}]*)\\}`));
     assert.ok(rule, `.${cls} rule present`);
     assert.ok(
-      rule[1].includes('color: var(--cuk-semantic-text-secondary);'),
-      `.${cls} keeps the secondary tone`,
+      rule[1].includes(`color: var(--cuk-semantic-text-${cls === 'cui-terminal-tabs__empty' ? 'primary' : 'secondary'});`),
+      `.${cls} keeps its readable semantic tone`,
     );
   }
 });

@@ -254,7 +254,7 @@ function onSelect() {
     role="button"
     class="audit-row"
     :class="{ 'audit-row-selected': props.selected }"
-    :data-semantic-anchor="anchor === '' ? undefined : anchor"
+    :data-semantic-anchor="anchor || ('settings/control-' + domId)"
     :aria-label="accessibleName"
     :aria-pressed="props.selected ? 'true' : 'false'"
     :title="titleText"

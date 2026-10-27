@@ -1,6 +1,8 @@
 <script setup>
 import { computed, nextTick, ref, watch } from 'vue';
-import Dialog from 'openvue/dialog';
+import VendorDialog from 'openvue/dialog';
+import { createCspDialog } from '../workspace/cspDialog.js';
+const Dialog = createCspDialog(VendorDialog);
 import SearchIcon from '@openvue/icons/search';
 import CheckIcon from '@openvue/icons/check';
 import PlusIcon from '@openvue/icons/plus';
@@ -648,4 +650,7 @@ defineExpose({ openDialog: showDialog, closeDialog });
   outline: var(--cuk-semantic-focus-ring-width) solid var(--cuk-semantic-focus-ring-color);
   outline-offset: var(--cuk-component-app-shell-space-hairline);
 }
+
+.cuk-csp-dialog:not([open]) { display: none !important; }
+.cuk-csp-dialog { margin: auto; padding: 0; color: var(--cuk-semantic-text-primary); background: var(--cuk-component-dialog-host-surface); }
 </style>

@@ -1,6 +1,8 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
-import Dialog from 'openvue/dialog';
+import VendorDialog from 'openvue/dialog';
+import { createCspDialog } from '../workspace/cspDialog.js';
+const Dialog = createCspDialog(VendorDialog);
 import BarsIcon from '@openvue/icons/bars';
 import GridIcon from '@openvue/icons/thlarge';
 import SearchIcon from '@openvue/icons/search';
@@ -286,7 +288,7 @@ defineExpose({ openPalette: showPalette, closePalette });
   border-radius: var(--cuk-semantic-radius-sm);
   font-size: var(--cuk-semantic-typography-roles-body-sm-font-size);
   line-height: var(--cuk-semantic-typography-roles-body-sm-line-height);
-  color: var(--cuk-semantic-text-disabled);
+  color: var(--cuk-semantic-text-muted);
   text-align: left;
 }
 .s1-topbar .s1-topbar-search svg{
@@ -421,4 +423,7 @@ defineExpose({ openPalette: showPalette, closePalette });
   .s1-topbar-kbd{display: none;}
   .s1-topbar-new-label{display: none;}
 }
+
+.cuk-csp-dialog:not([open]) { display: none !important; }
+.cuk-csp-dialog { margin: auto; padding: 0; color: var(--cuk-semantic-text-primary); background: var(--cuk-component-dialog-host-surface); }
 </style>

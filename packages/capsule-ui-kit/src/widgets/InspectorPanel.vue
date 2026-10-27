@@ -134,7 +134,7 @@ function hasMatrix() {
         <h3 class="s1-inspector-title">{{ title }}</h3>
         <p v-if="subject" class="s1-inspector-subject">{{ subject }}</p>
       </div>
-      <button
+      <button :data-semantic-anchor="'settings/control-' + (id + '-dismiss').replace(/[^A-Za-z0-9._-]/g, '-')"
         v-if="dismissLabel"
         type="button"
         :id="id + '-dismiss'"
@@ -206,7 +206,7 @@ function hasMatrix() {
       </section>
       <div v-if="actions.length" class="s1-inspector-actions" role="group" :aria-label="actionsLabel">
         <slot name="actions" :actions="actions">
-          <button
+          <button :data-semantic-anchor="'settings/control-' + (action.id).replace(/[^A-Za-z0-9._-]/g, '-')"
             v-for="action in /** @type {Array<InspectorAction>} */ (/** @type {unknown} */ (actions))"
             :key="action.id"
             type="button"

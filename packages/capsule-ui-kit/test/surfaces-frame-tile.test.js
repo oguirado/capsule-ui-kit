@@ -369,7 +369,7 @@ test('every received frame is acked exactly once on the supplied port', () => {
 });
 
 test('folded and hidden tiles stop the display branch and release bitmaps', () => {
-  assert.ok(tileSource.includes('v-show="!hidden"'), 'hidden keeps the tile mounted but unseen');
+  assert.ok(tileSource.includes("'cuk-csp-hidden': !(!hidden)"), 'hidden keeps the tile mounted but unseen');
   assert.ok(tileSource.includes('if (props.folded || props.hidden) stopDisplayBranch()'), 'branch stop on fold/hide');
   assert.ok(tileSource.includes('function stopDisplayBranch()'), 'stop routine');
   assert.ok(tileSource.includes('releaseLiveFrame()'), 'bitmap release');

@@ -13,7 +13,7 @@
  * @property {string} anchorTemplate - Kit semantic-anchor family template.
  * @property {string} anchorExample - Concrete example anchor built from fixture ids.
  * @property {string} role - Effective ARIA/semantic role for this control.
- * @property {'B'|'C'|'D'|'E'} lane - Room lane owning the carrying component.
+ * @property {'B'|'C'|'D'|'E'|'T'} lane - Room lane owning the carrying component.
  * @property {string} component - Carrying kit component name.
  * @property {'new'|'existing'} anchorStatus - Whether the anchor family is a new SaaS row.
  */
@@ -96,4 +96,38 @@ export function saasAnchorFor(agentLaneId, params = {}) {
   anchor = anchor.split(SAAS_FIXTURE_IDS.sessionId).join(sid);
   anchor = anchor.split(SAAS_FIXTURE_IDS.dispatchId).join(did);
   return anchor;
+}
+
+/**
+ * kw1 lane T additive rows: the wall-tile take_control / release_control
+ * pair for the tile-state surface. Kept separate from `SAAS_REGISTRY_ROWS`
+ * (whose 34-row shape stays pinned); both anchors reuse pre-existing
+ * control families that require an unavailable reason when disabled.
+ * Data only: no component imports, no product names, no backend verbs.
+ * @type {readonly SaasRegistryRow[]}
+ */
+export const KW1_TILE_STATE_ROWS = Object.freeze([
+  Object.freeze({ agentLaneId: 'wall.tile.take-control', anchorTemplate: 'capsule/{id}/{fold,pin,control,close,popout,dock-back,float,maximize,hide,show}', anchorExample: 'capsule/cap-01/control', role: 'button', lane: 'T', component: 'SaasWallTile', anchorStatus: 'existing' }),
+  Object.freeze({ agentLaneId: 'wall.tile.release-control', anchorTemplate: 'capsule/{id}/{release-control,retry,export,record-ai,record-disk,screenshot,copy-id,hide-surface,hide-terminal}', anchorExample: 'capsule/cap-01/release-control', role: 'button', lane: 'T', component: 'SaasWallTile', anchorStatus: 'existing' }),
+]);
+
+/**
+ * Every plan control id on the kw1 tile-state agent_lane surface.
+ * @type {readonly string[]}
+ */
+export const KW1_TILE_AGENT_LANE_IDS = Object.freeze(KW1_TILE_STATE_ROWS.map((row) => row.agentLaneId));
+
+/**
+ * Builds a concrete semantic anchor for a kw1 tile-state plan control id.
+ * @param {string} agentLaneId - Plan control id from `KW1_TILE_AGENT_LANE_IDS`.
+ * @param {{ id?: string }} [params] - Entity token for the template.
+ * @returns {string} Concrete semantic anchor.
+ */
+export function kw1TileAnchorFor(agentLaneId, params = {}) {
+  const row = KW1_TILE_STATE_ROWS.find((entry) => entry.agentLaneId === agentLaneId);
+  if (!row) {
+    throw new Error(`Unknown kw1 tile agent_lane id "${String(agentLaneId)}"`);
+  }
+  const id = params.id ?? SAAS_FIXTURE_IDS.capsuleId;
+  return row.anchorExample.split(SAAS_FIXTURE_IDS.capsuleId).join(id);
 }

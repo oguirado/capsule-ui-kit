@@ -60,7 +60,7 @@ test('SFC structure, @vue/compiler-sfc compilation, plain JS/JSDoc law, and zero
   assert.ok(!source.includes('lang="ts"'), 'Authored TypeScript (lang="ts") is forbidden');
   assert.ok(!source.includes("lang='ts'"), "Authored TypeScript (lang='ts') is forbidden");
   assert.ok(!/h3-app-root|h3-app-route|\u0068oldings\.owner-projection/i.test(source), 'No consumer imports or symbols allowed');
-  assert.ok(source.includes('v-show='), 'Folded live hosts must stay mounted using v-show (§6)');
+  assert.ok(source.includes("'cuk-csp-hidden':"), 'Folded live hosts must stay mounted using a mounted hidden class (§6)');
 
   const compilerSfc = loadCompilerSfc();
   assert.ok(compilerSfc, '@vue/compiler-sfc must be loadable for SFC smoke verification');
@@ -302,7 +302,7 @@ test('Negative contrast (§13 gate): mount, tab selection, fold/unfold, and Dock
   assert.equal(folded.state.presentation, 'folded');
   assert.equal(folded.state.keepBodyMounted, true);
   assert.equal(folded.state.schedulingEnabled, false);
-  assert.equal(folded.state.focusedAnchor, 'capsule/cap-alpha/fold');
+  assert.equal(folded.state.focusedAnchor, 'capsule/cap-alpha/session-slot/fold');
   assert.equal(folded.state.focusMovedBeforeHide, true);
   assert.equal(folded.state.spawnCount, 0);
   assert.equal(folded.state.killCount, 0);
@@ -627,7 +627,7 @@ test('§9 AI-operability semantic control inventory and negative contrast for fa
     presentationInstance: 'wall-main',
     boxesByAnchor: {
       'capsule/cap-sem/slot': { x: 10, y: 20, width: 500, height: 240 },
-      'capsule/cap-sem/fold': { x: 12, y: 22, width: 80, height: 28 },
+      'capsule/cap-sem/session-slot/fold': { x: 12, y: 22, width: 80, height: 28 },
       'capsule/cap-sem/session/sess-alpha/tab': { x: 100, y: 22, width: 140, height: 28 },
       'session/sess-alpha/attach': { x: 250, y: 22, width: 64, height: 24 },
       'session/sess-alpha/stop': { x: 320, y: 22, width: 64, height: 24 },
@@ -639,7 +639,7 @@ test('§9 AI-operability semantic control inventory and negative contrast for fa
 
   const anchors = expandedControls.map((c) => c.semanticAnchor);
   assert.ok(anchors.includes('capsule/cap-sem/slot'));
-  assert.ok(anchors.includes('capsule/cap-sem/fold'));
+  assert.ok(anchors.includes('capsule/cap-sem/session-slot/fold'));
   assert.ok(anchors.includes('capsule/cap-sem/session/sess-alpha/tab'));
   assert.ok(anchors.includes('session/sess-alpha/attach'));
   assert.ok(anchors.includes('session/sess-alpha/stop'));
@@ -665,7 +665,7 @@ test('§9 AI-operability semantic control inventory and negative contrast for fa
     presentationInstance: 'wall-main',
     rejectFabricatedHiddenBoxes: false,
     boxesByAnchor: {
-      'capsule/cap-sem/fold': { x: 12, y: 22, width: 80, height: 28 }
+      'capsule/cap-sem/session-slot/fold': { x: 12, y: 22, width: 80, height: 28 }
     }
   });
   const foldedTab = foldedControls.find((c) => c.semanticAnchor === 'capsule/cap-sem/session/sess-alpha/tab');

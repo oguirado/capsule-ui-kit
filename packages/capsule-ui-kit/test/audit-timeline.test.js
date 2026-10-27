@@ -271,8 +271,8 @@ test('Audit timeline exposes a receipt viewer slot and a virtualised list', () =
   assert.ok(template.includes('<slot name="receipt"'), 'receipt viewer slot');
   assert.ok(template.includes(':record="selectedRecord"'), 'receipt slot record prop');
   assert.ok(template.includes('visibleRecords'), 'windowed record slice');
-  assert.ok(template.includes("win.top + 'px'"), 'top spacer');
-  assert.ok(template.includes("win.bottom + 'px'"), 'bottom spacer');
+  assert.ok(template.includes(':data-cuk-geometry-id="cspGeometry1"'), 'top spacer');
+  assert.ok(template.includes(':data-cuk-geometry-id="cspGeometry3"'), 'bottom spacer');
   assert.ok(template.includes('No records in range.'), 'empty state');
   assert.ok(template.includes('Loading records'), 'loading state');
   assert.ok(template.includes('role="alert"'), 'chain-break alert');

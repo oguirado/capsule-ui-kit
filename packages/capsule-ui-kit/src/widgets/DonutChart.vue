@@ -99,12 +99,12 @@ const summary = computed(() => summarizeSlices(
         <g transform="rotate(-90 60 60)">
           <circle
             v-for="entry in normSlices"
-            v-show="entry.chartable"
+            
             :key="entry.key"
             cx="60" cy="60" r="47" pathLength="100"
             :stroke-dasharray="entry.dashArray"
             :stroke-dashoffset="entry.dashOffset"
-            :class="'s1-donut-slice s1-donut-slice-' + entry.tone"
+            :class="['s1-donut-slice s1-donut-slice-' + entry.tone, { 'cuk-csp-hidden': !(entry.chartable) }]"
           />
         </g>
         <text v-if="totalValue" ref="centerValueRef" x="60" y="58" text-anchor="middle" lengthAdjust="spacingAndGlyphs" class="s1-donut-center-value">{{ totalValue }}</text>
@@ -121,7 +121,7 @@ const summary = computed(() => summarizeSlices(
         <span class="s1-donut-legend-share">{{ entry.share }}</span>
       </li>
     </ul>
-    <button
+    <button :data-semantic-anchor="'settings/control-' + (id + '-table-toggle').replace(/[^A-Za-z0-9._-]/g, '-')"
       type="button"
       :id="id + '-table-toggle'"
       class="s1-donut-btn s1-donut-toggle"
@@ -310,4 +310,6 @@ const summary = computed(() => summarizeSlices(
   opacity: var(--cuk-semantic-opacity-disabled);
   cursor: not-allowed;
 }
+
+.cuk-csp-hidden { display: none !important; }
 </style>

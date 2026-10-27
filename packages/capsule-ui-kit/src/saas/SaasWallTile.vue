@@ -237,6 +237,7 @@ export function saasWallTileFixture(overrides = {}) {
     epoch: 1,
     generation: 1,
     phase: 'running',
+    tileState: '',
     identityLabel: 'id:capsule-01',
     surfaceAddress: 'surface://capsule-01',
     surfaceState: 'live',
@@ -249,6 +250,8 @@ export function saasWallTileFixture(overrides = {}) {
     recordReason: '',
     takeControlDisabled: false,
     takeControlReason: '',
+    releaseControlDisabled: false,
+    releaseControlReason: '',
     controlHeld: false,
     popoutDisabled: true,
     popoutReason: 'Policy: window open disabled',
@@ -273,6 +276,14 @@ import SaasRecordButton from './SaasRecordButton.vue';
 import SaasViewerChips from './SaasViewerChips.vue';
 import SaasSurfaceView from './SaasSurfaceView.vue';
 import SaasVeil from './SaasVeil.vue';
+import {
+  tileControlDisabled,
+  tileControlReason,
+  tileStateAccessibleName,
+  tileStateBadgeAnchor,
+  tileStateBadgeDomId,
+  tileStateMeta,
+} from './SaasTileState.js';
 /* Plain-<script> helpers above share this module scope (kit SFC convention). */
 
 const props = defineProps({
@@ -282,6 +293,7 @@ const props = defineProps({
   epoch: { type: Number, default: 1 },
   generation: { type: Number, default: 1 },
   phase: { type: String, default: 'running' },
+  tileState: { type: String, default: '' },
   identityLabel: { type: String, default: null },
   surfaceAddress: { type: String, default: null },
   surfaceState: { type: String, default: 'live' },
@@ -294,6 +306,8 @@ const props = defineProps({
   recordReason: { type: String, default: '' },
   takeControlDisabled: { type: Boolean, default: false },
   takeControlReason: { type: String, default: '' },
+  releaseControlDisabled: { type: Boolean, default: false },
+  releaseControlReason: { type: String, default: '' },
   controlHeld: { type: Boolean, default: false },
   popoutDisabled: { type: Boolean, default: true },
   popoutReason: { type: String, default: 'Policy: window open disabled' },
@@ -327,6 +341,30 @@ const controlAnchor = computed(() =>
   props.controlHeld === true
     ? wallReleaseControlAnchor(props.capsuleId)
     : anchors.value.control,
+);
+const tileMeta = computed(() => (props.tileState ? tileStateMeta(props.tileState) : null));
+const tileName = computed(() =>
+  tileMeta.value
+    ? tileStateAccessibleName({
+      capsuleTitle: props.capsuleTitle,
+      capsuleId: props.capsuleId,
+      state: props.tileState,
+    })
+    : '',
+);
+const controlDisabled = computed(() =>
+  tileControlDisabled({
+    controlHeld: props.controlHeld,
+    takeControlDisabled: props.takeControlDisabled,
+    releaseControlDisabled: props.releaseControlDisabled,
+  }),
+);
+const controlReason = computed(() =>
+  tileControlReason({
+    controlHeld: props.controlHeld,
+    takeControlReason: props.takeControlReason,
+    releaseControlReason: props.releaseControlReason,
+  }),
 );
 const phaseChip = computed(() => wallPhaseChip(props.phase));
 const dotTone = computed(() => wallStatusDotTone(props.phase));
@@ -381,7 +419,7 @@ function close() {
 }
 
 function requestControl() {
-  if (props.takeControlDisabled) return;
+  if (controlDisabled.value) return;
   emit('control-request', buildWallControlPayload({ capsuleId: props.capsuleId, verb: controlVerb.value }));
 }
 
@@ -403,6 +441,15 @@ function selectSession(sessionId) {
         <span :class="'saas-dot saas-dot-' + dotTone" aria-hidden="true"></span>
         <span :id="domIds.name" class="saas-tile-name">{{ capsuleTitle }}</span>
         <span :id="domIds.phase" :class="'saas-chip saas-chip-' + phaseChip.tone">{{ phaseChip.label }}</span>
+        <span
+          v-if="tileMeta"
+          :id="tileStateBadgeDomId(capsuleId)"
+          :class="'saas-state saas-state-' + tileMeta.tone"
+          role="status"
+          :aria-label="tileName"
+          :title="tileMeta.description"
+          :data-semantic-anchor="tileStateBadgeAnchor(capsuleId)"
+        ><svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path :d="tileMeta.iconPath" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg><span class="saas-state-label">{{ tileMeta.label }}</span><span v-if="tileMeta.captureAlive" class="saas-state-capture"><span class="saas-state-capture-dot" aria-hidden="true"></span>CAPTURING</span></span>
         <span v-if="isRecording" class="saas-chip saas-chip-rec"><span class="saas-chip-dot" aria-hidden="true"></span>REC ACTIVE</span>
         <span v-if="identityText" :id="domIds.identity" class="saas-identity">{{ identityText }}</span>
       </div>
@@ -422,9 +469,9 @@ function selectSession(sessionId) {
           class="saas-take-control"
           :data-semantic-anchor="controlAnchor"
           :aria-label="controlName"
-          :title="takeControlReason || controlName"
-          :disabled="takeControlDisabled"
-          :data-unavailable-reason="takeControlReason || undefined"
+          :title="controlReason || controlName"
+          :disabled="controlDisabled"
+          :data-unavailable-reason="controlReason || undefined"
           @click="requestControl"
         >{{ controlLabel }}</button>
         <span class="saas-divider" aria-hidden="true"></span>
@@ -636,6 +683,70 @@ function selectSession(sessionId) {
   border-color: color-mix(in srgb, var(--cuk-primitive-color-rose-500) 25%, transparent);
 }
 .saas-chip-dot {
+  width: var(--cuk-primitive-space-3);
+  height: var(--cuk-primitive-space-3);
+  border-radius: var(--cuk-semantic-radius-pill);
+  background: var(--cuk-primitive-color-rose-500);
+  animation: saas-tile-rec-pulse 1.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+.saas-state {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cuk-primitive-space-2);
+  padding: 1px var(--cuk-primitive-space-3);
+  border-radius: var(--cuk-semantic-radius-sm);
+  border: var(--cuk-semantic-border-width) solid var(--cuk-semantic-border-divider);
+  background: color-mix(in srgb, var(--cuk-primitive-color-neutral-400) 10%, transparent);
+  color: var(--cuk-primitive-color-neutral-50);
+  font-family: var(--cuk-semantic-typography-font-family-mono);
+  font-size: var(--cuk-semantic-typography-font-size-s1_10);
+  white-space: nowrap;
+}
+.saas-state svg {
+  width: var(--cuk-semantic-typography-font-size-s1_14);
+  height: var(--cuk-semantic-typography-font-size-s1_14);
+  flex: none;
+}
+.saas-state-success {
+  background: color-mix(in srgb, var(--cuk-primitive-color-emerald-500) 10%, transparent);
+  border-color: color-mix(in srgb, var(--cuk-primitive-color-emerald-500) 25%, transparent);
+}
+.saas-state-success svg { color: var(--cuk-primitive-color-emerald-500); }
+.saas-state-warning {
+  background: color-mix(in srgb, var(--cuk-primitive-color-amber-500) 10%, transparent);
+  border-color: color-mix(in srgb, var(--cuk-primitive-color-amber-500) 25%, transparent);
+}
+.saas-state-warning svg { color: var(--cuk-primitive-color-amber-500); }
+.saas-state-info {
+  background: color-mix(in srgb, var(--cuk-primitive-color-saas-sky500, var(--cuk-primitive-color-cyan-500)) 10%, transparent);
+  border-color: color-mix(in srgb, var(--cuk-primitive-color-saas-sky500, var(--cuk-primitive-color-cyan-500)) 25%, transparent);
+}
+.saas-state-info svg { color: var(--cuk-primitive-color-saas-sky500, var(--cuk-primitive-color-cyan-500)); }
+.saas-state-danger {
+  background: color-mix(in srgb, var(--cuk-primitive-color-rose-500) 10%, transparent);
+  border-color: color-mix(in srgb, var(--cuk-primitive-color-rose-500) 25%, transparent);
+}
+.saas-state-danger svg { color: var(--cuk-primitive-color-rose-500); }
+.saas-state-neutral {
+  background: color-mix(in srgb, var(--cuk-primitive-color-neutral-400) 10%, transparent);
+  border-color: var(--cuk-semantic-border-divider);
+}
+.saas-state-neutral svg { color: var(--cuk-primitive-color-neutral-400); }
+.saas-state-accent {
+  background: color-mix(in srgb, var(--cuk-primitive-color-saas-indigo500, var(--cuk-primitive-color-accent-500)) 10%, transparent);
+  border-color: color-mix(in srgb, var(--cuk-primitive-color-saas-indigo500, var(--cuk-primitive-color-accent-500)) 25%, transparent);
+}
+.saas-state-accent svg { color: var(--cuk-primitive-color-saas-indigo500, var(--cuk-primitive-color-accent-500)); }
+.saas-state-label {
+  color: var(--cuk-primitive-color-neutral-50);
+}
+.saas-state-capture {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cuk-primitive-space-2);
+  color: var(--cuk-primitive-color-rose-500);
+}
+.saas-state-capture-dot {
   width: var(--cuk-primitive-space-3);
   height: var(--cuk-primitive-space-3);
   border-radius: var(--cuk-semantic-radius-pill);
@@ -864,5 +975,6 @@ function selectSession(sessionId) {
 }
 @media (prefers-reduced-motion: reduce) {
   .saas-chip-dot { animation: none; }
+  .saas-state-capture-dot { animation: none; }
 }
 </style>

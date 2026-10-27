@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
@@ -120,7 +120,7 @@ test('kit bars carry no consumer names and import only the Dialog vendor primiti
       require.resolve(`@openvue/icons/${icon}`);
       found = true;
     } catch {
-      found = existsSync(path.resolve(here, `../node_modules/@openvue/icons/${icon}/index.mjs`));
+      found = false;
     }
     assert.ok(found, 'icon ' + icon);
   }

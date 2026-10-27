@@ -7,3 +7,4 @@ export { default as SettingsPanel } from './shell/SettingsPanel.vue';
 export { default as ShellWorkspace } from './shell/ShellWorkspace.vue';
 export { default as HiddenStrip } from './shell/HiddenStrip.vue';
 export { default as HiddenStripDropPreview } from './shell/HiddenStripDropPreview.vue';
+export { default as EmptyWall } from './shell/EmptyWall.vue';

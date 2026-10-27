@@ -2,7 +2,7 @@
 /**
  * @fileoverview SAAS-2 capsule detail layout helpers: surface + attached
  * terminal split with geometry bar, separator, console row, shell gate and
- * edge strip. Panes hide with v-show and never unmount; the live surface is
+ * edge strip. Panes hide with mounted hidden classes and never unmount; the live surface is
  * a consumer slot, never placeholder DOM.
  * Plain JavaScript with JSDoc; no authored TypeScript, no product imports.
  */
@@ -137,6 +137,7 @@ export function describeSaasDetail(fixture = {}) {
 }
 </script>
 <script setup>
+import { useKitGeometry } from '../workspace/useKitGeometry.js';
 import { computed } from 'vue';
 import TerminalView from '../terminal/TerminalView.vue';
 import SaasGeometryBar from './SaasGeometryBar.vue';
@@ -393,6 +394,8 @@ function onConsoleDraft(value) {
 function onSplitResize(payload) {
   emit('resize', { capsuleId: props.capsuleId, width: payload.width });
 }
+
+const cspGeometry1 = useKitGeometry(() => (terminalStyle));
 </script>
 <template>
   <div
@@ -503,10 +506,10 @@ function onSplitResize(payload) {
 
     <div class="saas-detail__main">
       <section
-        v-show="surfaceVisible"
+        
         class="saas-detail__surface"
         aria-label="Capsule surface"
-      >
+       :class="{ 'cuk-csp-hidden': !(surfaceVisible) }">
         <div class="saas-detail__pane-head">
           <div class="saas-detail__pane-cluster">
             <span class="saas-detail__live">
@@ -544,7 +547,7 @@ function onSplitResize(payload) {
           <div class="saas-detail__notice" role="alert">
             <span v-if="surfaceCid.length > 0" class="saas-detail__cid">{{ surfaceCid }}</span>
             <span class="saas-detail__notice-text">Surface unavailable.</span>
-            <button
+            <button :data-semantic-anchor="'settings/control-' + (`${controlBase}-surface-retry`).replace(/[^A-Za-z0-9._-]/g, '-')"
               :id="`${controlBase}-surface-retry`"
               type="button"
               class="saas-detail__retry"
@@ -558,7 +561,7 @@ function onSplitResize(payload) {
       </section>
 
       <SaasSplitter
-        v-show="surfaceVisible && terminalVisible"
+        
         :capsule-id="capsuleId"
         :separator-id="presentationInstance"
         :position="paneWidth"
@@ -567,16 +570,16 @@ function onSplitResize(payload) {
         :pane-id="terminalPaneId"
         :reduced-motion="reducedMotion"
         @resize="onSplitResize"
-      />
+      :class="{ 'cuk-csp-hidden': !(surfaceVisible && terminalVisible) }" />
 
       <section
-        v-show="terminalVisible"
+        
         :id="terminalPaneId"
         class="saas-detail__terminal"
-        :style="terminalStyle"
+        :data-cuk-geometry-id="cspGeometry1"
         aria-label="Attached terminal"
-      >
-        <div class="saas-detail__tabs" role="tablist" aria-label="Detail sessions" @keydown="onTablistKeydown">
+       :class="{ 'cuk-csp-hidden': !(terminalVisible) }">
+        <div class="saas-detail__tabs" :id="`${controlBase}-tabs`" role="tablist" aria-label="Detail sessions" @keydown="onTablistKeydown">
           <button
             v-for="(sess, index) in sessionList"
             :id="`${controlBase}-tab-${sess.sessionId}`"
@@ -635,7 +638,7 @@ function onSplitResize(payload) {
         <div v-else class="saas-detail__stream">
           <div class="saas-detail__notice" role="status">
             <span class="saas-detail__notice-text">No session attached.</span>
-            <button
+            <button :data-semantic-anchor="'settings/control-' + (`${controlBase}-attach`).replace(/[^A-Za-z0-9._-]/g, '-')"
               :id="`${controlBase}-attach`"
               type="button"
               class="saas-detail__retry"
@@ -1132,4 +1135,6 @@ function onSplitResize(payload) {
     animation: none;
   }
 }
+
+.cuk-csp-hidden { display: none !important; }
 </style>

@@ -32,10 +32,11 @@ export const MV_FIXTURE_IDS = Object.freeze({
 });
 
 /**
- * mv2 control surface without a prior row: 8 rows.
+ * mv2 control surface, including the workspace dock tab.
  * @type {readonly MvRegistryRow[]}
  */
 export const MV_REGISTRY_ROWS = Object.freeze([
+  Object.freeze({ agentLaneId: 'workspace.dock-tab', anchorTemplate: 'workspace/tab/{id}', anchorExample: 'workspace/tab/panel-alpha', role: 'tab', lane: 'W', component: 'DockWorkspace', anchorStatus: 'new' }),
   // Wall tile release-control (lane W).
   Object.freeze({ agentLaneId: 'wall.capsule.release-control', anchorTemplate: 'capsule/{id}/{release-control,retry,export,record-ai,record-disk,screenshot,copy-id,hide-surface,hide-terminal}', anchorExample: 'capsule/cap-01/release-control', role: 'button', lane: 'W', component: 'SaasWallTile', anchorStatus: 'new' }),
   // Record-cluster export to a host destination (lane W).
@@ -66,6 +67,9 @@ export function mvAnchorFor(agentLaneId, params = {}) {
   const row = MV_REGISTRY_ROWS.find((entry) => entry.agentLaneId === agentLaneId);
   if (!row) {
     throw new Error(`Unknown mv agent_lane id "${String(agentLaneId)}"`);
+  }
+  if (agentLaneId === 'workspace.dock-tab') {
+    return `workspace/tab/${encodeURIComponent(params.id ?? 'panel-alpha')}`;
   }
   const id = params.id ?? MV_FIXTURE_IDS.capsuleId;
   return row.anchorExample.split(MV_FIXTURE_IDS.capsuleId).join(id);

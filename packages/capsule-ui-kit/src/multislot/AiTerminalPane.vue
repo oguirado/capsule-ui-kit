@@ -2,7 +2,7 @@
 /**
  * @fileoverview AI multislot attached-terminal pane: thin host around the
  * session tab strip, the terminal view and the new-session menu. One terminal
- * view stays mounted per session (v-show on selection; never unmount on
+ * view stays mounted per session (mounted hidden classes on selection; never unmount on
  * switch, hide or fold); exited tabs stay visible until the operator closes
  * them. Plain JavaScript with JSDoc; no authored TypeScript, no product
  * imports.
@@ -68,7 +68,7 @@ export function terminalPaneDomIds(capsuleId) {
 export function terminalPaneAnchors(capsuleId) {
   return {
     host: `capsule/${capsuleId}/terminal`,
-    hide: `capsule/${capsuleId}/hide-terminal`,
+    hide: `capsule/${capsuleId}/ai-terminal/hide-terminal`,
   };
 }
 
@@ -231,10 +231,10 @@ function passThrough(name) {
 </script>
 <template>
   <section
-    v-show="!hidden"
+    
     :id="domIds.host"
     class="ai-terminal-pane"
-    :class="{ 'ai-terminal-pane--reduced': reducedMotion }"
+    :class="[{ 'ai-terminal-pane--reduced': reducedMotion }, { 'cuk-csp-hidden': !(!hidden) }]"
     :data-semantic-anchor="anchors.host"
     :aria-label="paneLabel"
   >
@@ -276,10 +276,10 @@ function passThrough(name) {
 
     <div
       v-for="sess in sessionList"
-      v-show="sess.sessionId === effectiveSelectedId"
+      
       :key="sess.sessionId"
       class="ai-terminal-pane__view"
-    >
+     :class="{ 'cuk-csp-hidden': !(sess.sessionId === effectiveSelectedId) }">
       <TerminalView
         :embedded="true"
         :session-id="sess.sessionId"
@@ -381,4 +381,6 @@ function passThrough(name) {
   font-size: var(--cuk-semantic-typography-font-size-sm);
   color: var(--cuk-semantic-text-muted);
 }
+
+.cuk-csp-hidden { display: none !important; }
 </style>

@@ -328,7 +328,7 @@ function onViewOutput(payload) {
     <div v-if="props.showScrim" class="saas-dispatch__scrim" aria-hidden="true" />
     <header class="saas-dispatch__bar">
       <div class="saas-dispatch__tabs" role="tablist" aria-label="Dispatch sessions">
-        <button
+        <button :data-semantic-anchor="'settings/control-' + ('cuk-saas-dispatch-new-task').replace(/[^A-Za-z0-9._-]/g, '-')"
           id="cuk-saas-dispatch-new-task"
           type="button"
           role="button"
@@ -339,7 +339,7 @@ function onViewOutput(payload) {
           + Orchestrator Task
         </button>
         <span class="saas-dispatch__divider" aria-hidden="true" />
-        <button
+        <button :data-semantic-anchor="'settings/control-' + (`cuk-saas-dispatch-tab-${tab.sessionId}`).replace(/[^A-Za-z0-9._-]/g, '-')"
           v-for="tab in tabs"
           :key="tab.sessionId"
           :id="`cuk-saas-dispatch-tab-${tab.sessionId}`"
@@ -380,7 +380,7 @@ function onViewOutput(payload) {
         >
           +
         </button>
-        <button
+        <button :data-semantic-anchor="'settings/control-' + ('cuk-saas-dispatch-close').replace(/[^A-Za-z0-9._-]/g, '-')"
           id="cuk-saas-dispatch-close"
           type="button"
           role="button"
@@ -392,7 +392,7 @@ function onViewOutput(payload) {
         </button>
       </div>
     </header>
-    <div v-show="bodyVisible" class="saas-dispatch__body">
+    <div  class="saas-dispatch__body" :class="{ 'cuk-csp-hidden': !(bodyVisible) }">
       <SaasTargetRow
         :targets="props.targets"
         :model-value="selectedIds"
@@ -420,7 +420,7 @@ function onViewOutput(payload) {
           <footer class="saas-dispatch__composer-footer">
             <span class="saas-dispatch__method">{{ props.methodLabel }} · {{ props.priorityLabel }}</span>
             <span class="saas-dispatch__composer-actions">
-              <button
+              <button :data-semantic-anchor="'settings/control-' + ('cuk-saas-dispatch-dry-run').replace(/[^A-Za-z0-9._-]/g, '-')"
                 id="cuk-saas-dispatch-dry-run"
                 type="button"
                 role="button"
@@ -741,4 +741,6 @@ function onViewOutput(payload) {
     transition: none;
   }
 }
+
+.cuk-csp-hidden { display: none !important; }
 </style>

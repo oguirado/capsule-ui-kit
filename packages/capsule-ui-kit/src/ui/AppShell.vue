@@ -1,10 +1,13 @@
 <script setup>
 import {ref,computed,onMounted,onBeforeUnmount,nextTick} from 'vue';
-import Menu from 'openvue/menu';
-import Dialog from 'openvue/dialog';
+import VendorMenu from 'openvue/menu';
+import { createCspMenu } from '../workspace/cspMenu.js';
+const Menu = createCspMenu(VendorMenu);
+import VendorDialog from 'openvue/dialog';
+import { createCspDialog } from '../workspace/cspDialog.js';
+const Dialog = createCspDialog(VendorDialog);
 import Badge from 'openvue/badge';
 import Message from 'openvue/message';
-import Skeleton from 'openvue/skeleton';
 import Toast from 'openvue/toast';
 import SearchIcon from '@openvue/icons/search';
 import BarsIcon from '@openvue/icons/bars';
@@ -41,17 +44,17 @@ onBeforeUnmount(()=>document.removeEventListener('keydown',shortcut));
   </header>
   <aside id="shell/navigation" class="ui-app-sidebar" :hidden="collapsed" aria-label="Capsules">
    <p class="ui-sidebar-heading">WORKSPACE</p>
-   <Menu :model="groups" aria-label="Capsule menu" class="ui-capsule-menu"><template #item="{item,props:bindings}"><a v-bind="bindings.action" role="button" :id="'shell-menu-'+item.id" :data-semantic-anchor="'shell/navigation/menu-'+item.id" :aria-label="(item.hidden?'Show ':'Open ')+item.label" :data-window-hidden="String(item.hidden)" :class="{'ui-menu-hidden':item.hidden}"><component :is="iconMap[item.icon] || GridIcon" aria-hidden="true" /><span>{{item.label}}</span><span v-if="item.hidden" class="ui-menu-show">Show</span><Badge v-if="item.unread" :value="item.unread" /><UiTag v-if="item.status" :label="item.status" /></a></template></Menu>
+   <Menu id="shell-app-menu" :pt="{ list: { 'data-semantic-anchor': 'shell/menu/app-list' }, item: ({ context }) => ({ style: undefined, 'data-semantic-anchor': 'shell/menu/item-' + context.item.id }) }" :model="groups" aria-label="Capsule menu" class="ui-capsule-menu"><template #item="{item,props:bindings}"><a v-bind="bindings.action" role="button" :id="'shell-menu-'+item.id" :data-semantic-anchor="'shell/navigation/menu-'+item.id" :aria-label="(item.hidden?'Show ':'Open ')+item.label" :data-window-hidden="String(item.hidden)" :class="{'ui-menu-hidden':item.hidden}"><component :is="iconMap[item.icon] || GridIcon" aria-hidden="true" /><span>{{item.label}}</span><span v-if="item.hidden" class="ui-menu-show">Show</span><Badge v-if="item.unread" :value="item.unread" /><UiTag v-if="item.status" :label="item.status" /></a></template></Menu>
    <div class="ui-sidebar-footer"><UiTag label="Local workspace" /><small>{{registry.length}} capsule types</small></div>
   </aside>
   <main id="shell/wall" class="ui-app-main" aria-label="Workspace">
    <Message v-if="error" severity="error" :closable="false" role="alert">{{error}}</Message>
-   <Skeleton v-if="loading" class="ui-workspace-loading" aria-label="Loading workspace" />
+   <div v-if="loading" class="ui-workspace-loading" role="status" aria-label="Loading workspace"></div>
    <slot />
    <Message v-if="!loading && !registry.length" severity="info" :closable="false">No capsules registered.</Message>
   </main>
   <footer class="ui-app-status" role="status" aria-label="Workspace status"><span>{{product}} / Workspace</span><span>{{status}}</span><UiButton v-if="shortcutId" id="shell-terminal-shortcut" data-semantic-anchor="shell/navigation/terminal-shortcut" :label="registry.find(item=>item.id===shortcutId)?.label || shortcutId" @click="open(registry.find(item=>item.id===shortcutId))" /></footer>
-  <Dialog v-model:visible="palette" modal header="Open a capsule" class="ui-command-palette" :draggable="false" id="shell-command-palette"><UiTextInput id="shell-command-input" data-semantic-anchor="settings/capsule-search" v-model="query" label="Find capsule" placeholder="Find a capsule…" @keydown.enter="results[0] && open(results[0])" /><div role="list" aria-label="Matching capsules"><UiButton v-for="item in results" :key="item.id" :id="'shell-command-'+item.id" :data-semantic-anchor="'shell/navigation/command-'+item.id" :label="item.label" :aria-label="'Open '+item.label" @click="open(item)" /></div><Message v-if="!results.length" severity="info">No matching capsules. Try another name.</Message></Dialog>
+  <Dialog v-model:visible="palette" modal header="Open a capsule" class="ui-command-palette" :draggable="false" id="shell-command-palette"><UiTextInput id="shell-command-input" data-semantic-anchor="settings/capsule-search" v-model="query" label="Find capsule" placeholder="Find a capsule…" @keydown.enter="results[0] && open(results[0])" /><div role="list" aria-label="Matching capsules"><UiButton v-for="item in results" :key="item.id" :id="'shell-command-'+item.id" :data-semantic-anchor="'shell/navigation/command-'+item.id" :label="item.label" :aria-label="'Open '+item.label" @click="open(item)" /></div><Message v-if="!results.length" severity="info" :closable="false">No matching capsules. Try another name.</Message></Dialog>
   <Dialog v-model:visible="profile" modal header="Workspace settings" :draggable="false" id="shell-profile-menu"><UiButton id="tp3-reset-cockpit" data-semantic-anchor="settings/reset-cockpit" label="Restore default cockpit" @click="emit('reset');profile=false" /><p>Layout preferences are separate from application saves.</p><UiTag label="Local profile" /></Dialog>
   <Toast position="bottom-right" />
  </div>
@@ -75,4 +78,7 @@ onBeforeUnmount(()=>document.removeEventListener('keydown',shortcut));
 .ui-page{padding:var(--cuk-semantic-spacing-md);}.ui-page-title{font-size:var(--cuk-semantic-typography-roles-page-title-font-size);}.ui-field{display:flex;flex-direction:column;gap:var(--cuk-semantic-spacing-xs);}.ui-field small{color:var(--cuk-semantic-text-muted);}
 button:focus-visible,a:focus-visible,input:focus-visible{outline:var(--cuk-semantic-focus-ring-width) solid var(--cuk-semantic-focus-ring-color);outline-offset:var(--cuk-component-app-shell-space-hairline);}
 .dv-tab:has([data-hidden=true]){display:none!important;}
+
+.cuk-csp-dialog:not([open]) { display: none !important; }
+.cuk-csp-dialog { margin: auto; padding: 0; color: var(--cuk-semantic-text-primary); background: var(--cuk-component-dialog-host-surface); }
 </style>

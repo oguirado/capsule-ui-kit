@@ -58,13 +58,13 @@ function onBack() {
         <slot />
       </div>
       <div class="s1-confirm-footer">
-        <button
+        <button :data-semantic-anchor="'settings/control-' + (id + '-back').replace(/[^A-Za-z0-9._-]/g, '-')"
           type="button"
           :id="id + '-back'"
           class="s1-confirm-btn"
           @click="onBack"
         >{{ backLabel }}</button>
-        <button
+        <button :data-semantic-anchor="'settings/control-' + (id + '-confirm').replace(/[^A-Za-z0-9._-]/g, '-')"
           type="button"
           :id="id + '-confirm'"
           class="s1-confirm-btn s1-confirm-btn-primary"

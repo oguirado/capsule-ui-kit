@@ -149,9 +149,9 @@ test('detailLayout exposes stable anchors, roles and accessible names', () => {
 
 test('DetailLayout hides panes with v-show (never unmounts) and has no save affordance', () => {
   const source = sourceOf.SaasDetailLayout;
-  assert.ok(source.includes('v-show="surfaceVisible"'), 'surface pane v-show');
-  assert.ok(source.includes('v-show="surfaceVisible && terminalVisible"'), 'splitter v-show');
-  assert.ok(source.includes('v-show="terminalVisible"'), 'terminal pane v-show');
+  assert.ok(source.includes("'cuk-csp-hidden': !(surfaceVisible)"), 'surface pane v-show');
+  assert.ok(source.includes("'cuk-csp-hidden': !(surfaceVisible && terminalVisible)"), 'splitter v-show');
+  assert.ok(source.includes("'cuk-csp-hidden': !(terminalVisible)"), 'terminal pane v-show');
   assert.equal(/save/i.test(source), false, 'no save affordance anywhere in the detail layout');
 });
 

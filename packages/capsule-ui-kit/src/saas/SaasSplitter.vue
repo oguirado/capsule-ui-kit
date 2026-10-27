@@ -138,7 +138,7 @@ function onPointerUp() {
 }
 </script>
 <template>
-  <div
+  <div :id="'cuk-control-' + (anchor).replace(/[^a-zA-Z0-9_-]/g, '-')"
     class="saas-splitter"
     :class="{ 'saas-splitter--reduced': reducedMotion }"
     role="separator"

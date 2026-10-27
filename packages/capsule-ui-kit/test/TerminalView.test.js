@@ -342,7 +342,7 @@ test('SFC compilation & structural audit: <script setup> plain JS/JSDoc, no lang
   assert.equal(compiledTemplate.errors.length, 0);
 
   // Verify v-show is used for folded host retention and required §9 semantic anchors exist
-  assert.ok(descriptor.template.content.includes('v-show='), 'Folded live host must remain mounted via v-show');
+  assert.ok(descriptor.template.content.includes("'cuk-csp-hidden':"), 'Folded live host must remain mounted via a mounted hidden class');
   assert.ok(descriptor.template.content.includes('output/'), 'Must render output/{sid}/text semantic anchor');
   assert.ok(descriptor.template.content.includes('/attach'), 'Must render session/{sid}/attach semantic anchor');
   assert.ok(descriptor.template.content.includes('/stop'), 'Must render session/{sid}/stop semantic anchor');

@@ -83,7 +83,7 @@ function onAction(action) {
         @input="onInput"
       />
     </div>
-    <button
+    <button :data-semantic-anchor="'settings/control-' + (`${controlBase}-inspect`).replace(/[^A-Za-z0-9._-]/g, '-')"
       :id="`${controlBase}-inspect`"
       type="button"
       class="saas-console__button saas-console__button--neutral"
@@ -92,7 +92,7 @@ function onAction(action) {
     >
       Inspect
     </button>
-    <button
+    <button :data-semantic-anchor="'settings/control-' + (`${controlBase}-submit`).replace(/[^A-Za-z0-9._-]/g, '-')"
       :id="`${controlBase}-submit`"
       type="button"
       class="saas-console__button saas-console__button--primary"
@@ -101,7 +101,7 @@ function onAction(action) {
     >
       Submit
     </button>
-    <button
+    <button :data-semantic-anchor="'settings/control-' + (`${controlBase}-cancel`).replace(/[^A-Za-z0-9._-]/g, '-')"
       :id="`${controlBase}-cancel`"
       type="button"
       class="saas-console__button saas-console__button--ghost"

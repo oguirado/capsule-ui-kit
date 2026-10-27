@@ -598,7 +598,7 @@ export function buildMultiSlotSemanticControls(state, options = {}) {
     });
   }
 
-  const foldAnchor = `capsule/${state.capsuleId}/fold`;
+  const foldAnchor = `capsule/${state.capsuleId}/session-slot/fold`;
   controls.push(
     Object.freeze({
       semanticAnchor: foldAnchor,
@@ -758,7 +758,7 @@ export function buildMultiSlotSemanticControls(state, options = {}) {
  *   and contiguous tail to a per-session non-reactive writer, and acknowledges only the contiguous prefix.
  * - Gap or stale epoch refuses to skip VT bytes and restarts reconciliation.
  * - Quiet output never implies ready/done.
- * - G5 fold moves focus to the fold invoker before hiding, keeps DOM mounted (`v-show`), disables scheduling,
+ * - G5 fold moves focus to the fold invoker before hiding, keeps DOM mounted (`mounted hidden classes`), disables scheduling,
  *   and cancels pending focus retries (`0 ms`, `120 ms`, `400 ms`).
  *
  * @param {{
@@ -1036,8 +1036,8 @@ export function createMultiSlotController(config) {
 
   /**
    * Folds the MultiSlot AI area (`UI_ARCHITECTURE.md` §6:189, 197, 207, §13).
-   * Moves focus to the valid fold invoker (`capsule/{id}/fold`) BEFORE hiding, keeps the DOM host
-   * mounted via `v-show`, disables display scheduling, cancels pending focus retries, and NEVER kills sessions.
+   * Moves focus to the valid fold invoker (`capsule/{id}/session-slot/fold`) BEFORE hiding, keeps the DOM host
+   * mounted via `mounted hidden classes`, disables display scheduling, cancels pending focus retries, and NEVER kills sessions.
    * @param {Record<string, unknown>} [forbiddenOptions]
    */
   function foldSlot(forbiddenOptions) {
@@ -1056,7 +1056,7 @@ export function createMultiSlotController(config) {
     }
 
     // Move focus to the fold invoker BEFORE hiding the body
-    focusedAnchor = `capsule/${capsuleId}/fold`;
+    focusedAnchor = `capsule/${capsuleId}/session-slot/fold`;
     focusMovedBeforeHide = true;
 
     // Cancel any pending focus retry timers so no late timer steals focus into hidden content
@@ -2026,8 +2026,8 @@ defineExpose({
     <header class="cuk-multislot__header">
       <button
         ref="foldButtonRef"
-        :id="`capsule/${capsuleId}/fold`"
-        :data-semantic-anchor="`capsule/${capsuleId}/fold`"
+        :id="`capsule/${capsuleId}/session-slot/fold`"
+        :data-semantic-anchor="`capsule/${capsuleId}/session-slot/fold`"
         type="button"
         role="button"
         class="cuk-multislot__fold-btn"
@@ -2042,11 +2042,11 @@ defineExpose({
       </button>
 
       <div
-        v-show="!isFolded"
+        
         class="cuk-multislot__tablist"
         role="tablist"
         :aria-label="`Session tabs for ${uiState.capsuleTitle}`"
-      >
+       :class="{ 'cuk-csp-hidden': !(!isFolded) }">
         <button
           v-for="session in visibleSessions"
           :key="session.sessionId"
@@ -2071,15 +2071,15 @@ defineExpose({
       </div>
     </header>
 
-    <!-- Folded live hosts stay mounted using v-show with scheduling disabled (UI_ARCHITECTURE.md §6:197) -->
+    <!-- Folded live hosts stay mounted using mounted hidden classes with scheduling disabled (UI_ARCHITECTURE.md §6:197) -->
     <div
-      v-show="!isFolded"
+      
       :id="`capsule/${capsuleId}/slot-body`"
       class="cuk-multislot__body"
-    >
+     :class="{ 'cuk-csp-hidden': !(!isFolded) }">
       <div
         v-if="veilState.veilVisible"
-        class="cuk-multislot__veil"
+        class="cuk-multislot__veil" :id="`cuk-${capsuleId}-multislot-veil`" :data-semantic-anchor="`settings/activate-slot-${capsuleId}`" role="button" :aria-label="`Activate ${capsuleTitle}`"
         data-testid="multislot-activation-veil"
         @pointerdown="onSurfaceAdjacentPointer"
         @mousedown="onSurfaceAdjacentPointer"
@@ -2091,11 +2091,11 @@ defineExpose({
       <div
         v-for="session in visibleSessions"
         :key="session.sessionId"
-        v-show="session.sessionId === uiState.viewedSessionId"
+        
         class="cuk-multislot__session-pane"
         :data-session-id="session.sessionId"
         :data-view-retention="session.viewRetention"
-      >
+       :class="{ 'cuk-csp-hidden': !(session.sessionId === uiState.viewedSessionId) }">
         <div class="cuk-multislot__actions">
           <button
             :id="`session/${session.sessionId}/attach`"
@@ -2263,4 +2263,6 @@ defineExpose({
   padding: var(--cuk-space-2, 8px);
   border: 1px solid var(--cuk-border-default, #2d3139);
 }
+
+.cuk-csp-hidden { display: none !important; }
 </style>

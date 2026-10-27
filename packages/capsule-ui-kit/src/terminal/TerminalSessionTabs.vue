@@ -10,8 +10,10 @@
 export const TERMINAL_SESSION_TAB_SCHEMA = 'capsule-ui-kit.terminal-session-tabs/v1';
 </script>
 <script setup>
-import { computed } from 'vue';
+import { computed, useId } from 'vue';
 import { resolveSessionTabStatus } from '../side-terminal/sessionTabStatus.js';
+
+const idPrefix = `cuk-terminal-tabs-${useId()}`;
 
 const props = defineProps({
   sessions: {
@@ -129,7 +131,7 @@ function onTablistKeydown(event) {
 <template>
   <div class="cui-terminal-tabs">
     <div
-      class="cui-terminal-tabs__list"
+      class="cui-terminal-tabs__list" :id="`${idPrefix}-list`"
       role="tablist"
       aria-label="Terminal sessions"
       @keydown="onTablistKeydown"
@@ -296,7 +298,7 @@ function onTablistKeydown(event) {
 .cui-terminal-tabs__empty {
   margin: var(--cuk-semantic-spacing-none);
   padding: var(--cuk-semantic-spacing-md);
-  color: var(--cuk-semantic-text-secondary);
+  color: var(--cuk-semantic-text-primary);
   font-size: var(--cuk-semantic-typography-roles-body-sm-font-size);
 }
 </style>
