@@ -18,4 +18,4 @@ Start with [Getting started](docs/GETTING_STARTED.md), then [Register capsule ty
 
 Run `npm ci`, `npm test`, `npm run check`, `npm run build`, and `npm run router` from the root. `npm run proof` performs the offline copy-and-boot proof. Read the offline Electron runtime requirement before running with network disabled.
 
-The package is not granted an inferred open-source licence: project licence is UNLICENSED pending the owner's choice. Dependency licences remain those in the pinned evidence. No Git history is initialized by this delivery.
+The package is not granted an inferred open-source licence: project licence is UNLICENSED pending the owner's choice. Dependency licences remain those in the pinned evidence.

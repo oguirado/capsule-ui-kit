@@ -4,7 +4,7 @@
 
 | Job | What it runs |
 | --- | --- |
-| `verify` | `npm ci`, `xvfb-run -a npm run test:kit` (the Electron dock test needs a display; xvfb is installed if the runner lacks it), `node --test test/security.test.mjs test/router-negative.test.mjs`, `npm run check`, `npm run build`, `npm run router`, the router kit unit tests (`python3 -I -m unittest discover -s tests -p 'test_*.py'` from `router/kit`), the publication lint tests (`python3 -I -m unittest discover -s test -p 'test_*.py'`), `npm run lint:publication`, `npm run claims` |
+| `verify` | `npm ci`, `npm run digest`, `xvfb-run -a npm run test:kit` (the Electron dock test needs a display; the job fails closed if `xvfb-run` is missing), `node --test test/security.test.mjs test/router-negative.test.mjs test/kit-digest.test.mjs`, `npm run check`, `npm run build`, `npm run router`, the router kit unit tests (`python3 -I -m unittest discover -s tests -p 'test_*.py'` from `router/kit`), the publication lint tests (`python3 -I -m unittest discover -s test -p 'test_*.py'`), `npm run lint:publication`, `npm run claims` |
 | `secrets` | gitleaks over the full history (`fetch-depth: 0`), then four negative controls |
 
 The `secrets` job plants four random credentials with the same binary and config, and each must be detected: (a) a `ghp_` token, (b) a 64-hex `secret_key`, (c) a token appended to a real line of the router manifest, (d) a private-key block. Nothing is allowlisted in `.gitleaks.toml`.
@@ -26,9 +26,6 @@ Its log goes to `.proof/` (git-ignored). Record each manual run in the pull requ
 
 Install gitleaks v8.18.4 for your platform and run `gitleaks detect --source . --config .gitleaks.toml --redact --no-banner --exit-code 1`. The pre-push hook (`tools/hooks/pre-push`) runs the same scan and fails closed when gitleaks is missing.
 
-## Kit tests that need the host application
-
-`npm run test:kit` runs `tools/kit_tests.mjs`, which runs every `packages/capsule-ui-kit/test/*.test.js` except `capsule-chrome-s1.test.js` and `shell-sidebar-navigation.test.js`. Those two read `app/shell/src/renderer-v2/` of the owner's host application, which this repository does not contain. They stay in the package untouched and run in the owner's repository.
-
+## Kit tests
 
 All kit tests run in this repository: the package's kit-boundary test forbids kit tests from reading outside the package (tools/kit_tests.mjs).

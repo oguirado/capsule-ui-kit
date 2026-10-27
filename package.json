@@ -19,7 +19,8 @@
     "proof": "node --test test/copy-ready.test.mjs",
     "test:kit": "node tools/kit_tests.mjs",
     "lint:publication": "python3 -I tools/publication_lint.py . --report-only packages/capsule-ui-kit",
-    "claims": "python3 -I tools/claims_check.py"
+    "claims": "python3 -I tools/claims_check.py",
+    "digest": "node tools/kit_digest.mjs"
   },
   "dependencies": {
     "@xterm/addon-fit": "0.11.0",

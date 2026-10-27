@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 """Generic publication lint for a checkout: standard library only, no network, no private policy file.
 
-Usage: python3 -I tools/publication_lint.py [ROOT] [--report-only PREFIX ...]
+Usage: python3 -I tools/publication_lint.py [ROOT] [--report-only PREFIX ...] [--private-terms FILE]
 Errors (exit 1): absolute home-directory paths, user or host names of the machine running the lint,
 e-mail addresses other than the no-reply form, private-key headers, well-known credential token shapes,
-and the private-term list below.
+and the terms of an optional private policy file.
+Private policy: --private-terms FILE, or the file named by the PUBLICATION_PRIVATE_TERMS environment variable.
+Keep that file outside the repository. One term per line, "#" starts a comment; a line "home-user NAME" also
+flags NAME as the user directory inside a home path. Without a policy file only the generic rules run.
 Every file is matched twice (e-mail shapes: as written only): as written, and after normalisation (\\uXXXX, \\UXXXXXXXX, \\xXX and \\/ escapes decoded,
 adjacent or "+"-joined string literals merged, newlines preserved), so splitting or escaping a literal does not hide it.
 Other encodings (percent, base64, HTML entities, runtime-built strings) are not decoded.
-PRIVATE_TERMS is the one documented place where the private campaign and host names appear; this file is exempt
-from that rule only (its own list), and every other file, tests included, is not.
 Warnings (exit 0): file names that are not plain ASCII English words.
 --report-only PREFIX: findings under that repository-relative prefix are listed as "owner" and never fail the run.
 Skipped: node_modules, .git, .proof, starter/dist, router/kit/tmp (gate scratch, git-ignored), .kit-sync-* and __pycache__.
@@ -38,13 +39,7 @@ RULES = [
     ("private-key", re.compile("-----BEGIN (?:[A-Z]+ )?PRIV" + "ATE KEY")),
     ("token", re.compile(r"\b(?:AK" + r"IA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9]{36,}|xox[baprs]-[A-Za-z0-9-]{10,})")),
 ]
-# Private campaign, directory and host-user terms; the second rule is the host user name inside a home path.
-PRIVATE_TERMS = ("Papers_Math", "papersmath", "ORQUESTADOR", "WAVEMIND", "campaigns/")
-PRIVATE_RULES = [
-    ("private-term", re.compile("|".join(re.escape(t) for t in PRIVATE_TERMS), re.I)),
-    ("private-term", re.compile(r"(?:/(?:%s)|\\Users)[/\\]+admin(?![\w.-])" % _ROOTS, re.I)),
-]
-SELF_REL = "tools/publication_lint.py"
+POLICY_ENV = "PUBLICATION_PRIVATE_TERMS"
 EMAIL = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+")
 NON_ENGLISH = {"catalogo", "guia", "leeme", "contacto", "licencia", "informe", "resumen", "borrador", "prueba",
                "pruebas", "ejemplo", "entrada", "salida", "ayuda"}
@@ -54,6 +49,31 @@ ALLOW_LINES = {
     ("router/kit/tests/fixtures/gates/privacy_path.txt",
      "7f01e50d63e7bbc8fcee6888b2517415a78152fccce35f9a21496bcfd3cb99c5"),
 }
+
+
+def read_policy(path):
+    """Returns (terms, home_users) from a private policy file kept outside the repository."""
+    terms, home_users = [], []
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            line = line.split("#", 1)[0].strip()
+            if not line:
+                continue
+            if line.startswith("home-user "):
+                home_users.append(line[len("home-user "):].strip())
+            else:
+                terms.append(line)
+    return terms, home_users
+
+
+def private_rules(terms=(), home_users=()):
+    rules = []
+    if terms:
+        rules.append(("private-term", re.compile("|".join(re.escape(t) for t in terms), re.I)))
+    if home_users:
+        rules.append(("private-term", re.compile(r"(?:/(?:%s)|\\Users)[/\\]+(?:%s)(?![\w.-])"
+                                                 % (_ROOTS, "|".join(re.escape(u) for u in home_users)), re.I)))
+    return rules
 
 
 def local_names():
@@ -140,8 +160,9 @@ def read_text(path):
     return data.decode("utf-8", errors="replace")
 
 
-def lint(root):
+def lint(root, terms=(), home_users=()):
     errors, warnings = [], []
+    rules = RULES + private_rules(terms, home_users)
     nrx = name_rx(local_names())
     for path in files_under(root):
         rel = os.path.relpath(path, root).replace(os.sep, "/")
@@ -151,7 +172,6 @@ def lint(root):
         text = read_text(path)
         if text is None:
             continue
-        rules = RULES + ([] if rel == SELF_REL else PRIVATE_RULES)
         allowed = {no for no, raw in enumerate(text.split("\n"), 1)
                    if (rel, hashlib.sha256(raw.strip().encode("utf-8")).hexdigest()) in ALLOW_LINES}
         norm, norm_lines = normalise(text)
@@ -182,21 +202,26 @@ def lint(root):
 def main(argv=None):
     argv = sys.argv[1:] if argv is None else argv
     report_only, rest = [], []
+    policy = os.environ.get(POLICY_ENV) or None
     it = iter(argv)
     for a in it:
         if a == "--report-only":
             report_only.append(next(it, "").strip("/"))
+        elif a == "--private-terms":
+            policy = next(it, "")
         else:
             rest.append(a)
     root = os.path.abspath(rest[0] if rest else os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
-    errors, warnings = lint(root)
+    terms, home_users = read_policy(policy) if policy else ((), ())
+    errors, warnings = lint(root, terms, home_users)
     own = lambda rel: any(rel == p or rel.startswith(p + "/") for p in report_only if p)
     for rule, rel, no in warnings:
         print("warning %s %s" % (rule, rel))
     for rule, rel, no in errors:
         print("%s %s %s:%d" % ("owner" if own(rel) else "error", rule, rel, no))
     fail = [e for e in errors if not own(e[1])]
-    print("publication_lint: %d errors, %d owner-reported, %d warnings" % (len(fail), len(errors) - len(fail), len(warnings)))
+    print("publication_lint: %d errors, %d owner-reported, %d warnings%s" % (len(fail), len(errors) - len(fail), len(warnings),
+                                                                       ", private policy loaded" if policy else ""))
     return 1 if fail else 0
 
 
