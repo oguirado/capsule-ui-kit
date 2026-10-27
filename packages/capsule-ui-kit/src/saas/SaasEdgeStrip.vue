@@ -60,7 +60,7 @@ function onRestore() {
       <span class="saas-edge-strip__label">{{ slotLabel }} // {{ slotDetail }}</span>
     </div>
     <div class="saas-edge-strip__foot">
-      <button
+      <button :id="'cuk-control-' + (restoreAnchor).replace(/[^a-zA-Z0-9_-]/g, '-')"
         type="button"
         class="saas-edge-strip__restore"
         :data-semantic-anchor="restoreAnchor"

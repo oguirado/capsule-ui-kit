@@ -1,3 +1,6 @@
+import { setKitGeometryRule } from '../workspace/kitGeometrySheet.js';
+
+const geometryCounters = new WeakMap();
 /** xterm's documented documentOverride keeps its generated styles nonce-bound.
  * @param {Document} document
  * @returns {Document}
@@ -6,21 +9,26 @@ export function createTerminalDocument(document) {
   const nonce=document.querySelector('meta[name$="-style-nonce"]')?.getAttribute('content');
   if(!nonce)throw new Error('Terminal style nonce unavailable');
   const styleNonce=nonce;
+
   const createElement=document.createElement.bind(document);
   /** @param {string} tagName @param {ElementCreationOptions} [options] */
   function create(tagName,options){
     const element=createElement(tagName,options);
     if(String(tagName).toLowerCase()==='style')element.setAttribute('nonce',styleNonce);
-    // xterm row styling uses setAttribute('style'). Use the equivalent CSSOM
-    // setter so generated presentation stays inside the admitted script realm.
     const setAttribute=element.setAttribute.bind(element);
+    const sequence = (geometryCounters.get(document) ?? 0) + 1;
+    geometryCounters.set(document, sequence);
+    const geometryKey = `cuk-terminal-row-${sequence}`;
     element.setAttribute=(name,value)=>{
       if(name.toLowerCase()==='style'){
-        for(const property of Array.from(element.style))element.style.removeProperty(property);
+        /** @type {Record<string, unknown>} */
+        const declarations = {};
         for(const declaration of String(value).split(';')){
           const separator=declaration.indexOf(':');
-          if(separator>0)element.style.setProperty(declaration.slice(0,separator).trim(),declaration.slice(separator+1).trim());
+          if(separator>0) declarations[declaration.slice(0,separator).trim()] = declaration.slice(separator+1).trim();
         }
+        setAttribute('data-cuk-geometry-id', geometryKey);
+        setKitGeometryRule(document, geometryKey, geometryKey, declarations, true);
       }
       else setAttribute(name,value);
     };

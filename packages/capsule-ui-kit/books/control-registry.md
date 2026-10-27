@@ -47,3 +47,31 @@ The registry is a pure JavaScript ES module with JSDoc types, zero external runt
 ```bash
 node --test packages/capsule-ui-kit/test/controlRegistry.test.js
 ```
+
+## Capsule header anchor ownership
+
+Visible interactive controls in a composed tile use distinct deterministic families.
+`{id}` is the immutable capsule identity. Existing tile control and fold targets remain stable.
+
+| Owner | Anchor path after `capsule/{id}/` |
+|---|---|
+| Tile header | `control`, `fold`, `pin`, `popout`; tab: `tab` |
+| Window presenter | `hide`, `float`, `maximize`, `dock-back`, `close`, `show` |
+| AI multislot control bar | `multislot/{hide-surface,hide-terminal,fold,float,dock-back,close,control}` |
+| AI slot frame header | `ai-slot/{fold,float,dock-back}` |
+| Session MultiSlot header | `session-slot/fold` |
+| AI terminal pane header | `ai-terminal/hide-terminal` |
+
+With `capsuleWindowPresentation`, both chrome variants retain fold and the existing
+projected control-owner take/release action, including its label, pressed state,
+disabled state and event semantics. Pin and popout are hidden: the presenter owns
+float/maximize/dock placement, so a second placement mechanism is redundant.
+Window actions and the tile tab retain their existing public anchors and DOM ids.
+The declarative capsule inventory follows the same tab and window-action
+paths and omits pin/popout in window context. Public props, events and slots are unchanged.
+
+`test/csp-audit.test.js` renders composed tile, AI slot, control-bar, terminal and
+session-slot headers, in both chrome styles and folded/expanded states. Its
+uniqueness oracle considers only visible interactive controls, checks registration
+and roles, and rejects an injected duplicate anchor. Mounted Vue control tests
+exercise take/release for human, agent and unowned projection states and fold/unfold.

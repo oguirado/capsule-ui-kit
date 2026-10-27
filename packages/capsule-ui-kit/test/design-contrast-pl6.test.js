@@ -433,3 +433,25 @@ test('PL6 touched shell compiles as plain JS with tokens only and no consumer na
     assert.ok(!/\u0048oldings|Sequoia|Vanguard|Apex|Meridian|Northgate|Halcyon/.test(source), file);
   }
 });
+
+// KWD MV-3/MV-4: pin the actual painted pairs, including high contrast.
+for (const [item, file, selector, background, foreground] of [
+  ['MV-3', 'src/shell/TopBar.vue', '.s1-topbar .s1-topbar-search', 'canvas', 'muted'],
+  ['MV-4', 'src/terminal/TerminalSessionTabs.vue', '.cui-terminal-tabs__empty', 'sunken', 'primary'],
+]) {
+  test(`${item}: enabled/informational text uses ${foreground} on ${background} in every scheme`, () => {
+    const rule = text(file).split(`${selector}{`)[1]?.split('}')[0]
+      ?? text(file).split(`${selector} {`)[1]?.split('}')[0];
+    assert.ok(rule.includes(`color: var(--cuk-semantic-text-${foreground})`));
+    if (item === 'MV-3') {
+      assert.ok(rule.includes('background: var(--cuk-semantic-surface-canvas)'));
+    } else {
+      const parentRule = text(file).split('.cui-terminal-tabs {')[1]?.split('}')[0];
+      assert.ok(parentRule.includes('background-color: var(--cuk-semantic-surface-sunken)'));
+    }
+    for (const mode of MODES) {
+      const ratio = contrast(tokenValue(`semantic.text.${foreground}`, mode), tokenValue(`semantic.surface.${background}`, mode));
+      assert.ok(ratio >= 4.5, `${item}/${mode}: ${ratio}`);
+    }
+  });
+}

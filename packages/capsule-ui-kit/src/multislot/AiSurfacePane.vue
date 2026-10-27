@@ -3,7 +3,7 @@
  * @fileoverview AI multislot live-surface pane: thin host around the shared
  * surface view. The consumer provides the live surface through the default
  * slot; the pane never renders placeholder DOM and never unmounts (hide uses
- * v-show). In `read` input mode a transparent shield stops operator pointer
+ * mounted hidden classes). In `read` input mode a transparent shield stops operator pointer
  * input from reaching the surface; enforcement stays with the host. Plain
  * JavaScript with JSDoc; no authored TypeScript, no product imports.
  */
@@ -151,7 +151,7 @@ function onWheelInput(event) {
 </script>
 <template>
   <div
-    v-show="!hidden"
+    
     :id="domIds.host"
     class="ai-surface-pane"
     :data-surface-state="normalizedState"
@@ -159,7 +159,7 @@ function onWheelInput(event) {
     @pointerdown="onPointerInput"
     @keydown="onKeyboardInput"
     @wheel="onWheelInput"
-  >
+   :class="{ 'cuk-csp-hidden': !(!hidden) }">
     <SaasSurfaceView
       v-bind="embedded ? { 'data-semantic-anchor': null } : {}"
       :capsule-id="capsuleId"
@@ -197,4 +197,6 @@ function onWheelInput(event) {
   background-color: var(--cuk-component-ai-multi-slot-veil-read-fill, transparent);
   cursor: not-allowed;
 }
+
+.cuk-csp-hidden { display: none !important; }
 </style>

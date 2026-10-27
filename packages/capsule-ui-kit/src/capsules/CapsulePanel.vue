@@ -1029,7 +1029,10 @@ export function buildCapsuleSemanticInventory(capsuleState, layoutContext = {}) 
     },
   ];
 
-  return Object.freeze(entries.map((entry) => Object.freeze(entry)));
+  const presented = layoutContext.windowPresentation
+    ? entries.filter((entry) => !['pin', 'popout'].includes(entry.controlSlot))
+    : entries;
+  return Object.freeze(presented.map((entry) => Object.freeze(entry)));
 }
 
 /**
@@ -1057,7 +1060,7 @@ export function syncCapsuleControlsToRegistry(registry, capsuleState, layoutCont
  * Creates a headless/testable CapsulePanel chrome coordinator enforcing:
  * - Mount never spawns a backend process (§6).
  * - Fold moves focus to `capsule/{id}/fold`, disables only the display branch in `presentationScheduler`,
- *   keeps the DOM host mounted via `v-show`, NEVER unsubscribes or stops authoritative capture, and updates
+ *   keeps the DOM host mounted via `mounted hidden classes`, NEVER unsubscribes or stops authoritative capture, and updates
  *   semantic control boxes (§6, §9, §10, §12, §13).
  * - Unfold requests the newest frame generation beyond any hidden capture witness without replaying backlog (§10).
  * - Presentation moves/tabs/Dockview remove callbacks never destroy the backend capsule (§6).
@@ -1236,7 +1239,7 @@ export function createCapsuleChromeController(config) {
    * 2. Calls `scheduler.foldSurface(surfaceId)` to disable only the display branch and drain the pending
    *    presentation mailbox lease while retaining the authoritative capture lease (§10).
    * 3. Submits desired visibility intent (`surface_visibility`) without `frame_unsubscribe` or `destroy` (§5, §6).
-   * 4. Revalidates semantic control inventory so hidden regions have `box: null` while `inDom` stays `true` (`v-show`).
+   * 4. Revalidates semantic control inventory so hidden regions have `box: null` while `inDom` stays `true` (`mounted hidden classes`).
    */
   function fold() {
     assertFoldNeverStopsCapture({ unsubscribeCapture: false, terminateProcess: false });
@@ -1589,6 +1592,7 @@ const semanticInventory = computed(() => {
   };
   return buildCapsuleSemanticInventory(baseState, {
     presentationInstance: resolvedInstanceId.value,
+    windowPresentation: Boolean(windowPresentation),
     visible: true,
     materialized: true,
     inDom: true,
@@ -1686,6 +1690,7 @@ onMounted(() => {
   if (activeControlRegistry.value && capsuleSnapshot.value) {
     syncCapsuleControlsToRegistry(activeControlRegistry.value, capsuleSnapshot.value, {
       presentationInstance: resolvedInstanceId.value,
+      windowPresentation: Boolean(windowPresentation),
       visible: !windowState.value.hidden,
       materialized: !windowState.value.hidden,
       inDom: true,
@@ -1713,6 +1718,7 @@ watch(
         capsuleSnapshot.value,
         {
           presentationInstance: resolvedInstanceId.value,
+          windowPresentation: Boolean(windowPresentation),
           visible: !windowState.value.hidden,
           materialized: !windowState.value.hidden,
           inDom: true,
@@ -1743,7 +1749,7 @@ defineExpose({
   <section
     :id="domIds.panel"
     class="cuk-capsule-panel"
-    v-show="!windowState.hidden"
+    
     role="region"
     :aria-label="controlMap.panel?.accessibleName || titleText"
     :data-semantic-anchor="anchors.panel"
@@ -1755,7 +1761,7 @@ defineExpose({
     :data-window-floating="String(windowState.floating)"
     :data-window-hidden="String(windowState.hidden)"
     :data-window-maximized="String(windowState.maximized)"
-  >
+   :class="{ 'cuk-csp-hidden': !(!windowState.hidden) }">
     <header class="cuk-capsule-panel__header"><template v-if="styledChrome"><UiToolbar class="ui-capsule-toolbar" :label="`Capsule chrome for ${titleText}`"><template #start>
       <div class="cuk-capsule-panel__title-cluster">
       <div
@@ -1782,7 +1788,7 @@ defineExpose({
           <button :id="`window-float-${resolvedInstanceId}`" :data-semantic-anchor="`capsule/${capsuleId}/float`" class="cuk-capsule-panel__action-btn cuk-capsule-panel__icon-btn" type="button" role="button" :aria-label="`Float ${titleText}`" :title="`Float ${titleText}`" :aria-pressed="String(windowState.floating)" @click="windowAction('float')"><svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M9.5 3.5h3v3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /><path d="M12.5 3.5 8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /><path d="M6.5 5.5h-3v7h7v-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></button>
           <button :id="`window-maximize-${resolvedInstanceId}`" :data-semantic-anchor="`capsule/${capsuleId}/maximize`" class="cuk-capsule-panel__action-btn cuk-capsule-panel__icon-btn" type="button" role="button" :aria-label="`${windowState.maximized ? 'Restore' : 'Maximize'} ${titleText}`" :title="`${windowState.maximized ? 'Restore' : 'Maximize'} ${titleText}`" :aria-pressed="String(windowState.maximized)" @click="windowAction('maximize')"><svg v-if="windowState.maximized" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M6 3.5h6.5V10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /><rect x="3.5" y="6" width="6.5" height="6.5" fill="none" stroke="currentColor" stroke-width="1.5" /></svg><svg v-else viewBox="0 0 16 16" aria-hidden="true" focusable="false"><rect x="3.5" y="3.5" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5" /></svg></button>
         </template>
-        <button v-if="!windowPresentation"
+        <button
           :id="domIds.fold"
           type="button"
           class="cuk-capsule-panel__action-btn"
@@ -1818,7 +1824,7 @@ defineExpose({
           {{ localPinned ? 'Unpin' : 'Pin' }}
         </button>
 
-        <button v-if="!windowPresentation"
+        <button
           :id="domIds.control"
           type="button"
           class="cuk-capsule-panel__action-btn"
@@ -1929,7 +1935,7 @@ defineExpose({
           {{ localFolded ? 'Unfold' : 'Fold' }}
         </button>
 
-        <button
+        <button v-if="!windowPresentation"
           :id="domIds.pin"
           type="button"
           class="cuk-capsule-panel__action-btn"
@@ -1965,7 +1971,7 @@ defineExpose({
           Control
         </button>
 
-        <button
+        <button v-if="!windowPresentation"
           :id="domIds.popout"
           type="button"
           class="cuk-capsule-panel__action-btn"
@@ -2026,18 +2032,18 @@ defineExpose({
       <span v-if="readinessError.requestId">({{ readinessError.requestId }})</span>
     </div>
 
-    <!-- Permanent body host stays mounted in DOM via v-show so folding never kills surface/session -->
+    <!-- Permanent body host stays mounted in DOM via mounted hidden classes so folding never kills surface/session -->
     <div
-      v-show="!localFolded"
+      
       class="cuk-capsule-panel__body"
       data-permanent-host="true"
-    >
+     :class="{ 'cuk-csp-hidden': !(!localFolded) }">
       <div class="cuk-capsule-panel__surface-host" data-permanent-surface-host="true">
         <slot name="surface" :capsule="capsuleSnapshot" :folded="localFolded" />
 
         <div
           v-if="veilState.showVeil"
-          class="cuk-capsule-panel__activation-veil"
+          class="cuk-capsule-panel__activation-veil" :id="`cuk-${capsuleId}-activation-veil`" :data-semantic-anchor="`settings/activate-panel-${capsuleId}`"
           role="button"
           tabindex="0"
           :aria-label="`Activate keyboard focus for ${titleText}`"
@@ -2052,13 +2058,13 @@ defineExpose({
       <section
         :id="domIds.slot"
         v-if="!externalAiSlot"
-        v-show="!localSlotFolded"
+        
         class="cuk-capsule-panel__multislot-region"
         role="region"
         :aria-label="controlMap.slot?.accessibleName || `AI sessions for ${titleText}`"
         :data-semantic-anchor="anchors.slot"
         data-permanent-slot-host="true"
-      >
+       :class="{ 'cuk-csp-hidden': !(!localSlotFolded) }">
         <slot
           name="multislot"
           :capsule="capsuleSnapshot"
@@ -2312,6 +2318,8 @@ defineExpose({
   border-top: var(--cuk-semantic-border-width) solid var(--cuk-semantic-border-subtle);
   background-color: var(--cuk-component-multi-slot-header-background, var(--cuk-semantic-surface-chrome));
 }
+
+.cuk-csp-hidden { display: none !important; }
 </style>
 
 <style scoped>

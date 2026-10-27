@@ -193,6 +193,7 @@ export function auditTimelineFixture(overrides = {}) {
 </script>
 
 <script setup>
+import { useKitGeometry } from '../workspace/useKitGeometry.js';
 import { computed, onMounted, ref } from 'vue';
 import AuditStreamTabs from './AuditStreamTabs.vue';
 import AuditRow from './AuditRow.vue';
@@ -348,6 +349,9 @@ function onVerdictChange(event) {
 function onClearFilters() {
   emit('filter-change', buildFilterChangePayload({ capsule: '', verdict: '' }));
 }
+const cspGeometry1 = useKitGeometry(() => ({ height: win.value.top + 'px' }));
+const cspGeometry2 = useKitGeometry(() => ({ height: rowPx.value + 'px' }));
+const cspGeometry3 = useKitGeometry(() => ({ height: win.value.bottom + 'px' }));
 </script>
 
 <template>
@@ -411,16 +415,16 @@ function onClearFilters() {
       :data-semantic-anchor="timelineListAnchor()"
       @scroll="onScroll"
     >
-      <div class="audit-spacer" :style="{ height: win.top + 'px' }" aria-hidden="true"></div>
+      <div class="audit-spacer" :data-cuk-geometry-id="cspGeometry1" aria-hidden="true"></div>
       <AuditRow
         v-for="(record, index) in visibleRecords"
         :key="recordKey(record, index)"
         :record="record"
         :selected="isSelected(record)"
-        :style="{ height: rowPx + 'px' }"
+        :data-cuk-geometry-id="cspGeometry2"
         @select-record="forwardRecord"
       />
-      <div class="audit-spacer" :style="{ height: win.bottom + 'px' }" aria-hidden="true"></div>
+      <div class="audit-spacer" :data-cuk-geometry-id="cspGeometry3" aria-hidden="true"></div>
     </div>
     <div :id="ids.receipt" class="audit-receipt-wrap">
       <slot name="receipt" :record="selectedRecord">

@@ -4,7 +4,7 @@
 
 | Job | What it runs |
 | --- | --- |
-| `verify` | `npm ci`, `npm run test:kit`, `node --test test/security.test.mjs test/router-negative.test.mjs`, `npm run check`, `npm run build`, `npm run router`, the router kit unit tests (`python3 -I -m unittest discover -s tests -p 'test_*.py'` from `router/kit`), the publication lint tests (`python3 -I -m unittest discover -s test -p 'test_*.py'`), `npm run lint:publication`, `npm run claims` |
+| `verify` | `npm ci`, `xvfb-run -a npm run test:kit` (the Electron dock test needs a display; xvfb is installed if the runner lacks it), `node --test test/security.test.mjs test/router-negative.test.mjs`, `npm run check`, `npm run build`, `npm run router`, the router kit unit tests (`python3 -I -m unittest discover -s tests -p 'test_*.py'` from `router/kit`), the publication lint tests (`python3 -I -m unittest discover -s test -p 'test_*.py'`), `npm run lint:publication`, `npm run claims` |
 | `secrets` | gitleaks over the full history (`fetch-depth: 0`), then four negative controls |
 
 The `secrets` job plants four random credentials with the same binary and config, and each must be detected: (a) a `ghp_` token, (b) a 64-hex `secret_key`, (c) a token appended to a real line of the router manifest, (d) a private-key block. Nothing is allowlisted in `.gitleaks.toml`.

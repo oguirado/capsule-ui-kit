@@ -176,6 +176,7 @@ function onPointerEnd() {
 </script>
 <template>
   <div
+    :id="`cuk-ai-splitter-${capsuleId}-${separatorId || 'main'}`"
     class="ai-splitter"
     :class="{ 'ai-splitter--horizontal': orientation === 'horizontal', 'ai-splitter--reduced': reducedMotion }"
     role="separator"

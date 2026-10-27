@@ -266,7 +266,7 @@ async function changeLimit(event) {
             <label v-for="option in providerList" :key="option.id" class="s1-set-option" :class="{ 's1-set-option-active': provider === option.id }">
               <input
                 type="radio"
-                name="settings-provider"
+                name="settings-provider" :id="'settings-provider-' + option.id" :data-semantic-anchor="'settings/provider-' + option.id"
                 :aria-label="option.label"
                 :value="option.id"
                 :checked="provider === option.id"

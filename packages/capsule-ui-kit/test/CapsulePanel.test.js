@@ -15,7 +15,7 @@
  *    hidden/folded regions, and rejects numeric list-index IDs or UI-synthesized stableId suffixes.
  * 4. Fold cannot stop capture (UI_ARCHITECTURE.md §6, §10, §12, §13): folding disables only the display
  *    branch in presentationScheduler, drains pending display mailbox lease, retains authoritative capture
- *    lease, keeps DOM host mounted via v-show, and allows upstream capture witnesses to advance while
+ *    lease, keeps DOM host mounted via a mounted hidden class, and allows upstream capture witnesses to advance while
  *    rejecting hidden draws; unfolding requests newest generation beyond hidden capture witnesses without
  *    replaying hidden backlog.
  * 5. G5 Fold/restore focus, bounded retry controller (0ms + 120ms + 400ms), activation veil truth table,
@@ -152,8 +152,8 @@ test('SFC compilation: CapsulePanel.vue uses plain JS (<script> + <script setup>
   });
   assert.equal(compiledTemplate.errors.length, 0);
   assert.ok(
-    compiledTemplate.code.includes('vShow'),
-    'Template must use v-show (vShow directive) to keep folded live hosts mounted in the DOM'
+    compiledTemplate.code.includes('cuk-csp-hidden'),
+    'Template must use a mounted hidden class to keep folded live hosts mounted in the DOM'
   );
 
   assert.ok(parsedSfc.descriptor.styles.length >= 1, 'Scoped style block is required');
@@ -513,7 +513,7 @@ test('Semantic inventory & controlRegistry integration: registers all §9 capsul
     (err) => err.code === 'ERR_TARGET_DISABLED' && /already docked/i.test(err.message)
   );
 
-  // Now fold the capsule: slot region is hidden via v-show and must receive box: null
+  // Now fold the capsule: slot region is hidden via a mounted hidden class and must receive box: null
   const foldedCapsuleState = {
     ...capsuleState,
     axes: {
@@ -684,7 +684,7 @@ test('ROW NEGATIVE CONTRAST — Fold cannot stop capture: folding drains display
   const foldRes = controller.fold();
   assert.equal(foldRes.ok, true);
   assert.equal(foldRes.folded, true);
-  assert.equal(foldRes.domHostMounted, true, 'Folded live host must stay mounted via v-show');
+  assert.equal(foldRes.domHostMounted, true, 'Folded live host must stay mounted via a mounted hidden class');
   assert.equal(foldRes.focusMovedTo, 'capsule/cap-capture-1/fold', 'Focus must return to fold invoker before hiding');
   assert.equal(foldRes.captureLeaseRetained, true, 'Fold must NEVER release the authoritative capture lease');
   assert.equal(foldRes.drainedFrameGeneration, 2, 'Pending display mailbox lease must be drained on fold');

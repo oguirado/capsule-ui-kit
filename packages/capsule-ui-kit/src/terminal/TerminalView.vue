@@ -2141,14 +2141,14 @@ defineExpose({
 
 <template>
   <div
-    v-show="!folded"
+    
     class="cui-terminal-view"
     :data-session-id="sessionId"
     :data-attachment-state="attachmentState"
     :data-activity-state="activityState"
     :data-view-retention="viewRetention"
     @paste.capture="handlePasteIntercept"
-  >
+   :class="{ 'cuk-csp-hidden': !(!folded) }">
     <div v-if="!embedded" class="cui-terminal-toolbar" role="toolbar" :aria-label="`Controls for ${effectiveTitle}`">
       <button
         :id="`cui-session-${sessionId}-attach`"
@@ -2226,7 +2226,7 @@ defineExpose({
     >
       <pre class="cui-terminal-paste-preview">{{ stagedPasteInfoRef.visualPreview }}</pre>
       <div class="cui-terminal-paste-actions">
-        <button
+        <button :data-semantic-anchor="'settings/control-' + (`cui-session-${sessionId}-paste-send`).replace(/[^A-Za-z0-9._-]/g, '-')"
           :id="`cui-session-${sessionId}-paste-send`"
           type="button"
           role="button"
@@ -2236,7 +2236,7 @@ defineExpose({
         >
           Send Paste
         </button>
-        <button
+        <button :data-semantic-anchor="'settings/control-' + (`cui-session-${sessionId}-paste-cancel`).replace(/[^A-Za-z0-9._-]/g, '-')"
           :id="`cui-session-${sessionId}-paste-cancel`"
           type="button"
           role="button"
@@ -2342,4 +2342,6 @@ defineExpose({
   padding: var(--cuk-semantic-spacing-xs) var(--cuk-semantic-spacing-md);
   border-top: var(--cuk-semantic-border-width) solid var(--cuk-semantic-border-subtle);
 }
+
+.cuk-csp-hidden { display: none !important; }
 </style>

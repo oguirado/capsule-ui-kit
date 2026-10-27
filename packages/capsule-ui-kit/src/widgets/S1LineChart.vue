@@ -146,7 +146,7 @@ const tableRows = computed(() => {
       </div>
     </div>
     <p v-else class="s1-line-chart-empty" role="status">{{ emptyText }}</p>
-    <button
+    <button :data-semantic-anchor="'settings/control-' + (id + '-table-toggle').replace(/[^A-Za-z0-9._-]/g, '-')"
       type="button"
       :id="id + '-table-toggle'"
       class="s1-action-btn s1-line-chart-toggle"

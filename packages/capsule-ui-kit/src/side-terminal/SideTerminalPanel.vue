@@ -8,6 +8,7 @@
 export const SIDE_TERMINAL_PANEL_SCHEMA = 'capsule-ui-kit.side-terminal-panel/v1';
 </script>
 <script setup>
+import { useKitGeometry } from '../workspace/useKitGeometry.js';
 import { shallowRef, computed, watch, onMounted, onBeforeUnmount, nextTick, markRaw } from 'vue';
 import { Terminal } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
@@ -363,6 +364,8 @@ onBeforeUnmount(() => {
   themeObserver?.disconnect();
   model.dispose({ closeSessions: false });
 });
+
+const cspGeometry1 = useKitGeometry(() => (rootStyle));
 </script>
 <template>
   <aside
@@ -371,9 +374,9 @@ onBeforeUnmount(() => {
     data-semantic-anchor="terminal/side/panel"
     role="complementary"
     aria-label="Terminal panel"
-    :style="rootStyle"
+    :data-cuk-geometry-id="cspGeometry1"
   >
-    <div v-show="isOpen" class="cui-side-terminal__body">
+    <div  class="cui-side-terminal__body" :class="{ 'cuk-csp-hidden': !(isOpen) }">
       <div
         id="side-terminal-resize"
         class="cui-side-terminal__resize"
@@ -419,10 +422,10 @@ onBeforeUnmount(() => {
           </button>
         </header>
         <p
-          v-show="!view.enabled"
+          
           id="side-terminal-real-shell-disclosure"
           class="cui-side-terminal__disclosure"
-        >
+         :class="{ 'cuk-csp-hidden': !(!view.enabled) }">
           AI terminal mode opens a real operating-system shell with your full user permissions.
           Commands can read, change or delete your files and access the network.
           Enable it only if you accept this access. Nothing runs until you explicitly launch a session.
@@ -455,7 +458,7 @@ onBeforeUnmount(() => {
           {{ view.error }}
         </p>
         <div class="cui-side-terminal__views">
-          <div v-for="session in view.sessions" :key="session.sessionId" v-show="session.sessionId === view.selected" class="cui-side-terminal__session">
+          <div v-for="session in view.sessions" :key="session.sessionId"  class="cui-side-terminal__session" :class="{ 'cuk-csp-hidden': !(session.sessionId === view.selected) }">
           <div class="cui-side-terminal__viewport">
           <TerminalView
             embedded
@@ -473,7 +476,7 @@ onBeforeUnmount(() => {
           />
           </div>
             <details class="cui-side-terminal__transcript">
-              <summary :data-semantic-anchor="`terminal/session/${session.sessionId}/output`" role="button" :aria-label="`Read output for ${session.title}`">Accessible terminal output</summary>
+              <summary :id="'cuk-control-' + (`terminal/session/${session.sessionId}/output`).replace(/[^a-zA-Z0-9_-]/g, '-')" :data-semantic-anchor="`terminal/session/${session.sessionId}/output`" role="button" :aria-label="`Read output for ${session.title}`">Accessible terminal output</summary>
               <div :data-semantic-anchor="`output/${session.sessionId}/text`" role="region" :aria-label="`Accessible output for ${session.title}`" tabindex="0"><pre>{{ session.accessibleText }}</pre></div>
             </details>
           </div>
@@ -481,7 +484,7 @@ onBeforeUnmount(() => {
       </div>
     </div>
     <button
-      v-show="!isOpen"
+      
       id="side-terminal-edge-tab"
       type="button"
       class="cui-side-terminal__edge"
@@ -491,7 +494,7 @@ onBeforeUnmount(() => {
       :aria-expanded="isOpen ? 'true' : 'false'"
       aria-controls="side-terminal"
       @click="setOpen(true)"
-    >
+     :class="{ 'cuk-csp-hidden': !(!isOpen) }">
       Terminal
     </button>
   </aside>
@@ -635,4 +638,6 @@ onBeforeUnmount(() => {
   color: var(--cuk-semantic-text-primary);
   background-color: var(--cuk-semantic-surface-elevated);
 }
+
+.cuk-csp-hidden { display: none !important; }
 </style>

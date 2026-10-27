@@ -66,7 +66,7 @@ function activate(button) {
   <div class="s1-timeline-controls" role="group" :aria-label="label">
     <div class="s1-timeline-controls-buttons">
       <div v-if="segmentButtons().length" class="s1-timeline-segment" role="group" :aria-label="speedLabel">
-        <button
+        <button :data-semantic-anchor="'settings/control-' + (button.id).replace(/[^A-Za-z0-9._-]/g, '-')"
           v-for="button in segmentButtons()"
           :key="button.id"
           type="button"
@@ -81,7 +81,7 @@ function activate(button) {
           @click="activate(button)"
         >{{ button.label }}</button>
       </div>
-      <button
+      <button :data-semantic-anchor="'settings/control-' + (button.id).replace(/[^A-Za-z0-9._-]/g, '-')"
         v-for="button in advanceButtons()"
         :key="button.id"
         type="button"

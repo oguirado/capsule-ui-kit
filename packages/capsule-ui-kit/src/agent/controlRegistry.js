@@ -251,6 +251,14 @@ const FAMILY_RULES = Object.freeze([
     forbidsZeroWhenUnknown: false,
   }),
   Object.freeze({
+    rowIndex: 1,
+    template: 'shell/menu/{id}',
+    pattern: /^shell\/menu\/([A-Za-z0-9._-]+)$/,
+    allowedRoles: Object.freeze(['menu', 'menuitem']),
+    requiresReasonWhenDisabled: false,
+    forbidsZeroWhenUnknown: false,
+  }),
+  Object.freeze({
     rowIndex: 2,
     template: 'capsule/{id}/panel',
     pattern: /^capsule\/([A-Za-z0-9._-]+)\/panel$/,
@@ -272,6 +280,47 @@ const FAMILY_RULES = Object.freeze([
     pattern: /^capsule\/([A-Za-z0-9._-]+)\/(fold|pin|control|close|popout|dock-back|float|maximize|hide|show)$/,
     allowedRoles: Object.freeze(['button']),
     requiresReasonWhenDisabled: true,
+    forbidsZeroWhenUnknown: false,
+  }),
+  Object.freeze({
+    rowIndex: 3,
+    template: 'capsule/{id}/session-slot/fold',
+    pattern: /^capsule\/([A-Za-z0-9._-]+)\/session-slot\/fold$/,
+    allowedRoles: Object.freeze(['button']),
+    requiresReasonWhenDisabled: true,
+    forbidsZeroWhenUnknown: false,
+  }),
+  // Independent capsule control families may coexist in one visible composition.
+  Object.freeze({
+    rowIndex: 3,
+    template: 'capsule/{id}/multislot/{fold,float,dock-back,close,hide-surface,hide-terminal,control}',
+    pattern: /^capsule\/([A-Za-z0-9._-]+)\/multislot\/(fold|float|dock-back|close|hide-surface|hide-terminal|control)$/,
+    allowedRoles: Object.freeze(['button']),
+    requiresReasonWhenDisabled: true,
+    forbidsZeroWhenUnknown: false,
+  }),
+  Object.freeze({
+    rowIndex: 3,
+    template: 'capsule/{id}/ai-slot/{fold,float,dock-back}',
+    pattern: /^capsule\/([A-Za-z0-9._-]+)\/ai-slot\/(fold|float|dock-back)$/,
+    allowedRoles: Object.freeze(['button']),
+    requiresReasonWhenDisabled: true,
+    forbidsZeroWhenUnknown: false,
+  }),
+  Object.freeze({
+    rowIndex: 3,
+    template: 'capsule/{id}/ai-terminal/{hide-terminal}',
+    pattern: /^capsule\/([A-Za-z0-9._-]+)\/ai-terminal\/(hide-terminal)$/,
+    allowedRoles: Object.freeze(['button']),
+    requiresReasonWhenDisabled: true,
+    forbidsZeroWhenUnknown: false,
+  }),
+  Object.freeze({
+    rowIndex: 4,
+    template: 'workspace/tab/{id}',
+    pattern: /^workspace\/tab\/([^\s/]+)$/,
+    allowedRoles: Object.freeze(['tab']),
+    requiresReasonWhenDisabled: false,
     forbidsZeroWhenUnknown: false,
   }),
   Object.freeze({
@@ -367,7 +416,7 @@ const FAMILY_RULES = Object.freeze([
     template: 'settings/{key}',
     pattern: /^settings\/([A-Za-z0-9._-]+)$/,
     // mv2 lane G: `group` admitted for the providers settings section.
-    allowedRoles: Object.freeze(['textbox', 'combobox', 'checkbox', 'switch', 'spinbutton', 'button', 'group']),
+    allowedRoles: Object.freeze(['textbox', 'combobox', 'checkbox', 'radio', 'switch', 'spinbutton', 'button', 'tab', 'group']),
     requiresReasonWhenDisabled: false,
     forbidsZeroWhenUnknown: false,
   }),
@@ -632,8 +681,8 @@ const FAMILY_RULES = Object.freeze([
 export const CONTROL_FAMILY_INVENTORY = Object.freeze([
   Object.freeze({
     row: 1,
-    templates: Object.freeze(['shell/fullscreen', 'shell/navigation/{id}', 'shell/layout-save']),
-    roles: Object.freeze(['button', 'tab']),
+    templates: Object.freeze(['shell/fullscreen', 'shell/navigation/{id}', 'shell/menu/{id}', 'shell/layout-save']),
+    roles: Object.freeze(['button', 'tab', 'menu', 'menuitem']),
   }),
   Object.freeze({
     row: 2,
@@ -642,13 +691,13 @@ export const CONTROL_FAMILY_INVENTORY = Object.freeze([
   }),
   Object.freeze({
     row: 3,
-    templates: Object.freeze(['capsule/{id}/{fold,pin,control,close,popout,dock-back,float,maximize,hide,show}', 'capsule/{id}/{record,destroy}', 'capsule/{id}/{release-control,retry,export,record-ai,record-disk,screenshot,copy-id,hide-surface,hide-terminal}', 'capsule/{id}/input-mode', 'capsule/{id}/splitter', 'capsule/{id}/operator-guidance', 'recording/{id}/{toggle,screenshot}', 'recording/{id}/{phase,store-chip}']),
+    templates: Object.freeze(['capsule/{id}/session-slot/fold', 'capsule/{id}/multislot/{fold,float,dock-back,close,hide-surface,hide-terminal,control}', 'capsule/{id}/ai-slot/{fold,float,dock-back}', 'capsule/{id}/ai-terminal/{hide-terminal}', 'capsule/{id}/{fold,pin,control,close,popout,dock-back,float,maximize,hide,show}', 'capsule/{id}/{record,destroy}', 'capsule/{id}/{release-control,retry,export,record-ai,record-disk,screenshot,copy-id,hide-surface,hide-terminal}', 'capsule/{id}/input-mode', 'capsule/{id}/splitter', 'capsule/{id}/operator-guidance', 'recording/{id}/{toggle,screenshot}', 'recording/{id}/{phase,store-chip}']),
     roles: Object.freeze(['button', 'switch', 'separator', 'status']),
   }),
   Object.freeze({
     row: 4,
-    templates: Object.freeze(['workspace/separator/{id}']),
-    roles: Object.freeze(['separator']),
+    templates: Object.freeze(['workspace/separator/{id}', 'workspace/tab/{id}']),
+    roles: Object.freeze(['separator', 'tab']),
   }),
   Object.freeze({
     row: 5,
@@ -688,7 +737,7 @@ export const CONTROL_FAMILY_INVENTORY = Object.freeze([
   Object.freeze({
     row: 12,
     templates: Object.freeze(['settings/{key}', 'dialog/{id}/{action}', 'shell/navigation/palette-search']),
-    roles: Object.freeze(['textbox', 'combobox', 'checkbox', 'switch', 'spinbutton', 'button', 'dialog', 'listbox', 'option', 'group']),
+    roles: Object.freeze(['textbox', 'combobox', 'checkbox', 'radio', 'switch', 'spinbutton', 'button', 'tab', 'dialog', 'listbox', 'option', 'group']),
   }),
   Object.freeze({
     row: 13,

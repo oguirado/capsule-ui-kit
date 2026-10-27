@@ -389,3 +389,52 @@ test('stop kills live sessions and ignores exited ones', async () => {
   assert.equal(facade.calls.close.length, 1);
   model.dispose();
 });
+
+
+test('MV-1: absent or partial facades produce typed capability failure and safe copy', async () => {
+  for (const facade of [null, undefined, {}]) {
+    const harness = createFakeRegistryHarness();
+    const model = createSideTerminalModel({ facade, createRegistry: harness.createRegistry });
+    await model.initialize();
+    assert.equal(model.snapshot().ready, false);
+    assert.equal(model.snapshot().error, 'Terminal capabilities unavailable');
+    assert.equal(model.snapshot().errorCode, 'TERMINAL_CAPABILITIES_UNAVAILABLE');
+    model.dispose();
+  }
+});
+
+test('MV-1: capability and operation exceptions never become user copy; codes remain data', async () => {
+  const secret = 'private host-secret token=abc <script>alert(1)</script>';
+  const failure = Object.assign(new Error(secret), {code: 'BROKER_PRIVATE'});
+  const facade = createFakeFacade();
+  facade.capabilities = async () => { throw failure; };
+  const harness = createFakeRegistryHarness();
+  const model = createSideTerminalModel({ facade, createRegistry: harness.createRegistry });
+  await model.initialize();
+  assert.equal(model.snapshot().error, 'Terminal capabilities unavailable');
+  assert.equal(model.snapshot().errorCode, 'TERMINAL_CAPABILITIES_UNAVAILABLE');
+  assert.equal(model.snapshot().diagnosticCode, 'BROKER_PRIVATE');
+  model.dispose();
+  const live = createFakeFacade();
+  live.open = async () => { throw failure; };
+  const ready = await createReadyModel(live, createFakeRegistryHarness());
+  await assert.rejects(ready.model.launch({ command: 'shell' }), {message: secret});
+  assert.equal(ready.model.snapshot().error, 'Terminal operation unavailable');
+  assert.equal(ready.model.snapshot().errorCode, 'TERMINAL_OPERATION_FAILED');
+  assert.equal(ready.model.snapshot().diagnosticCode, 'BROKER_PRIVATE');
+  ready.model.dispose();
+});
+
+
+test('MV-1: malformed capabilities and non-Error rejections use fixed copy', async () => {
+  for (const capabilities of [async () => null, async () => ({}), async () => { throw 'private broker text'; }]) {
+    const facade = createFakeFacade();
+    facade.capabilities = capabilities;
+    const model = createSideTerminalModel({facade, createRegistry: createFakeRegistryHarness().createRegistry});
+    await model.initialize();
+    assert.equal(model.snapshot().error, 'Terminal capabilities unavailable');
+    assert.equal(model.snapshot().errorCode, 'TERMINAL_CAPABILITIES_UNAVAILABLE');
+    assert.equal(model.snapshot().ready, false);
+    model.dispose();
+  }
+});

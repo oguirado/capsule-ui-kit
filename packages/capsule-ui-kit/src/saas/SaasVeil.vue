@@ -1,13 +1,14 @@
 <script>
 /**
  * Generic SaaS state veils over the wall tile surface (SAAS-1 §3):
- * switching (amber), agent-held (sky), booting skeleton, error card.
+ * switching (amber), agent-held (sky), booting skeleton, error card,
+ * plus the tile-state connecting (sky) and lost (amber retry) veils.
  * Plain JavaScript with JSDoc; no imports; no product names.
  * @module saas/SaasVeil
  */
 
 /** Veil kinds; `none` renders nothing. @type {ReadonlyArray<string>} */
-export const SAAS_VEIL_KINDS = Object.freeze(['none', 'switching', 'ai-held', 'booting', 'error']);
+export const SAAS_VEIL_KINDS = Object.freeze(['none', 'switching', 'ai-held', 'booting', 'error', 'connecting', 'lost']);
 
 /**
  * @param {unknown} kind
@@ -23,13 +24,15 @@ export function normalizeVeilKind(kind) {
  * Maps a generic backend projection to a veil kind. The explicit `veilKind`
  * prop always wins over this projection mapping.
  * @param {{ mode?: unknown, lifecycle?: unknown }|null|undefined} projection
- * @returns {string} One of `none|switching|ai-held|booting|error`.
+ * @returns {string} One of `none|switching|ai-held|booting|error|connecting|lost`.
  */
 export function resolveSaasVeilKind(projection) {
   if (!projection || typeof projection !== 'object') return 'none';
   const lifecycle = projection.lifecycle;
   const mode = projection.mode;
   if (lifecycle === 'failed' || lifecycle === 'error') return 'error';
+  if (lifecycle === 'connecting') return 'connecting';
+  if (lifecycle === 'lost') return 'lost';
   if (mode === 'agent_locked' || mode === 'agent-held') return 'ai-held';
   if (mode === 'switching') return 'switching';
   if (lifecycle === 'booting' || lifecycle === 'starting') return 'booting';
@@ -140,6 +143,10 @@ export function saasVeilFixture(overrides = {}) {
     ],
     dumpLabel: 'core.capsule-01.zst (Ready)',
     exitLabel: 'Exit code 1',
+    connectingBanner: 'Connecting live surface',
+    connectingNote: '',
+    lostBanner: 'Signal lost',
+    lostNote: 'The last frame is held while the tile retries.',
     ...overrides,
   };
 }
@@ -147,6 +154,7 @@ export function saasVeilFixture(overrides = {}) {
 
 <script setup>
 import { computed } from 'vue';
+import { tileStateVeilKind } from './SaasTileState.js';
 /* Plain-<script> helpers above share this module scope (kit SFC convention). */
 
 const props = defineProps({
@@ -166,11 +174,17 @@ const props = defineProps({
   stats: { type: Array, default: () => [] },
   dumpLabel: { type: String, default: null },
   exitLabel: { type: String, default: null },
+  connectingBanner: { type: String, default: 'Connecting live surface' },
+  connectingNote: { type: String, default: '' },
+  lostBanner: { type: String, default: 'Signal lost' },
+  lostNote: { type: String, default: 'The last frame is held while the tile retries.' },
 });
 
 const emit = defineEmits(['control-request', 'submit-intent']);
 
 const kind = computed(() => {
+  const tileMapped = tileStateVeilKind(props.veilKind);
+  if (tileMapped !== null) return tileMapped;
   const explicit = normalizeVeilKind(props.veilKind || undefined);
   if (props.veilKind) return explicit;
   return resolveSaasVeilKind(props.projection);
@@ -238,6 +252,20 @@ function requestExport() {
     <div class="saas-skeleton-row"><span class="saas-skeleton saas-skeleton-wide"></span><span class="saas-skeleton saas-skeleton-narrow"></span></div>
     <div class="saas-skeleton-grid"><span class="saas-skeleton saas-skeleton-block"></span><span class="saas-skeleton saas-skeleton-block"></span></div>
     <div class="saas-skeleton-lines"><span class="saas-skeleton saas-skeleton-line"></span><span class="saas-skeleton saas-skeleton-line"></span><span class="saas-skeleton saas-skeleton-line-short"></span></div>
+  </div>
+
+  <div v-else-if="kind === 'connecting'" :id="domIds.veil" class="saas-veil saas-veil-connecting" role="status" :aria-label="'Connecting surface for ' + label">
+    <div class="saas-connecting-spinner" aria-hidden="true"></div>
+    <div class="saas-connecting-banner">{{ connectingBanner }}</div>
+    <p v-if="connectingNote" class="saas-veil-subnote">{{ connectingNote }}</p>
+  </div>
+
+  <div v-else-if="kind === 'lost'" :id="domIds.veil" class="saas-veil saas-veil-lost" role="status" :aria-label="'Signal lost for ' + label">
+    <div class="saas-lost-card">
+      <div class="saas-lost-banner">{{ lostBanner }}</div>
+      <p v-if="lostNote" class="saas-lost-note">{{ lostNote }}</p>
+      <button :id="domIds.retry" type="button" role="button" class="saas-lost-retry" :data-semantic-anchor="anchors.retry" :aria-label="'Retry capsule ' + label" @click="requestRetry">Retry</button>
+    </div>
   </div>
 
   <div v-else-if="kind === 'error'" :id="domIds.veil" class="saas-veil saas-veil-error" role="alert" :aria-label="'Surface error for ' + label">
@@ -416,6 +444,85 @@ function requestExport() {
 .saas-skeleton-block { height: 4rem; }
 .saas-skeleton-line { height: var(--cuk-primitive-space-6); width: 100%; }
 .saas-skeleton-line-short { height: var(--cuk-primitive-space-6); width: 66%; }
+.saas-veil-connecting {
+  background: color-mix(in srgb, var(--cuk-primitive-color-saas-sky500, var(--cuk-primitive-color-cyan-500)) 10%, transparent);
+  backdrop-filter: blur(2px);
+  border: var(--cuk-semantic-border-width) solid
+    color-mix(in srgb, var(--cuk-primitive-color-saas-sky500, var(--cuk-primitive-color-cyan-500)) 30%, transparent);
+  background-image: radial-gradient(
+    color-mix(in srgb, var(--cuk-primitive-color-saas-sky500, var(--cuk-primitive-color-cyan-500)) 15%, transparent) 1px,
+    transparent 1px
+  );
+  background-size: 12px 12px;
+}
+.saas-connecting-spinner {
+  width: var(--cuk-primitive-space-16);
+  height: var(--cuk-primitive-space-16);
+  border-radius: var(--cuk-semantic-radius-pill);
+  border: 2px solid var(--cuk-primitive-color-saas-sky500, var(--cuk-primitive-color-cyan-500));
+  border-top-color: transparent;
+  margin-bottom: var(--cuk-primitive-space-6);
+  animation: saas-veil-spin 1s linear infinite;
+}
+.saas-connecting-banner {
+  padding: var(--cuk-primitive-space-2) var(--cuk-primitive-space-5);
+  border-radius: var(--cuk-semantic-radius-sm);
+  background: var(--cuk-primitive-color-saas-canvas, var(--cuk-semantic-surface-canvas));
+  border: var(--cuk-semantic-border-width) solid
+    color-mix(in srgb, var(--cuk-primitive-color-saas-sky500, var(--cuk-primitive-color-cyan-500)) 50%, transparent);
+  color: var(--cuk-primitive-color-saas-sky500, var(--cuk-primitive-color-cyan-500));
+  font-family: var(--cuk-semantic-typography-font-family-mono);
+  font-size: var(--cuk-semantic-typography-font-size-xs);
+  font-weight: var(--cuk-primitive-font-weight-semibold);
+}
+.saas-veil-lost {
+  background: color-mix(in srgb, var(--cuk-primitive-color-neutral-900) 75%, transparent);
+  backdrop-filter: blur(2px);
+}
+.saas-lost-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 24rem;
+  padding: var(--cuk-primitive-space-8);
+  border-radius: var(--cuk-semantic-radius-lg);
+  background: var(--cuk-primitive-color-saas-canvas, var(--cuk-semantic-surface-canvas));
+  border: var(--cuk-semantic-border-width) solid
+    color-mix(in srgb, var(--cuk-primitive-color-amber-500) 40%, transparent);
+}
+.saas-lost-banner {
+  padding: var(--cuk-primitive-space-2) var(--cuk-primitive-space-5);
+  border-radius: var(--cuk-semantic-radius-sm);
+  background: color-mix(in srgb, var(--cuk-primitive-color-amber-500) 10%, transparent);
+  border: var(--cuk-semantic-border-width) solid
+    color-mix(in srgb, var(--cuk-primitive-color-amber-500) 30%, transparent);
+  color: var(--cuk-primitive-color-neutral-50);
+  font-family: var(--cuk-semantic-typography-font-family-mono);
+  font-size: var(--cuk-semantic-typography-font-size-xs);
+  font-weight: var(--cuk-primitive-font-weight-bold);
+  white-space: nowrap;
+}
+.saas-lost-note {
+  margin: var(--cuk-primitive-space-4) 0 var(--cuk-primitive-space-6);
+  font-size: var(--cuk-semantic-typography-font-size-xs);
+  line-height: 1.5;
+  color: var(--cuk-primitive-color-neutral-400);
+}
+.saas-lost-retry {
+  height: var(--cuk-primitive-space-16);
+  padding: 0 var(--cuk-primitive-space-8);
+  border-radius: var(--cuk-semantic-radius-sm);
+  border: var(--cuk-semantic-border-width) solid var(--cuk-primitive-color-amber-500);
+  background: var(--cuk-primitive-color-amber-500);
+  color: var(--cuk-primitive-color-neutral-900);
+  font-size: var(--cuk-semantic-typography-font-size-sm);
+  font-weight: var(--cuk-primitive-font-weight-semibold);
+  cursor: pointer;
+}
+.saas-lost-retry:hover {
+  background: var(--cuk-primitive-color-amber-600);
+  border-color: var(--cuk-primitive-color-amber-600);
+}
 .saas-veil-error {
   align-items: stretch;
   justify-content: flex-start;
@@ -559,7 +666,8 @@ function requestExport() {
 .saas-error-strip span:first-child { color: var(--cuk-primitive-color-rose-500); }
 .saas-veil-override:focus-visible,
 .saas-error-export:focus-visible,
-.saas-error-retry:focus-visible {
+.saas-error-retry:focus-visible,
+.saas-lost-retry:focus-visible {
   outline: var(--cuk-semantic-focus-ring-width) solid
     var(--cuk-primitive-color-saas-indigo500, var(--cuk-semantic-focus-ring-color));
   outline-offset: 1px;
@@ -581,6 +689,7 @@ function requestExport() {
 }
 @media (prefers-reduced-motion: reduce) {
   .saas-veil-spinner,
+  .saas-connecting-spinner,
   .saas-veil-ping,
   .saas-error-dot { animation: none; }
   .saas-skeleton {

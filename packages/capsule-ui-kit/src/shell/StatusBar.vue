@@ -1,6 +1,8 @@
 <script setup>
 import { ref } from 'vue';
-import Dialog from 'openvue/dialog';
+import VendorDialog from 'openvue/dialog';
+import { createCspDialog } from '../workspace/cspDialog.js';
+const Dialog = createCspDialog(VendorDialog);
 import UiButton from '../ui/UiButton.vue';
 
 /**
@@ -231,4 +233,7 @@ defineExpose({ openShortcuts, closeShortcuts });
 .s1-statusbar-key-row{display:flex;align-items:center;justify-content:space-between;gap:var(--cuk-semantic-spacing-md);}
 .s1-statusbar-key-row dt{color: var(--cuk-semantic-text-muted);}
 .s1-statusbar-key-row dd{margin: 0;}
+
+.cuk-csp-dialog:not([open]) { display: none !important; }
+.cuk-csp-dialog { margin: auto; padding: 0; color: var(--cuk-semantic-text-primary); background: var(--cuk-component-dialog-host-surface); }
 </style>

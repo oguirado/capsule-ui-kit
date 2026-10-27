@@ -33,7 +33,7 @@ export const MULTISLOT_FIXTURE_IDS = Object.freeze({
 });
 
 /**
- * Full lane L1-L3 control surface: 14 rows.
+ * Lane L1-L3 control surface, including independently rendered header families.
  * @type {readonly MultislotRegistryRow[]}
  */
 export const MULTISLOT_REGISTRY_ROWS = Object.freeze([
@@ -43,16 +43,21 @@ export const MULTISLOT_REGISTRY_ROWS = Object.freeze([
   Object.freeze({ agentLaneId: 'multislot.screenshot', anchorTemplate: 'capsule/{id}/screenshot', anchorExample: 'capsule/cap-01/screenshot', role: 'button', lane: 'L3', component: 'AiRecordCluster', anchorStatus: 'new' }),
   // Lane L2 — control bar, input-mode chip, identity plate.
   Object.freeze({ agentLaneId: 'multislot.copy-id', anchorTemplate: 'capsule/{id}/copy-id', anchorExample: 'capsule/cap-01/copy-id', role: 'button', lane: 'L2', component: 'AiIdentityPlate', anchorStatus: 'new' }),
-  Object.freeze({ agentLaneId: 'multislot.hide-surface', anchorTemplate: 'capsule/{id}/hide-surface', anchorExample: 'capsule/cap-01/hide-surface', role: 'button', lane: 'L2', component: 'AiSlotControlBar', anchorStatus: 'new' }),
-  Object.freeze({ agentLaneId: 'multislot.hide-terminal', anchorTemplate: 'capsule/{id}/hide-terminal', anchorExample: 'capsule/cap-01/hide-terminal', role: 'button', lane: 'L2', component: 'AiSlotControlBar', anchorStatus: 'new' }),
+  Object.freeze({ agentLaneId: 'multislot.hide-surface', anchorTemplate: 'capsule/{id}/multislot/{fold,float,dock-back,close,hide-surface,hide-terminal,control}', anchorExample: 'capsule/cap-01/multislot/hide-surface', role: 'button', lane: 'L2', component: 'AiSlotControlBar', anchorStatus: 'existing' }),
+  Object.freeze({ agentLaneId: 'multislot.hide-terminal', anchorTemplate: 'capsule/{id}/multislot/{fold,float,dock-back,close,hide-surface,hide-terminal,control}', anchorExample: 'capsule/cap-01/multislot/hide-terminal', role: 'button', lane: 'L2', component: 'AiSlotControlBar', anchorStatus: 'existing' }),
   Object.freeze({ agentLaneId: 'multislot.input-mode', anchorTemplate: 'capsule/{id}/input-mode', anchorExample: 'capsule/cap-01/input-mode', role: 'switch', lane: 'L2', component: 'AiInputModeChip', anchorStatus: 'new' }),
   // Lane L1 — slot shell, panes, splitter.
-  Object.freeze({ agentLaneId: 'multislot.fold', anchorTemplate: 'capsule/{id}/{fold,pin,control,close,popout,dock-back,float,maximize,hide,show}', anchorExample: 'capsule/cap-01/fold', role: 'button', lane: 'L1', component: 'AiMultiSlot', anchorStatus: 'existing' }),
-  Object.freeze({ agentLaneId: 'multislot.float', anchorTemplate: 'capsule/{id}/{fold,pin,control,close,popout,dock-back,float,maximize,hide,show}', anchorExample: 'capsule/cap-01/float', role: 'button', lane: 'L1', component: 'AiMultiSlot', anchorStatus: 'existing' }),
-  Object.freeze({ agentLaneId: 'multislot.dock-back', anchorTemplate: 'capsule/{id}/{fold,pin,control,close,popout,dock-back,float,maximize,hide,show}', anchorExample: 'capsule/cap-01/dock-back', role: 'button', lane: 'L1', component: 'AiMultiSlot', anchorStatus: 'existing' }),
-  Object.freeze({ agentLaneId: 'multislot.close', anchorTemplate: 'capsule/{id}/{fold,pin,control,close,popout,dock-back,float,maximize,hide,show}', anchorExample: 'capsule/cap-01/close', role: 'button', lane: 'L1', component: 'AiMultiSlot', anchorStatus: 'existing' }),
+  Object.freeze({ agentLaneId: 'multislot.fold', anchorTemplate: 'capsule/{id}/multislot/{fold,float,dock-back,close,hide-surface,hide-terminal,control}', anchorExample: 'capsule/cap-01/multislot/fold', role: 'button', lane: 'L1', component: 'AiSlotControlBar', anchorStatus: 'existing' }),
+  Object.freeze({ agentLaneId: 'multislot.float', anchorTemplate: 'capsule/{id}/multislot/{fold,float,dock-back,close,hide-surface,hide-terminal,control}', anchorExample: 'capsule/cap-01/multislot/float', role: 'button', lane: 'L1', component: 'AiSlotControlBar', anchorStatus: 'existing' }),
+  Object.freeze({ agentLaneId: 'multislot.dock-back', anchorTemplate: 'capsule/{id}/multislot/{fold,float,dock-back,close,hide-surface,hide-terminal,control}', anchorExample: 'capsule/cap-01/multislot/dock-back', role: 'button', lane: 'L1', component: 'AiSlotControlBar', anchorStatus: 'existing' }),
+  Object.freeze({ agentLaneId: 'multislot.close', anchorTemplate: 'capsule/{id}/multislot/{fold,float,dock-back,close,hide-surface,hide-terminal,control}', anchorExample: 'capsule/cap-01/multislot/close', role: 'button', lane: 'L1', component: 'AiSlotControlBar', anchorStatus: 'existing' }),
   Object.freeze({ agentLaneId: 'multislot.splitter', anchorTemplate: 'capsule/{id}/splitter', anchorExample: 'capsule/cap-01/splitter', role: 'separator', lane: 'L1', component: 'AiSlotSplitter', anchorStatus: 'new' }),
   Object.freeze({ agentLaneId: 'multislot.slot', anchorTemplate: 'capsule/{id}/slot', anchorExample: 'capsule/cap-01/slot', role: 'region', lane: 'L1', component: 'AiMultiSlot', anchorStatus: 'existing' }),
+  Object.freeze({ agentLaneId: 'ai-slot.fold', anchorTemplate: 'capsule/{id}/ai-slot/{fold,float,dock-back}', anchorExample: 'capsule/cap-01/ai-slot/fold', role: 'button', lane: 'L1', component: 'AiMultiSlot', anchorStatus: 'existing' }),
+  Object.freeze({ agentLaneId: 'ai-slot.float', anchorTemplate: 'capsule/{id}/ai-slot/{fold,float,dock-back}', anchorExample: 'capsule/cap-01/ai-slot/float', role: 'button', lane: 'L1', component: 'AiMultiSlot', anchorStatus: 'existing' }),
+  Object.freeze({ agentLaneId: 'ai-slot.dock-back', anchorTemplate: 'capsule/{id}/ai-slot/{fold,float,dock-back}', anchorExample: 'capsule/cap-01/ai-slot/dock-back', role: 'button', lane: 'L1', component: 'AiMultiSlot', anchorStatus: 'existing' }),
+  Object.freeze({ agentLaneId: 'ai-terminal.hide-terminal', anchorTemplate: 'capsule/{id}/ai-terminal/{hide-terminal}', anchorExample: 'capsule/cap-01/ai-terminal/hide-terminal', role: 'button', lane: 'L1', component: 'AiTerminalPane', anchorStatus: 'existing' }),
+  Object.freeze({ agentLaneId: 'session-slot.fold', anchorTemplate: 'capsule/{id}/session-slot/fold', anchorExample: 'capsule/cap-01/session-slot/fold', role: 'button', lane: 'L1', component: 'MultiSlot', anchorStatus: 'existing' }),
   // Lane L1 — host event (not a button): operator input while input mode is `write`.
   Object.freeze({ agentLaneId: 'multislot.operator-guidance', anchorTemplate: 'capsule/{id}/operator-guidance', anchorExample: 'capsule/cap-01/operator-guidance', role: 'status', lane: 'L1', component: 'AiMultiSlot', anchorStatus: 'new' }),
 ]);

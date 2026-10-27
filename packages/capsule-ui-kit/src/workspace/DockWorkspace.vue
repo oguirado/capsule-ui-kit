@@ -1267,6 +1267,7 @@ export function createDockWorkspaceHost(config) {
 
 <script setup>
 import { ref, shallowRef, computed, watch, onMounted, onBeforeUnmount, markRaw, nextTick, provide } from 'vue';
+import { bindDockTabIdentities } from './dockTabIdentity.js';
 import { DockviewVue } from 'dockview-vue';
 import { createWindowPresentation } from './windowPresentation.js';
 
@@ -1325,6 +1326,7 @@ const emit = defineEmits([
 const dockviewApiRef = shallowRef(null);
 const stageElementRef = shallowRef(null);
 let stageObserver = null;
+let tabIdentityObserver = null;
 const hostRef = shallowRef(null);
 
 const windowRevision = ref(0);
@@ -1367,6 +1369,7 @@ function labelResizeHandles() {
   const api = dockviewApiRef.value;
   if (!api) return;
   for (const group of api.groups) {
+    bindDockTabIdentities(group.element);
     const panel = group.activePanel;
     const floating = group.element.closest('.dv-resize-container');
     if (!panel || !floating) continue;
@@ -1458,6 +1461,12 @@ function syncSnapshotFromHost() {
 async function onDockviewReady(event) {
   const rawApi = markRaw(event.api);
   dockviewApiRef.value = rawApi;
+  // Child-list observation covers tab creation/recreation after ready, restore,
+  // and moves. Attributes are deliberately excluded to avoid observing our writes.
+  tabIdentityObserver = new MutationObserver(() => {
+    for (const group of rawApi.groups) bindDockTabIdentities(group.element);
+  });
+  if (stageElementRef.value) tabIdentityObserver.observe(stageElementRef.value, {childList: true, subtree: true});
 
   const host = markRaw(
     createDockWorkspaceHost({
@@ -1637,6 +1646,8 @@ onBeforeUnmount(() => {
   window.removeEventListener('pointerup', onHeaderDrop, true);
   window.removeEventListener('pointerup', clearDropPreview);
   window.removeEventListener('pointermove', onDragPointerMove, true);
+  tabIdentityObserver?.disconnect();
+  tabIdentityObserver = null;
   stageObserver?.disconnect();
   stageObserver = null;
   if (hostRef.value) {
@@ -1769,13 +1780,13 @@ defineExpose({
 
       <!-- Full-size restore barrier veil (UI_ARCHITECTURE.md §4 line 131, §12 G-VISUAL) -->
       <div
-        v-show="!wallRevealed"
+        
         id="workspace-restore-veil"
         class="mv-dock-workspace__veil"
         role="status"
         aria-live="polite"
         aria-label="Restoring workspace layout"
-      >
+       :class="{ 'cuk-csp-hidden': !(!wallRevealed) }">
         <span class="mv-dock-workspace__veil-label">Restoring settled workspace layout…</span>
       </div>
     </div>
@@ -1905,6 +1916,8 @@ defineExpose({
   --dv-paneview-active-outline-color: var(--mv-focus-ring-color, #388bfd);
   --dv-floating-border: 1px solid var(--mv-border-default, #30363d);
 }
+
+.cuk-csp-hidden { display: none !important; }
 </style>
 
 <style>

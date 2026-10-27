@@ -240,7 +240,7 @@ function isGrid() {
               <template v-else-if="column.kind === 'bar'">
                 <span class="s1-data-table-bar">
                   <span class="s1-data-table-bar-track">
-                    <span :class="'s1-data-table-bar-fill s1-data-table-tone-' + barOf(column, row, rowIndex).tone" :style="{ width: barOf(column, row, rowIndex).pct + '%' }" />
+                    <span :class="['s1-data-table-bar-fill s1-data-table-tone-' + barOf(column, row, rowIndex).tone, 's1-bar-pct-' + Math.round(barOf(column, row, rowIndex).pct)]" />
                   </span>
                   <span :class="'s1-data-table-bar-value s1-data-table-tone-' + barOf(column, row, rowIndex).tone">{{ barOf(column, row, rowIndex).label }}</span>
                 </span>
@@ -253,7 +253,7 @@ function isGrid() {
               </template>
               <template v-else-if="column.kind === 'actions'">
                 <slot name="row-actions" :row="row" :rowIndex="rowIndex">
-                  <button
+                  <button :data-semantic-anchor="'settings/control-' + (rowActionId(row, rowIndex)).replace(/[^A-Za-z0-9._-]/g, '-')"
                     type="button"
                     :id="rowActionId(row, rowIndex)"
                     class="s1-data-table-row-btn"
@@ -432,4 +432,108 @@ function isGrid() {
   line-height: var(--cuk-semantic-typography-roles-body-sm-line-height);
   color: var(--cuk-semantic-text-muted);
 }
+</style>
+
+<style>
+.s1-bar-pct-0 { width: 0%; }
+.s1-bar-pct-1 { width: 1%; }
+.s1-bar-pct-2 { width: 2%; }
+.s1-bar-pct-3 { width: 3%; }
+.s1-bar-pct-4 { width: 4%; }
+.s1-bar-pct-5 { width: 5%; }
+.s1-bar-pct-6 { width: 6%; }
+.s1-bar-pct-7 { width: 7%; }
+.s1-bar-pct-8 { width: 8%; }
+.s1-bar-pct-9 { width: 9%; }
+.s1-bar-pct-10 { width: 10%; }
+.s1-bar-pct-11 { width: 11%; }
+.s1-bar-pct-12 { width: 12%; }
+.s1-bar-pct-13 { width: 13%; }
+.s1-bar-pct-14 { width: 14%; }
+.s1-bar-pct-15 { width: 15%; }
+.s1-bar-pct-16 { width: 16%; }
+.s1-bar-pct-17 { width: 17%; }
+.s1-bar-pct-18 { width: 18%; }
+.s1-bar-pct-19 { width: 19%; }
+.s1-bar-pct-20 { width: 20%; }
+.s1-bar-pct-21 { width: 21%; }
+.s1-bar-pct-22 { width: 22%; }
+.s1-bar-pct-23 { width: 23%; }
+.s1-bar-pct-24 { width: 24%; }
+.s1-bar-pct-25 { width: 25%; }
+.s1-bar-pct-26 { width: 26%; }
+.s1-bar-pct-27 { width: 27%; }
+.s1-bar-pct-28 { width: 28%; }
+.s1-bar-pct-29 { width: 29%; }
+.s1-bar-pct-30 { width: 30%; }
+.s1-bar-pct-31 { width: 31%; }
+.s1-bar-pct-32 { width: 32%; }
+.s1-bar-pct-33 { width: 33%; }
+.s1-bar-pct-34 { width: 34%; }
+.s1-bar-pct-35 { width: 35%; }
+.s1-bar-pct-36 { width: 36%; }
+.s1-bar-pct-37 { width: 37%; }
+.s1-bar-pct-38 { width: 38%; }
+.s1-bar-pct-39 { width: 39%; }
+.s1-bar-pct-40 { width: 40%; }
+.s1-bar-pct-41 { width: 41%; }
+.s1-bar-pct-42 { width: 42%; }
+.s1-bar-pct-43 { width: 43%; }
+.s1-bar-pct-44 { width: 44%; }
+.s1-bar-pct-45 { width: 45%; }
+.s1-bar-pct-46 { width: 46%; }
+.s1-bar-pct-47 { width: 47%; }
+.s1-bar-pct-48 { width: 48%; }
+.s1-bar-pct-49 { width: 49%; }
+.s1-bar-pct-50 { width: 50%; }
+.s1-bar-pct-51 { width: 51%; }
+.s1-bar-pct-52 { width: 52%; }
+.s1-bar-pct-53 { width: 53%; }
+.s1-bar-pct-54 { width: 54%; }
+.s1-bar-pct-55 { width: 55%; }
+.s1-bar-pct-56 { width: 56%; }
+.s1-bar-pct-57 { width: 57%; }
+.s1-bar-pct-58 { width: 58%; }
+.s1-bar-pct-59 { width: 59%; }
+.s1-bar-pct-60 { width: 60%; }
+.s1-bar-pct-61 { width: 61%; }
+.s1-bar-pct-62 { width: 62%; }
+.s1-bar-pct-63 { width: 63%; }
+.s1-bar-pct-64 { width: 64%; }
+.s1-bar-pct-65 { width: 65%; }
+.s1-bar-pct-66 { width: 66%; }
+.s1-bar-pct-67 { width: 67%; }
+.s1-bar-pct-68 { width: 68%; }
+.s1-bar-pct-69 { width: 69%; }
+.s1-bar-pct-70 { width: 70%; }
+.s1-bar-pct-71 { width: 71%; }
+.s1-bar-pct-72 { width: 72%; }
+.s1-bar-pct-73 { width: 73%; }
+.s1-bar-pct-74 { width: 74%; }
+.s1-bar-pct-75 { width: 75%; }
+.s1-bar-pct-76 { width: 76%; }
+.s1-bar-pct-77 { width: 77%; }
+.s1-bar-pct-78 { width: 78%; }
+.s1-bar-pct-79 { width: 79%; }
+.s1-bar-pct-80 { width: 80%; }
+.s1-bar-pct-81 { width: 81%; }
+.s1-bar-pct-82 { width: 82%; }
+.s1-bar-pct-83 { width: 83%; }
+.s1-bar-pct-84 { width: 84%; }
+.s1-bar-pct-85 { width: 85%; }
+.s1-bar-pct-86 { width: 86%; }
+.s1-bar-pct-87 { width: 87%; }
+.s1-bar-pct-88 { width: 88%; }
+.s1-bar-pct-89 { width: 89%; }
+.s1-bar-pct-90 { width: 90%; }
+.s1-bar-pct-91 { width: 91%; }
+.s1-bar-pct-92 { width: 92%; }
+.s1-bar-pct-93 { width: 93%; }
+.s1-bar-pct-94 { width: 94%; }
+.s1-bar-pct-95 { width: 95%; }
+.s1-bar-pct-96 { width: 96%; }
+.s1-bar-pct-97 { width: 97%; }
+.s1-bar-pct-98 { width: 98%; }
+.s1-bar-pct-99 { width: 99%; }
+.s1-bar-pct-100 { width: 100%; }
 </style>

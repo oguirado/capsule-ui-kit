@@ -220,7 +220,7 @@ function onSibling(sibling) {
       </button>
       <span class="saas-geometry__divider" aria-hidden="true"></span>
       <span class="saas-geometry__siblings-label">Siblings:</span>
-      <button
+      <button :id="'cuk-control-' + (`capsule/${sibling.capsuleId}/fold`).replace(/[^a-zA-Z0-9_-]/g, '-')"
         v-for="sibling in siblings"
         :key="sibling.capsuleId"
         type="button"
@@ -236,7 +236,7 @@ function onSibling(sibling) {
     <div class="saas-geometry__group">
       <div class="saas-geometry__stepper" role="group" aria-label="Slot width">
         <span class="saas-geometry__axis" aria-hidden="true">W:</span>
-        <button
+        <button :data-semantic-anchor="'settings/control-' + (`${controlBase}-w-down`).replace(/[^A-Za-z0-9._-]/g, '-')"
           :id="`${controlBase}-w-down`"
           type="button"
           class="saas-geometry__step"
@@ -245,7 +245,7 @@ function onSibling(sibling) {
         >
           <span aria-hidden="true">−</span>
         </button>
-        <span
+        <span :id="'cuk-control-' + (stepperAnchorFor(capsuleId, 'w')).replace(/[^a-zA-Z0-9_-]/g, '-')"
           class="saas-geometry__value"
           role="spinbutton"
           tabindex="0"
@@ -257,7 +257,7 @@ function onSibling(sibling) {
           :aria-valuetext="`${size.width} pixels`"
           @keydown="onSpinKey('w', $event)"
         >{{ size.width }}</span>
-        <button
+        <button :data-semantic-anchor="'settings/control-' + (`${controlBase}-w-up`).replace(/[^A-Za-z0-9._-]/g, '-')"
           :id="`${controlBase}-w-up`"
           type="button"
           class="saas-geometry__step"
@@ -269,7 +269,7 @@ function onSibling(sibling) {
       </div>
       <div class="saas-geometry__stepper" role="group" aria-label="Slot height">
         <span class="saas-geometry__axis" aria-hidden="true">H:</span>
-        <button
+        <button :data-semantic-anchor="'settings/control-' + (`${controlBase}-h-down`).replace(/[^A-Za-z0-9._-]/g, '-')"
           :id="`${controlBase}-h-down`"
           type="button"
           class="saas-geometry__step"
@@ -278,7 +278,7 @@ function onSibling(sibling) {
         >
           <span aria-hidden="true">−</span>
         </button>
-        <span
+        <span :id="'cuk-control-' + (stepperAnchorFor(capsuleId, 'h')).replace(/[^a-zA-Z0-9_-]/g, '-')"
           class="saas-geometry__value"
           role="spinbutton"
           tabindex="0"
@@ -290,7 +290,7 @@ function onSibling(sibling) {
           :aria-valuetext="`${size.height} pixels`"
           @keydown="onSpinKey('h', $event)"
         >{{ size.height }}</span>
-        <button
+        <button :data-semantic-anchor="'settings/control-' + (`${controlBase}-h-up`).replace(/[^A-Za-z0-9._-]/g, '-')"
           :id="`${controlBase}-h-up`"
           type="button"
           class="saas-geometry__step"
@@ -301,7 +301,7 @@ function onSibling(sibling) {
         </button>
       </div>
       <span class="saas-geometry__divider" aria-hidden="true"></span>
-      <button
+      <button :data-semantic-anchor="'settings/control-' + (`${controlBase}-preset-${preset.presetId}`).replace(/[^A-Za-z0-9._-]/g, '-')"
         v-for="preset in presets"
         :key="preset.presetId"
         type="button"
@@ -313,7 +313,7 @@ function onSibling(sibling) {
       >
         {{ preset.label }}
       </button>
-      <button
+      <button :data-semantic-anchor="'settings/control-' + (`${controlBase}-snap`).replace(/[^A-Za-z0-9._-]/g, '-')"
         :id="`${controlBase}-snap`"
         type="button"
         class="saas-geometry__snap"

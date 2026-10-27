@@ -227,9 +227,10 @@ test('catalog kinds resolve through the existing navigation family', () => {
 });
 
 test('mv rows carry shape, unique ids and a working anchor builder', () => {
-  assert.equal(MV_REGISTRY_ROWS.length, 8);
-  assert.equal(MV_AGENT_LANE_IDS.length, 8);
-  assert.equal(new Set(MV_AGENT_LANE_IDS).size, 8);
+  assert.equal(MV_REGISTRY_ROWS.filter(row => row.agentLaneId !== 'workspace.dock-tab').length, 8);
+  assert.equal(MV_REGISTRY_ROWS.length, 9);
+  assert.equal(MV_AGENT_LANE_IDS.length, 9);
+  assert.equal(new Set(MV_AGENT_LANE_IDS).size, 9);
   assert.deepEqual({ ...MV_FIXTURE_IDS }, { capsuleId: 'cap-01' });
   for (const row of MV_REGISTRY_ROWS) {
     assert.ok(row.agentLaneId && row.anchorTemplate && row.anchorExample && row.role, row.agentLaneId);
@@ -244,6 +245,8 @@ test('mv rows carry shape, unique ids and a working anchor builder', () => {
   assert.equal(mvAnchorFor('wall.capsule.release-control'), 'capsule/cap-01/release-control');
   assert.equal(mvAnchorFor('multislot.export', { id: 'cap-09' }), 'capsule/cap-09/export');
   assert.equal(mvAnchorFor('wall.veil.retry', { id: 'cap-09' }), 'capsule/cap-09/retry');
+  assert.equal(mvAnchorFor('workspace.dock-tab'), 'workspace/tab/panel-alpha');
+  assert.equal(mvAnchorFor('workspace.dock-tab', {id: 'panel/one'}), 'workspace/tab/panel%2Fone');
   assert.equal(mvAnchorFor('settings.theme'), 'settings/theme');
   assert.equal(mvAnchorFor('settings.providers'), 'settings/providers');
   assert.throws(() => mvAnchorFor('mv.nope'), /Unknown mv agent_lane id/);
@@ -270,7 +273,7 @@ test('every distributed registry row resolves centrally with its role', () => {
       count += 1;
     }
   }
-  assert.equal(count, 34 + 14 + 8 + 6 + 8 + 6 + 4 + 8);
+  assert.equal(count, 34 + 19 + 8 + 6 + 8 + 6 + 4 + 8 + 1);
 });
 
 test('new controls register with stable id, role and accessible name', () => {

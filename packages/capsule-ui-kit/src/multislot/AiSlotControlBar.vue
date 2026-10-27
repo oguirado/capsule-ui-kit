@@ -144,12 +144,12 @@ export function barControlDomId(control, capsuleId) {
  */
 export function barControlAnchor(control, capsuleId, intentType) {
   if (control === 'float' && (intentType === 'float' || intentType === 'dock-back')) {
-    return `capsule/${capsuleId}/${intentType}`;
+    return `capsule/${capsuleId}/multislot/${intentType}`;
   }
   if (MULTISLOT_BAR_CONTROLS.includes(control)) {
-    return `capsule/${capsuleId}/${control}`;
+    return `capsule/${capsuleId}/multislot/${control}`;
   }
-  return `capsule/${capsuleId}/control`;
+  return `capsule/${capsuleId}/multislot/control`;
 }
 
 /**

@@ -87,12 +87,15 @@ export function writeSidebarCollapsed(storage, collapsed) {
  * @property {'synced'|'syncing'|'offline'} [state] - Dot tone; default 'synced'.
  */
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import Menu from 'openvue/menu';
+import VendorMenu from 'openvue/menu';
+import { createCspMenu } from '../workspace/cspMenu.js';
 import Badge from 'openvue/badge';
 import Tag from 'openvue/tag';
 import Avatar from 'openvue/avatar';
 import Button from 'openvue/button';
 import SidebarIcon from './SidebarIcon.vue';
+
+const Menu = createCspMenu(VendorMenu);
 
 const props = defineProps({
   groups: { type: Array, required: true },
@@ -184,7 +187,9 @@ const menuModel = computed(() => {
 });
 /** Pass-through classes for Menu-owned nodes (slots cover the rest). */
 const menuPt = {
-  list: { class: 'cuk-sidebar__menulist' },
+  list: { class: 'cuk-sidebar__menulist', 'data-semantic-anchor': 'shell/menu/sidebar-list' },
+  /** @param {{context: {item: {key: string}}}} options */
+  item: ({ context }) => ({ style: undefined, 'data-semantic-anchor': `shell/menu/item-${context.item.key}` }),
   submenuLabel: { class: 'cuk-sidebar__menugroup' },
   separator: { class: 'cuk-sidebar__separator' },
 };
@@ -218,7 +223,7 @@ function itemDescription(nav) {
           <span v-if="workspaceVersion" class="cuk-sidebar__version">{{ workspaceVersion }}</span>
         </div>
       </slot>
-      <Menu :model="menuModel" class="cuk-sidebar__menu" aria-label="Capsule menu" :pt="menuPt">
+      <Menu id="shell-sidebar-menu" :model="menuModel" class="cuk-sidebar__menu" aria-label="Capsule menu" :pt="menuPt">
         <template #submenulabel="{ item }">
           <span class="cuk-sidebar__group">{{ item.label }}</span>
         </template>

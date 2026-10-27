@@ -2,7 +2,7 @@
 /**
  * @fileoverview AI multislot shell: one capsule live surface with its attached
  * AI terminal, travelling together. Fold, per-half hide and detach-to-float
- * are presentation-only (v-show; live hosts stay mounted, nothing spawns or
+ * are presentation-only (mounted hidden classes; live hosts stay mounted, nothing spawns or
  * dies). The shell owns the fold + float controls; the essential slot controls
  * mount through the `controls` slot. Emits `submit-intent` only.
  * Plain JavaScript with JSDoc; no authored TypeScript, no product imports.
@@ -67,9 +67,9 @@ export function multislotDomIds(capsuleId) {
 export function multislotAnchors(capsuleId) {
   return {
     slot: `capsule/${capsuleId}/slot`,
-    fold: `capsule/${capsuleId}/fold`,
-    float: `capsule/${capsuleId}/float`,
-    dockBack: `capsule/${capsuleId}/dock-back`,
+    fold: `capsule/${capsuleId}/ai-slot/fold`,
+    float: `capsule/${capsuleId}/ai-slot/float`,
+    dockBack: `capsule/${capsuleId}/ai-slot/dock-back`,
   };
 }
 
@@ -179,6 +179,7 @@ export function createRefocusScheduler(scheduleTimer, cancelTimer) {
 }
 </script>
 <script setup>
+import { useKitGeometry } from '../workspace/useKitGeometry.js';
 import { computed, onBeforeUnmount, shallowRef, watch } from 'vue';
 import AiSurfacePane from './AiSurfacePane.vue';
 import AiTerminalPane from './AiTerminalPane.vue';
@@ -392,6 +393,12 @@ watch(surfaceVisible, (visible) => {
 });
 
 onBeforeUnmount(() => refocus.cancel());
+
+const cspGeometry1 = useKitGeometry(() => (frameStyle));
+
+const cspGeometry2 = useKitGeometry(() => (surfaceStyle));
+
+const cspGeometry3 = useKitGeometry(() => (terminalStyle));
 </script>
 <template>
   <div
@@ -404,7 +411,7 @@ onBeforeUnmount(() => refocus.cancel());
       'ai-slot--side-bottom': side === 'bottom',
       'ai-slot--reduced': reducedMotion,
     }"
-    :style="frameStyle"
+    :data-cuk-geometry-id="cspGeometry1"
     role="region"
     :aria-label="accessibleName"
     :data-semantic-anchor="anchors.slot"
@@ -445,24 +452,24 @@ onBeforeUnmount(() => refocus.cancel());
       </button>
     </header>
 
-    <div v-show="!folded" :id="domIds.body" class="ai-slot__body">
+    <div  :id="domIds.body" class="ai-slot__body" :class="{ 'cuk-csp-hidden': !(!folded) }">
       <AiSurfacePane
         embedded
-        v-show="surfaceVisible"
+        
         :capsule-id="capsuleId"
         :capsule-label="capsuleLabel"
         :presentation-instance="presentationInstance"
         :state="surfaceState"
         :hidden="!surfaceVisible"
         :input-mode="inputMode"
-        :style="surfaceStyle"
+        :data-cuk-geometry-id="cspGeometry2"
         @surface-input="onSurfaceInput"
-      >
+       :class="{ 'cuk-csp-hidden': !(surfaceVisible) }">
         <slot name="surface" />
       </AiSurfacePane>
 
       <AiSlotSplitter
-        v-show="surfaceVisible && terminalVisible"
+        
         :capsule-id="capsuleId"
         :separator-id="presentationInstance"
         :axis="splitterAxis"
@@ -473,10 +480,10 @@ onBeforeUnmount(() => refocus.cancel());
         pane-label="Terminal pane"
         :reduced-motion="reducedMotion"
         @resize="onSplitResize"
-      />
+      :class="{ 'cuk-csp-hidden': !(surfaceVisible && terminalVisible) }" />
 
       <AiTerminalPane
-        v-show="terminalVisible"
+        
         :capsule-id="capsuleId"
         :sessions="sessions"
         :selected-session-id="selectedSessionId"
@@ -495,7 +502,7 @@ onBeforeUnmount(() => refocus.cancel());
         :max-sessions="maxSessions ?? undefined"
         :presentation-instance="presentationInstance"
         :reduced-motion="reducedMotion"
-        :style="terminalStyle"
+        :data-cuk-geometry-id="cspGeometry3"
         @select-session="onSelectSession"
         @close-session="onCloseSession"
         @launch-request="onLaunchRequest"
@@ -505,16 +512,16 @@ onBeforeUnmount(() => refocus.cancel());
         @select-target="passThrough('select-target')"
         @confirm-staged-paste="passThrough('confirm-staged-paste')"
         @submit-intent="forwardIntent"
-      />
+      :class="{ 'cuk-csp-hidden': !(terminalVisible) }" />
     </div>
 
     <SaasFoldedRail
-      v-show="folded"
+      
       :id="domIds.rail"
       :capsules="railCapsules"
       @fold-change="onRailRestore"
       @submit-intent="forwardIntent"
-    />
+    :class="{ 'cuk-csp-hidden': !(folded) }" />
   </div>
 </template>
 <style scoped>
@@ -598,4 +605,6 @@ onBeforeUnmount(() => refocus.cancel());
     transition: none;
   }
 }
+
+.cuk-csp-hidden { display: none !important; }
 </style>

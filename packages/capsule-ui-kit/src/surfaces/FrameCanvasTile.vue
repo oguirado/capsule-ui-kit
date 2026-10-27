@@ -419,7 +419,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div
-    v-show="!hidden"
+    
     :id="domIds.host"
     ref="hostRef"
     class="frame-tile"
@@ -427,7 +427,7 @@ onBeforeUnmount(() => {
     :aria-label="tileName"
     :data-semantic-anchor="anchors.tile"
     :data-tile-state="state"
-  >
+   :class="{ 'cuk-csp-hidden': !(!hidden) }">
     <canvas
       :id="domIds.canvas"
       ref="canvasRef"
@@ -516,4 +516,6 @@ onBeforeUnmount(() => {
   color: var(--cuk-semantic-status-warning-text);
   border: var(--cuk-semantic-border-width) solid var(--cuk-semantic-status-warning-border);
 }
+
+.cuk-csp-hidden { display: none !important; }
 </style>

@@ -293,7 +293,7 @@ function onViewOutput(requestId, sessionId) {
         </div>
         <div class="saas-result-rows__actions">
           <span class="saas-result-rows__elapsed">Elapsed: {{ row.elapsedText }}</span>
-          <button
+          <button :data-semantic-anchor="'settings/control-' + (`cuk-saas-dispatch-${row.requestId}-target-${row.sessionId}-output`).replace(/[^A-Za-z0-9._-]/g, '-')"
             v-if="row.status === 'verified-success' || row.status === 'completed-unverified' || row.viewOutputAllowed"
             :id="`cuk-saas-dispatch-${row.requestId}-target-${row.sessionId}-output`"
             type="button"

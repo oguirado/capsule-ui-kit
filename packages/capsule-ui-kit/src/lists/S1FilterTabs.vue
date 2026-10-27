@@ -93,7 +93,7 @@ function onKey(event, index) {
 </script>
 <template>
   <div class="s1-filter-tabs" role="tablist" :aria-label="label">
-    <button
+    <button :data-semantic-anchor="'settings/control-' + (tabDomId(tab)).replace(/[^A-Za-z0-9._-]/g, '-')"
       v-for="(tab, index) in /** @type {S1FilterTab[]} */ (/** @type {unknown} */ (tabs))"
       :key="tab.id"
       type="button"
