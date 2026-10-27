@@ -17,6 +17,7 @@ file:e11d81e10ee8a44e1e42	packages/capsule-ui-kit/demo/multislot-ai.html
 file:a7dc0fd7f1dac043180c	packages/capsule-ui-kit/index.js
 file:8d0a8c3ffd9b6391fdb6	packages/capsule-ui-kit/package.json
 file:3c65f2796673a208527e	packages/capsule-ui-kit/src/agent/controlRegistry.js
+file:8f7b87459b0f8d30b0c9	packages/capsule-ui-kit/src/agent/emptyWallRegistryRows.js
 file:6dbfb312d3844b520bdb	packages/capsule-ui-kit/src/agent/mvRegistryRows.js
 file:1f86996d5dc89d15c1c6	packages/capsule-ui-kit/src/agent/pl6RegistryRows.js
 file:333123ca4dca6e8eafc0	packages/capsule-ui-kit/src/agent/sha256.js
@@ -85,6 +86,7 @@ file:7c46cf43d2c3603008de	packages/capsule-ui-kit/src/saas/SaasShellToggle.vue
 file:7fddb6065bcf63b23112	packages/capsule-ui-kit/src/saas/SaasSplitter.vue
 file:d2a40574f0d813ab60ea	packages/capsule-ui-kit/src/saas/SaasSurfaceView.vue
 file:666e0b6f60cf83a2861e	packages/capsule-ui-kit/src/saas/SaasTargetRow.vue
+file:8bb0f68dc992a273982d	packages/capsule-ui-kit/src/saas/SaasTileState.js
 file:979549605ad7b9e5499c	packages/capsule-ui-kit/src/saas/SaasVeil.vue
 file:00911e5c3c7eae21dd9e	packages/capsule-ui-kit/src/saas/SaasViewerChips.vue
 file:669ea36ea4ec3a19bc22	packages/capsule-ui-kit/src/saas/SaasWallTile.vue
@@ -92,6 +94,7 @@ file:7d2c8ff3892e7bcc2f0f	packages/capsule-ui-kit/src/saas/index.js
 file:431b4e21d057a8371619	packages/capsule-ui-kit/src/saas/saasRegistryRows.js
 file:37534b2456a7d237a488	packages/capsule-ui-kit/src/shell/CommandPalette.vue
 file:3a02bb30300a87ed8c65	packages/capsule-ui-kit/src/shell/CommandPaletteModel.js
+file:d6f2263e8390b4be694a	packages/capsule-ui-kit/src/shell/EmptyWall.vue
 file:4301af085a9b1b246b66	packages/capsule-ui-kit/src/shell/HiddenStrip.vue
 file:3fb1b0a308209e323ebf	packages/capsule-ui-kit/src/shell/HiddenStripDropPreview.vue
 file:5b7c9de2f6fc05e9a022	packages/capsule-ui-kit/src/shell/NewCapsuleDialog.vue
@@ -138,7 +141,12 @@ file:62c8fc06da5e5f2aea44	packages/capsule-ui-kit/src/widgets/S1LineChart.vue
 file:31a10523446bb979fca1	packages/capsule-ui-kit/src/widgets/S1StatusPill.vue
 file:e65a716831049336b6ee	packages/capsule-ui-kit/src/widgets/chartGeometry.js
 file:21ba202060cc943b1bea	packages/capsule-ui-kit/src/workspace/DockWorkspace.vue
+file:6ebefeef0db9c48db227	packages/capsule-ui-kit/src/workspace/cspDialog.js
+file:fc3cbe42f18f5db8784f	packages/capsule-ui-kit/src/workspace/cspMenu.js
+file:00b653e34d5d08fb48f1	packages/capsule-ui-kit/src/workspace/dockTabIdentity.js
+file:d1627f3221d337ed84af	packages/capsule-ui-kit/src/workspace/kitGeometrySheet.js
 file:932bb9d61312bbb9e733	packages/capsule-ui-kit/src/workspace/layoutProfile.js
+file:014f343d8de0958912f1	packages/capsule-ui-kit/src/workspace/useKitGeometry.js
 file:8aafa623de62bd4d4bc7	packages/capsule-ui-kit/src/workspace/windowPresentation.js
 file:08768430f1dca48966a7	packages/capsule-ui-kit/test/CapsulePanel.test.js
 file:e4c08eaa722cf2753026	packages/capsule-ui-kit/test/DispatchResults.test.js
@@ -152,6 +160,8 @@ file:2bdf772867eaea1d66f7	packages/capsule-ui-kit/test/audit-registry.test.js
 file:d59564147754bfeb61fd	packages/capsule-ui-kit/test/audit-timeline.test.js
 file:52273062b5f824c28162	packages/capsule-ui-kit/test/capsule-chrome-s1.test.js
 file:905c3433e5f960aa1cf7	packages/capsule-ui-kit/test/controlRegistry.test.js
+file:00b54bfc6a8e091725cb	packages/capsule-ui-kit/test/csp-audit.test.js
+file:bc3a901e83fc18821ed9	packages/capsule-ui-kit/test/csp-menu-update.test.js
 file:b776eb84e325f2d28617	packages/capsule-ui-kit/test/design-contrast-pl2.test.js
 file:2d8b5e6b66b5b701a19b	packages/capsule-ui-kit/test/design-contrast-pl5.test.js
 file:f7a9b7718b89496a1f89	packages/capsule-ui-kit/test/design-contrast-pl6.test.js
@@ -164,6 +174,7 @@ file:9c7225ecc59259e8dda8	packages/capsule-ui-kit/test/design-s1-tokens.test.js
 file:a30b7180fe9023eb7d7d	packages/capsule-ui-kit/test/design-saas-legacy-snapshot.json
 file:c8e8a3a78888fe16c537	packages/capsule-ui-kit/test/design-saas-schemes.test.js
 file:7b0a36dd839c811fdd6e	packages/capsule-ui-kit/test/design-theme-order-pl2.test.js
+file:846ba448e40513b32e06	packages/capsule-ui-kit/test/dock-tab-live.test.js
 file:adfa971f18aeb81fb368	packages/capsule-ui-kit/test/fixtures/retired/README.md
 file:1386afaec1fea2d3ba78	packages/capsule-ui-kit/test/fixtures/retired/books/dispatch-results.md
 file:20b0e844ead3d6647287	packages/capsule-ui-kit/test/fixtures/retired/books/drawer-model.md
@@ -204,9 +215,11 @@ file:80c2bdade46e4035faf8	packages/capsule-ui-kit/test/saas-detail.test.js
 file:18b7d5b07099ddd3c2ab	packages/capsule-ui-kit/test/saas-dispatch.test.js
 file:41ce13b555ebea858ac7	packages/capsule-ui-kit/test/saas-registry.test.js
 file:e304677001a29439db2c	packages/capsule-ui-kit/test/saas-shell.test.js
+file:13b0d3d9092bb3ba6c8b	packages/capsule-ui-kit/test/saas-tile-states.test.js
 file:1cfbdb60c47b43928dcd	packages/capsule-ui-kit/test/saas-wall-mv.test.js
 file:b8e870baf991935a215b	packages/capsule-ui-kit/test/saas-wall.test.js
 file:dc8491925a820d34fad7	packages/capsule-ui-kit/test/shell-bars.test.js
+file:33a7d88ce9bc27701845	packages/capsule-ui-kit/test/shell-emptywall.test.js
 file:0e404d4cb3b23bb8c787	packages/capsule-ui-kit/test/shell-newcapsule-mv.test.js
 file:8f9bea7a1f6a78fed2b8	packages/capsule-ui-kit/test/shell-newcapsule.test.js
 file:3cd31c939d7c5dcc1807	packages/capsule-ui-kit/test/shell-palette.test.js
