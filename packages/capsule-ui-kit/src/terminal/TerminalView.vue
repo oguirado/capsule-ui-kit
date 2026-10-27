@@ -2,7 +2,7 @@
 /**
  * @file Stream view (`TerminalView.vue`) broker/display contract, non-reactive `StreamRegistry`,
  * security interceptors, staged paste composer, and G5 focus/refit lifecycle helpers.
- * Grounded in UI_ARCHITECTURE.md §§3, 4, 5, 6, 7, 8, 9, 10, 12, 13 and verified against
+ * Grounded in architecture contract §§3, 4, 5, 6, 7, 8, 9, 10, 12, 13 and verified against
  * installed `@xterm/xterm version 6.0.0`, `@xterm/addon-fit version 0.11.0`, and `vue version 3.5.43` declarations.
  * Plain JavaScript with JSDoc; no authored TypeScript, no consumer imports.
  */
@@ -139,7 +139,7 @@ export function getChunkByteLength(data) {
 /**
  * Detects whether a terminal data payload is a terminal-generated protocol response
  * (DA1/DA2/DA3, CPR, DSR, DECRQM, OSC color/selection report, DCS/XTGETTCAP report, or CSI window report).
- * UI_ARCHITECTURE.md §7 ("Terminal-generated protocol responses are separately inventoried, never classified as human intent").
+ * architecture contract §7 ("Terminal-generated protocol responses are separately inventoried, never classified as human intent").
  *
  * @param {unknown} data
  * @returns {boolean}
@@ -181,7 +181,7 @@ export function isTerminalProtocolResponse(data) {
 
 /**
  * Inspects staged paste text for control characters, newlines, and bracketed-paste breakout attempts.
- * UI_ARCHITECTURE.md §7 ("Stage paste in a separate composer, expose control/newline content and require explicit Send; bracketed paste is compatibility, not authorization").
+ * architecture contract §7 ("Stage paste in a separate composer, expose control/newline content and require explicit Send; bracketed paste is compatibility, not authorization").
  *
  * @param {string} rawText
  * @returns {{
@@ -498,7 +498,7 @@ export function extractAccessibleBufferText(terminal, options = {}) {
 }
 
 /**
- * Builds the UI_ARCHITECTURE.md §9 semantic control inventory rows owned by `TerminalView.vue`:
+ * Builds the architecture contract §9 semantic control inventory rows owned by `TerminalView.vue`:
  * - `output/{sid}/text` (region / Accessible output)
  * - `session/{sid}/{attach,stop,replay,target}` (button / full operation and session)
  *
@@ -771,7 +771,7 @@ class DefaultHeadlessFitAddon {
 }
 
 /**
- * Creates the non-reactive `StreamRegistry` service (`UI_ARCHITECTURE.md` §4, §6, §7, §10).
+ * Creates the non-reactive `StreamRegistry` service (`architecture contract` §4, §6, §7, §10).
  * Stamped with `__v_skip: true` (`ReactiveFlags.SKIP`) so Vue never converts the registry or its
  * `Terminal` / `FitAddon` / writer handles into reactive proxies.
  *
@@ -932,7 +932,7 @@ export function createStreamRegistry(options = {}) {
   }
 
   /**
-   * Forces session into resync state on sequence gap (`UI_ARCHITECTURE.md:195, 264`).
+   * Forces session into resync state on sequence gap (`architecture contract:195, 264`).
    * @param {any} record
    * @param {number} expectedSeq
    * @param {number} receivedSeq
@@ -982,7 +982,7 @@ export function createStreamRegistry(options = {}) {
 
     /**
      * Creates and registers a non-reactive terminal session record.
-     * Mounting a panel never spawns a backend PTY process (`UI_ARCHITECTURE.md` §6).
+     * Mounting a panel never spawns a backend PTY process (`architecture contract` §6).
      *
      * @param {Object} config
      * @param {string} config.sessionId
@@ -1278,7 +1278,7 @@ export function createStreamRegistry(options = {}) {
     },
 
     /**
-     * Writes an arriving output chunk to the per-session non-reactive writer (`UI_ARCHITECTURE.md:195, 264`).
+     * Writes an arriving output chunk to the per-session non-reactive writer (`architecture contract:195, 264`).
      * Rejects stale epoch or attachmentId (`ERR_STALE_ATTACH`) and forces resync on sequence gaps (`ERR_SEQUENCE_GAP`).
      *
      * @param {{
@@ -1534,7 +1534,7 @@ export function createStreamRegistry(options = {}) {
     },
 
     /**
-     * Updates core-projected session activity (`UI_ARCHITECTURE.md:192`).
+     * Updates core-projected session activity (`architecture contract:192`).
      * @param {{ sessionId: string, epoch: number, activityState: 'unknown' | 'ready' | 'busy' | 'waiting-input' | 'waiting-permission' | 'exited' | 'failed' }} params
      */
     updateActivityFromCore(params) {
@@ -1578,7 +1578,7 @@ export function createStreamRegistry(options = {}) {
 
     /**
      * Marks a session disconnected on transport/broker loss, invalidating active input capabilities
-     * and setting activity to `unknown` (`UI_ARCHITECTURE.md:191, 195`).
+     * and setting activity to `unknown` (`architecture contract:191, 195`).
      * @param {{ sessionId: string, epoch?: number }} params
      */
     markDisconnected(params) {
@@ -1594,7 +1594,7 @@ export function createStreamRegistry(options = {}) {
     },
 
     /**
-     * Sets folded presentation state (`UI_ARCHITECTURE.md:189, 197, 207`).
+     * Sets folded presentation state (`architecture contract:189, 197, 207`).
      * Moves focus to `foldInvoker` before hiding, cancels pending focus retries, and keeps session alive.
      *
      * @param {{ sessionId: string, folded: boolean, foldInvoker?: { focus?: () => void } | null }} params
@@ -1618,7 +1618,7 @@ export function createStreamRegistry(options = {}) {
 
     /**
      * Refits the terminal viewport immediately if and only if both the container box and
-     * `fitAddon.proposeDimensions()` report positive geometry (`UI_ARCHITECTURE.md:208`).
+     * `fitAddon.proposeDimensions()` report positive geometry (`architecture contract:208`).
      *
      * @param {{ sessionId: string, containerRect: { width: number, height: number } }} params
      */
@@ -1660,7 +1660,7 @@ export function createStreamRegistry(options = {}) {
     },
 
     /**
-     * Schedules `rAF` + `120 ms` geometry refit after restore/unfold (`UI_ARCHITECTURE.md:208`).
+     * Schedules `rAF` + `120 ms` geometry refit after restore/unfold (`architecture contract:208`).
      * @param {{ sessionId: string, getContainerRect: () => { width: number, height: number } }} params
      */
     scheduleRefit(params) {
@@ -1690,7 +1690,7 @@ export function createStreamRegistry(options = {}) {
 
     /**
      * Executes the DOM leg of the G5 three-layer focus protocol (`now`, `120 ms`, `400 ms`),
-     * revalidating slot identity, generation, epoch, visibility, and control lease on every retry (`UI_ARCHITECTURE.md:209-210`).
+     * revalidating slot identity, generation, epoch, visibility, and control lease on every retry (`architecture contract:209-210`).
      *
      * @param {{
      *   sessionId: string,
@@ -1779,7 +1779,7 @@ export function createStreamRegistry(options = {}) {
     },
 
     /**
-     * Explicitly disposes view resources when a session view transitions to `disposed` (`UI_ARCHITECTURE.md:193`).
+     * Explicitly disposes view resources when a session view transitions to `disposed` (`architecture contract:193`).
      * Never called on panel fold or Dockview move.
      *
      * @param {string} sessionId
@@ -1956,7 +1956,7 @@ const isTargetDisabled = computed(
 );
 
 /**
- * Preserves live-host keyboard focus when clicking controls beside the terminal (`UI_ARCHITECTURE.md:212`).
+ * Preserves live-host keyboard focus when clicking controls beside the terminal (`architecture contract:212`).
  * @param {Event} event
  */
 function preserveLiveHostFocus(event) {

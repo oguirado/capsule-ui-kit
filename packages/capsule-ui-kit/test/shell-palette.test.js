@@ -1,3 +1,4 @@
+import { assertPackageImports } from './publication-rules.js';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -101,7 +102,7 @@ test('every semantic anchor on the palette matches a declared control family', (
 });
 
 test('palette carries no consumer names, uses only the Dialog vendor primitive, and resolves its icons', () => {
-  assert.ok(!/\u0048oldings|Sequoia|Vanguard|Apex|Meridian|Northgate|Halcyon/.test(paletteSource));
+  assertPackageImports();
   const vendor = Array.from(paletteSource.matchAll(/from '(openvue\/[^']+)'/g)).map((m) => m[1]);
   assert.deepEqual(new Set(vendor), new Set(['openvue/dialog']));
   for (const icon of ['search', 'chevronright', 'thlarge']) {

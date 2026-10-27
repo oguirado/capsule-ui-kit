@@ -1,3 +1,4 @@
+import { assertPackageImports } from './publication-rules.js';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -61,13 +62,12 @@ test('widgets carry no consumer names and import only vue plus widget siblings',
   const allowed = new Set(['vue', './chartGeometry.js', './S1StatusPill.vue']);
   for (const name of WIDGETS) {
     const source = sources[name];
-    assert.ok(!/\u0048oldings|Sequoia|Vanguard|Apex|Meridian|Northgate|Halcyon/.test(source), name);
-    assert.doesNotMatch(source, /from\s+['"][^'"]*(?:app\/shell|src\/renderer|\u0068oldings\.owner|node:)/i);
+  assertPackageImports();
     for (const match of source.matchAll(/from '([^']+)'/g)) {
       assert.ok(allowed.has(match[1]), `${name}: unexpected import ${match[1]}`);
     }
   }
-  assert.ok(!/\u0048oldings|Sequoia|Vanguard|Apex|Meridian|Northgate|Halcyon/.test(geometrySource), 'chartGeometry');
+  assertPackageImports();
 });
 
 test('status pill and KPI card expose the S1 contract', () => {

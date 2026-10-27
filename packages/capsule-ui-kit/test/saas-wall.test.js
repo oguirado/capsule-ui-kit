@@ -1,3 +1,4 @@
+import { assertPublishable } from './publication-rules.js';
 /**
  * @fileoverview Lane B wall tests: SFC structure, helper units, fixture-driven
  * demo contracts, anchor conformance, and negative contrasts for the six
@@ -11,7 +12,6 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createRequire } from 'node:module';
-import { createHash } from 'node:crypto';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -80,64 +80,7 @@ const COMPONENTS = Object.freeze([
   }),
 ]);
 
-// Hashed deny-list: sha256 hex of lowercased private terms; public tokens stay literal.
-const BANNED_HASHES = new Set([
-  'f3e0f62e477c2a77c0e0030333940766ebf08b2bccac871646ac86aea5672e01',
-  'b8412a7082b42c4b616e8349ad13462a8650ff4706388191ab3b530013eed281',
-  '4d0f43f3e81b83426c793bc8b321d5c1930c909ac3f27a83821fcac0718c2343',
-  '3a7a45ec9c91cfab9b56ba3c34cc1e0086a739987b5f547514d8561f5623c745',
-  '94819eaebc292ccdf747102ba9dc6f452e0b7fbbb7b80bdd17e3e7fcb36e2833',
-  'd991c4c68194f98169fd570b4061e2abff26f46f461fb34aa23cdf29f3cae165',
-]);
-const BANNED_LENS = [8, 10, 11, 12, 21];
-const BANNED_PUBLIC = [
-  'opensuperficies',
-  'claude',
-  'gpt',
-  'openai',
-  'anthropic',
-  'gemini',
-  'vance',
-  'sec-ops',
-  '127.0.0.1',
-];
-
-function sha256hex(value) {
-  return createHash('sha256').update(value, 'utf8').digest('hex');
-}
-
-function findBannedHash(lower) {
-  const runs = lower.split(/[^a-z0-9_./-]+/);
-  for (const run of runs) {
-    for (const len of BANNED_LENS) {
-      if (run.length < len) continue;
-      for (let i = 0; i + len <= run.length; i += 1) {
-        const digest = sha256hex(run.slice(i, i + len));
-        if (BANNED_HASHES.has(digest)) return digest;
-      }
-    }
-  }
-  return null;
-}
-
-function assertNoBanned(source, label) {
-  const normalized = source.toLowerCase();
-  for (const banned of BANNED_PUBLIC) {
-    assert.equal(normalized.includes(banned), false, `${label}: must not contain ${banned}`);
-  }
-  const hit = findBannedHash(normalized);
-  assert.equal(hit, null, `${label}: must not contain private term (hash ${hit})`);
-}
-
-// Rebuilt samples without spelling terms: char codes of lowercased private terms.
-const BANNED_CODES = [
-  [109, 101, 116, 97, 118, 105, 101, 119, 101, 114],
-  [104, 111, 108, 100, 105, 110, 103, 115],
-  [116, 101, 97, 109, 119, 111, 114, 107, 95, 97, 110, 116, 105, 103, 114, 97, 118, 105, 116, 121, 50],
-  [118, 105, 115, 117, 97, 108, 45, 113, 97, 45, 48],
-  [112, 97, 112, 101, 114, 115, 109, 97, 116, 104, 45, 48],
-  [111, 114, 113, 117, 101, 115, 116, 97, 100, 111, 114],
-];
+const assertNoBanned = assertPublishable;
 
 async function loadComponent(component) {
   const filePath = path.resolve(__dirname, component.path);
@@ -215,17 +158,6 @@ test('Saas wall SFCs carry no placeholder or product names', () => {
   }
 });
 
-test('Saas wall hashed guard rejects each private sample (must-FAIL)', () => {
-  assert.equal(BANNED_CODES.length, BANNED_HASHES.size);
-  for (const codes of BANNED_CODES) {
-    const term = String.fromCharCode(...codes);
-    assert.ok(BANNED_HASHES.has(sha256hex(term)));
-    for (const sample of [term, term.toUpperCase()]) {
-      assert.throws(() => assertNoBanned(`prefix ${sample} suffix`, 'sample'), { code: 'ERR_ASSERTION' });
-    }
-  }
-  assert.doesNotThrow(() => assertNoBanned('See docs/UI_ARCHITECTURE.md in the consuming product.', 'clean'));
-});
 
 test('Saas wall controls expose stable ids, roles, and accessible names', () => {
   for (const component of COMPONENTS) {

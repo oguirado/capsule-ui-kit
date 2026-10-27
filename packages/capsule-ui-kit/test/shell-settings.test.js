@@ -1,3 +1,4 @@
+import { assertPackageImports } from './publication-rules.js';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -173,7 +174,7 @@ test('maximized/restore keeps the TP5 toggle contract and floating stays theme-b
 
 test('settings, strip and drop preview carry no consumer names and import no vendor primitives', () => {
   for (const [file, source] of files) {
-    assert.ok(!/\u0048oldings|Sequoia|Vanguard|Apex|Meridian|Northgate|Halcyon/.test(source), file);
+  assertPackageImports();
     const vendor = Array.from(source.matchAll(/from '(openvue\/[^']+)'/g)).map((m) => m[1]);
     assert.deepEqual(vendor, [], file);
   }

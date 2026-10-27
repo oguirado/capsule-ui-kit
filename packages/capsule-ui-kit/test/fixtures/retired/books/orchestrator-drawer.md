@@ -2,7 +2,7 @@
 
 ## Purpose and Scope
 
-`OrchestratorDrawer.vue` implements the customer-support-style bottom orchestrator drawer view and its exported view controller (`createOrchestratorDrawerController`, `handleSeparatorKeydown`, `preserveLiveSurfaceFocusOnPointerDown`, `syncDrawerControlsToRegistry`) for the shared capsule UI kit (`UI_ARCHITECTURE.md` §§3, 6 G5, 7, 8, 9, 10, 12, 13).
+`OrchestratorDrawer.vue` implements the customer-support-style bottom orchestrator drawer view and its exported view controller (`createOrchestratorDrawerController`, `handleSeparatorKeydown`, `preserveLiveSurfaceFocusOnPointerDown`, `syncDrawerControlsToRegistry`) for the shared capsule UI kit (`architecture contract` §§3, 6 G5, 7, 8, 9, 10, 12, 13).
 
 It owns:
 - Discoverable bottom launcher (`drawer/toggle`), maximize/restore chrome (`drawer/maximize`), and keyboard-operable resize separator (`workspace/separator/drawer-height`).
@@ -38,9 +38,9 @@ It owns:
 
 ## AUSENTE Items (`§5`, `§7`, `§14 R2–R3`)
 
-- **Prompt/session/dispatch/cancel wire contract in `envelope/v0.1`:** `AUSENTE` (`UI_ARCHITECTURE.md` §5, §14 R3). `OrchestratorDrawer.vue` delegates review and submission to `drawerModel.js`, which produces a local `intentPreview` with `wireContractStatus: 'AUSENTE'` rather than inventing an unapproved IPC wire payload.
-- **Structured adapter protocol name, version, and capabilities:** `AUSENTE` (`UI_ARCHITECTURE.md` §7). Session descriptors default `adapterProtocol` to `'AUSENTE'` unless supplied by a reviewed adapter projection.
-- **Reviewed main-process popout window transfer contract:** `AUSENTE` (`UI_ARCHITECTURE.md` §14 R2). `movePresentationHost` tracks logical host presentation without calling `window.open`.
+- **Prompt/session/dispatch/cancel wire contract in `envelope/v0.1`:** `AUSENTE` (`architecture contract` §5, §14 R3). `OrchestratorDrawer.vue` delegates review and submission to `drawerModel.js`, which produces a local `intentPreview` with `wireContractStatus: 'AUSENTE'` rather than inventing an unapproved IPC wire payload.
+- **Structured adapter protocol name, version, and capabilities:** `AUSENTE` (`architecture contract` §7). Session descriptors default `adapterProtocol` to `'AUSENTE'` unless supplied by a reviewed adapter projection.
+- **Reviewed main-process popout window transfer contract:** `AUSENTE` (`architecture contract` §14 R2). `movePresentationHost` tracks logical host presentation without calling `window.open`.
 
 ## Verification
 

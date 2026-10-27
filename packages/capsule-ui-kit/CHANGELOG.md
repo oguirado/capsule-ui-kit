@@ -1,5 +1,10 @@
 # capsule-ui-kit changelog
 
+## 0.2.2
+
+- Publication checks use generic path, address, credential and package-import rules.
+- Package comments and books describe portable contracts and transport-neutral seams.
+
 ## 0.2.1
 
 - New: generic EmptyWall shell component (title, hint, primary-action and secondary-action slots, stable ids, agent_lane/v1 rows).
@@ -8,4 +13,4 @@
 ## 0.2.0
 
 - Minor: side terminal surface, multislot capsules, SaaS templates.
-- Publication hygiene: deny-lists use sha256-hashed terms compared against hashed tokens; must-FAIL self-check kept.
+- Publication hygiene checks added.

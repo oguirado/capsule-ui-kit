@@ -4,7 +4,7 @@
 
 This companion book documents the `DockWorkspace` component and presentation coordinator implemented in `packages/capsule-ui-kit/src/workspace/DockWorkspace.vue` and verified by `packages/capsule-ui-kit/test/DockWorkspace.test.js`.
 
-Governing sections in the shared UI architecture document (`docs/UI_ARCHITECTURE.md` in the consuming product):
+Governing sections in the shared UI architecture document (`architecture contract` in the consuming product):
 - **§3 Component inventory and ownership**:
   - `DockWorkspace` owns: `Panel registry, Dockview adapter, presentation moves/tabs/size and restoration barrier`.
   - `DockWorkspace` excludes: `Capsule creation/destruction or authority from add/remove callbacks`.
@@ -44,9 +44,9 @@ Governing sections in the shared UI architecture document (`docs/UI_ARCHITECTURE
 
 ## AUSENTE Items and Conservative Boundaries
 
-1. **`dockview-vue version 8.6.1`**: `AUSENTE` in the consuming product’s `app/shell/node_modules/` (installed version is `8.4.1`; `UI_ARCHITECTURE.md` §2, §14 R1). All types and APIs strictly match installed `8.4.1`.
-2. **Dockview `suspendLayout` or `silent` Restore API**: `AUSENTE` in `dockview-core version 8.4.1` (`UI_ARCHITECTURE.md` §4 `Q02`). `DockWorkspace.vue` uses a full-size covered restore veil (`#workspace-restore-veil`, `v-show="!wallRevealed"`) plus `DockviewLayoutMutationEvent.origin` (`'user'` vs `'api'`) disambiguation.
-3. **Custom Popout Window Factory / Electron Host Transfer Contract**: `AUSENTE` in `dockview-core version 8.4.1` (`popoutWindow.d.ts:4-58` hardcodes `window.open` and rejects `file:` URLs; `UI_ARCHITECTURE.md` §14 R2). Popout controls are rendered disabled with an explicit R2 explanation, and `onDidOpenPopoutWindowFail` switches to `resolvePopoutFallbackView` while blocking gesture-save overwrites of saved wall placements.
+1. **`dockview-vue version 8.6.1`**: `AUSENTE` in the consuming product’s `node_modules/` (installed version is `8.4.1`; `architecture contract` §2, §14 R1). All types and APIs strictly match installed `8.4.1`.
+2. **Dockview `suspendLayout` or `silent` Restore API**: `AUSENTE` in `dockview-core version 8.4.1` (`architecture contract` §4 `Q02`). `DockWorkspace.vue` uses a full-size covered restore veil (`#workspace-restore-veil`, `v-show="!wallRevealed"`) plus `DockviewLayoutMutationEvent.origin` (`'user'` vs `'api'`) disambiguation.
+3. **Custom Popout Window Factory / Electron Host Transfer Contract**: `AUSENTE` in `dockview-core version 8.4.1` (`popoutWindow.d.ts:4-58` hardcodes `window.open` and rejects `file:` URLs; `architecture contract` §14 R2). Popout controls are rendered disabled with an explicit R2 explanation, and `onDidOpenPopoutWindowFail` switches to `resolvePopoutFallbackView` while blocking gesture-save overwrites of saved wall placements.
 4. **Enterprise Dockview Modules (`KeyboardNavigation`, `PinnedTabs`, `MultiRowTabs`, `AdvancedOverflow`, `SmartGuides`, `DndCompass`, `LayoutHistory`, `AutoHideEdgeGroup`, `AutoEdgeGroup`)**: `AUSENTE` in free `dockview-core version 8.4.1` (`modules.d.ts:88-94`). Keyboard group navigation (`F6`/`Shift+F6`), separator resizing, and layout persistence (`layoutProfile.js`) are implemented directly in the kit without enterprise module dependencies.
 
 ## Verification Command
@@ -65,4 +65,4 @@ Hide moves a capsule into an invisible presentation group and applies `v-show` t
 
 The already-allowlisted `viewMode` parameter reserves the `window-hidden:` prefix for JSON presentation metadata: former group/index, former viewMode, and optional floating bounds. The metadata is checked before Show; it contains no backend state. Dockview's serialized group visibility and floating bounds pass through the existing layout decoder and authenticated layout service. No new profile schema or main-process permission is introduced. Capsule window booleans are exposed separately from backend lifecycle in the product lane adapter; hidden capsule regions retain a non-actionable record with null geometry.
 
-Verification includes the kit's swap refusal controls and `app/shell/test/tp5-windows-live.test.js`: independently repeated real pointer journeys, native-lane conformance and stable identity, center swap versus tab merge versus edge split, docked width/height splitters, floating resize, maximize/restore, hide/show, keyboard recovery and fresh-process persistence. Window battery pins and per-field justifications live under the host's v2 battery fixtures.
+Verification includes the kit's swap refusal controls and the consuming application’s private integration suite: independently repeated real pointer journeys, native-lane conformance and stable identity, center swap versus tab merge versus edge split, docked width/height splitters, floating resize, maximize/restore, hide/show, keyboard recovery and fresh-process persistence. Window battery pins and per-field justifications live under the host's v2 battery fixtures.

@@ -4,12 +4,12 @@
  * §9 semantic control inventory builder, §6/§10 fold-cannot-stop-capture coordinator,
  * and §6 G5 focus retry / activation veil / pointer-focus-guard helpers.
  *
- * Grounded in UI_ARCHITECTURE.md §§3, 4, 5, 6, 8, 9, 10, 12, 13 and 14.
+ * Grounded in architecture contract §§3, 4, 5, 6, 8, 9, 10, 12, 13 and 14.
  * Plain JavaScript with JSDoc; no authored TypeScript, no consumer imports.
  */
 
 /**
- * Closed backend lifecycle enum defined by ARCH:110 and UI_ARCHITECTURE.md §6.
+ * Closed backend lifecycle enum defined by ARCH:110 and architecture contract §6.
  * @type {readonly string[]}
  */
 export const ALLOWED_BACKEND_LIFECYCLES = Object.freeze([
@@ -36,7 +36,7 @@ export const ALLOWED_UI_REQUEST_PHASES = Object.freeze([
 ]);
 
 /**
- * Closed projected AI session activity states (UI_ARCHITECTURE.md §6).
+ * Closed projected AI session activity states (architecture contract §6).
  * @type {readonly string[]}
  */
 export const ALLOWED_AI_SESSION_ACTIVITIES = Object.freeze([
@@ -50,7 +50,7 @@ export const ALLOWED_AI_SESSION_ACTIVITIES = Object.freeze([
 ]);
 
 /**
- * Closed multislot attachment states (UI_ARCHITECTURE.md §6).
+ * Closed multislot attachment states (architecture contract §6).
  * @type {readonly string[]}
  */
 export const ALLOWED_ATTACHMENT_STATES = Object.freeze([
@@ -62,7 +62,7 @@ export const ALLOWED_ATTACHMENT_STATES = Object.freeze([
 ]);
 
 /**
- * Closed dispatch outcome states (UI_ARCHITECTURE.md §6, §7).
+ * Closed dispatch outcome states (architecture contract §6, §7).
  * @type {readonly string[]}
  */
 export const ALLOWED_DISPATCH_OUTCOMES = Object.freeze([
@@ -78,7 +78,7 @@ export const ALLOWED_DISPATCH_OUTCOMES = Object.freeze([
 ]);
 
 /**
- * Canonical capsule header action verbs from UI_ARCHITECTURE.md §9 row 3.
+ * Canonical capsule header action verbs from architecture contract §9 row 3.
  * @type {readonly string[]}
  */
 export const CAPSULE_ACTION_VERBS = Object.freeze([
@@ -132,7 +132,7 @@ export function chipStatusForVariant(variant) {
 }
 
 /**
- * Default unavailable reason for popout under UI_ARCHITECTURE.md §14 R2.
+ * Default unavailable reason for popout under architecture contract §14 R2.
  * @type {string}
  */
 export const DEFAULT_POPOUT_UNAVAILABLE_REASON =
@@ -419,7 +419,7 @@ export function readCapsuleFromProjection(projectionSnapshotOrView, capsuleId, o
 }
 
 /**
- * Evaluates the G5 activation veil truth table (UI_ARCHITECTURE.md §6 G5):
+ * Evaluates the G5 activation veil truth table (architecture contract §6 G5):
  * Show activation veil ONLY when:
  * 1. More than one live surface exists (`liveSurfaceCount > 1`),
  * 2. This surface lacks keyboard ownership (`!hasKeyboardOwnership`), AND
@@ -453,7 +453,7 @@ export function evaluateActivationVeil(params) {
 }
 
 /**
- * Arbitrates single keyboard ownership across sibling surfaces (UI_ARCHITECTURE.md §6 G5).
+ * Arbitrates single keyboard ownership across sibling surfaces (architecture contract §6 G5).
  * Activation is idempotent, clears sibling keyboard ownership, and refuses surfaces under AI command
  * or in terminal destroyed/lost states.
  *
@@ -509,7 +509,7 @@ export function arbitrateKeyboardOwnership(surfaces, targetCapsuleId) {
 }
 
 /**
- * Preserves live-host focus when interacting with controls beside live surfaces (UI_ARCHITECTURE.md §6 G5):
+ * Preserves live-host focus when interacting with controls beside live surfaces (architecture contract §6 G5):
  * `pointerdown` and `mousedown` call `preventDefault()` while `click` and keyboard events proceed normally.
  *
  * @param {{ type?: string, preventDefault?: () => void } | null | undefined} event

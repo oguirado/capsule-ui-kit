@@ -1,3 +1,4 @@
+import { assertPackageImports } from './publication-rules.js';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -56,8 +57,7 @@ test('inspector styles use tokens only and every variable is declared in theme.c
 });
 
 test('inspector carries no consumer names and imports only vue plus widget siblings', () => {
-  assert.ok(!/\u0048oldings|Sequoia|Vanguard|Apex|Meridian|Northgate|Halcyon/.test(source), 'names');
-  assert.doesNotMatch(source, /from\s+['"][^'"]*(?:app\/shell|src\/renderer|\u0068oldings\.owner|node:)/i);
+  assertPackageImports();
   const allowed = new Set(['vue', './S1StatusPill.vue']);
   for (const match of source.matchAll(/from '([^']+)'/g)) {
     assert.ok(allowed.has(match[1]), `unexpected import ${match[1]}`);

@@ -2,11 +2,11 @@
 
 ## Purpose and Scope
 
-`packages/capsule-ui-kit/src/capsules/MultiSlot.vue` implements the foldable AI session area, session tab switcher, attach/restore cursor reconciliation, G5 fold/restore focus and activation veil protocol, and §9 AI-operability semantic control inventory specified in the shared UI architecture document (`docs/UI_ARCHITECTURE.md` in the consuming product) §§ 3, 6, 7, 8, 9, 10, 12, and 13 (writer unit: **Multislot**).
+`packages/capsule-ui-kit/src/capsules/MultiSlot.vue` implements the foldable AI session area, session tab switcher, attach/restore cursor reconciliation, G5 fold/restore focus and activation veil protocol, and §9 AI-operability semantic control inventory specified in the shared UI architecture document (`architecture contract` in the consuming product) §§ 3, 6, 7, 8, 9, 10, 12, and 13 (writer unit: **Multislot**).
 
 The SFC is authored in plain JavaScript with JSDoc annotations (`<script>` module helpers plus `<script setup>` component bindings, no `lang="ts"`), zero consumer imports, and runtime-only precompiled templates.
 
-## Five Orthogonal Multislot Axes (`UI_ARCHITECTURE.md` §6)
+## Five Orthogonal Multislot Axes (`architecture contract` §6)
 
 Backend lifecycle (`active`, `standby`, `ceded`, `destroyed`, `lost`), UI presentation, AI-session activity, attachment, and dispatch outcome remain strictly separate and never collapse into a single boolean:
 
@@ -18,7 +18,7 @@ Backend lifecycle (`active`, `standby`, `ceded`, `destroyed`, `lost`), UI presen
 | Projected session activity | `unknown`, `ready`, `busy`, `waiting-input`, `waiting-permission`, `exited`, `failed` | Updated only from authenticated core/adapter projections; output silence never implies `ready` or completion |
 | View retention | `live-view`, `replay-view`, `disposed` | Exited/failed sessions retain bounded read-only `replay-view`; explicit view disposal releases view state without killing independently owned backend processes |
 
-## Normative Invariants and Negative Contrasts (`UI_ARCHITECTURE.md` §§ 6, 9, 12, 13)
+## Normative Invariants and Negative Contrasts (`architecture contract` §§ 6, 9, 12, 13)
 
 | Gate / Invariant | Enforcement in `MultiSlot.vue` | Negative Contrast / Error Code |
 |---|---|---|
@@ -36,8 +36,8 @@ Backend lifecycle (`active`, `standby`, `ceded`, `destroyed`, `lost`), UI presen
 
 ## AUSENTE Items
 
-- **UI-to-core session/attach/PTY wire schema and workload byte/watermark limits (`UI_ARCHITECTURE.md` §5, §6, §7, §14 R3/R12)**: `AUSENTE` — `MultiSlot.vue` consumes pre-validated projections and emits structured intents (`capsule_visibility_intent`, `session_stop_intent`) without inventing unapproved IPC wire bodies.
-- **Complete backend lifecycle enum declarations beyond `active`, `standby`, `ceded`, `destroyed`, `lost` (`UI_ARCHITECTURE.md` §6:181)**: `AUSENTE` — `ALLOWED_BACKEND_LIFECYCLES` enforces the exact five ARCH states without adding unratified lifecycle enums.
+- **UI-to-core session/attach/PTY wire schema and workload byte/watermark limits (`architecture contract` §5, §6, §7, §14 R3/R12)**: `AUSENTE` — `MultiSlot.vue` consumes pre-validated projections and emits structured intents (`capsule_visibility_intent`, `session_stop_intent`) without inventing unapproved IPC wire bodies.
+- **Complete backend lifecycle enum declarations beyond `active`, `standby`, `ceded`, `destroyed`, `lost` (`architecture contract` §6:181)**: `AUSENTE` — `ALLOWED_BACKEND_LIFECYCLES` enforces the exact five ARCH states without adding unratified lifecycle enums.
 
 ## Verification Command
 

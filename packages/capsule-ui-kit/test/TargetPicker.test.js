@@ -1,7 +1,8 @@
+import { assertPackageImports } from './publication-rules.js';
 /**
  * @fileoverview Behavioral oracle and negative-contrast test suite for TargetPicker.vue.
- * Covers UI_ARCHITECTURE.md §3, §4, §6, §7 (G3, G4), §8, §9, and §13:
- * "Target picker | src/renderer/orchestrator/TargetPicker.vue, TargetPicker.test.js, books/target-picker.md | Core capability projection; duplicate/unknown recipient refuses"
+ * Covers architecture contract §3, §4, §6, §7 (G3, G4), §8, §9, and §13:
+ * "Target picker | TargetPicker.vue, TargetPicker.test.js, books/target-picker.md | Core capability projection; duplicate/unknown recipient refuses"
  */
 
 import { describe, it, before } from 'node:test';
@@ -70,7 +71,7 @@ describe('TargetPicker.vue — SFC Compilation & Structural Contract (§3, §8, 
     // Enforce plain JS with JSDoc (no lang="ts") and no consumer imports
     assert.equal(descriptor.script.lang, undefined, '<script> must not use lang="ts"');
     assert.equal(descriptor.scriptSetup.lang, undefined, '<script setup> must not use lang="ts"');
-    assert.equal(/from\s+['"][^'\"]*\u0068oldings/i.test(sfcSource), false, 'Must not contain consumer imports');
+    assertPackageImports();
 
     const compiledScript = compilerSfc.compileScript(descriptor, { id: 'target-picker-scope' });
     assert.ok(compiledScript.content.length > 0);

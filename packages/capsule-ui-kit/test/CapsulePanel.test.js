@@ -1,6 +1,6 @@
 /**
  * @file Independent behavioral and negative-contrast test suite for CapsulePanel.vue.
- * Grounded in UI_ARCHITECTURE.md §§3, 4, 5, 6, 8, 9, 10, 12, 13 and 14 (unit: Capsule chrome).
+ * Grounded in architecture contract §§3, 4, 5, 6, 8, 9, 10, 12, 13 and 14 (unit: Capsule chrome).
  *
  * Verifies:
  * 1. Vue SFC structure & compilation (@vue/compiler-sfc): plain JS/JSDoc (no lang="ts"),
@@ -9,11 +9,11 @@
  * 2. Snapshot reader over PublicProjection: 5 distinct lifecycle/presentation/session/attachment/dispatch
  *    axes (never collapsed into a single green/red boolean), stale/error preservation, and missing
  *    monetary/numeric fields preserved as 'unavailable' (never coerced to 0).
- * 3. Semantic control inventory (UI_ARCHITECTURE.md §9): registers capsule/{id}/panel, capsule/{id}/tab,
+ * 3. Semantic control inventory (architecture contract §9): registers capsule/{id}/panel, capsule/{id}/tab,
  *    capsule/{id}/{fold,pin,control,close,popout,dock-back}, and capsule/{id}/slot into controlRegistry;
  *    enforces unavailableReason on disabled actions (including R2 popout policy block), null boxes for
  *    hidden/folded regions, and rejects numeric list-index IDs or UI-synthesized stableId suffixes.
- * 4. Fold cannot stop capture (UI_ARCHITECTURE.md §6, §10, §12, §13): folding disables only the display
+ * 4. Fold cannot stop capture (architecture contract §6, §10, §12, §13): folding disables only the display
  *    branch in presentationScheduler, drains pending display mailbox lease, retains authoritative capture
  *    lease, keeps DOM host mounted via a mounted hidden class, and allows upstream capture witnesses to advance while
  *    rejecting hidden draws; unfolding requests newest generation beyond hidden capture witnesses without

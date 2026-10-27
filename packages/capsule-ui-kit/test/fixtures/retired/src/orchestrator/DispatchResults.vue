@@ -2,7 +2,7 @@
 /**
  * @fileoverview DispatchResults component controller, correlation contract verifier,
  * non-authoritative IntentStatus projection, witness verification guard, and semantic registry synchronizer.
- * Grounded in UI_ARCHITECTURE.md §§3, 4, 6 (G5), 7, 8, 9, 10, 12, and 13.
+ * Grounded in architecture contract §§3, 4, 6 (G5), 7, 8, 9, 10, 12, and 13.
  * Plain JavaScript with JSDoc; no authored TypeScript, no product-specific simulation imports.
  */
 
