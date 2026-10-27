@@ -87,6 +87,10 @@ class TPublicationLint(unittest.TestCase):
     def test_email_identifier_join_is_not_an_email(self):
         self.assertEqual(lint_text("id = 'cap/fold' + '@' + 'e3.g1'\n"), [])
 
+    def test_worktree_git_file_is_skipped(self):
+        root = L._ROOTS.split("|")[0]
+        self.assertEqual(lint_text("gitdir: /%s/zed/repo/.git/worktrees/w\n" % root, name=".git"), [])
+
     def test_without_policy_no_private_rule_runs(self):
         self.assertEqual(lint_text("T = %r\n" % TERMS[0], terms=(), home_users=()), [])
 

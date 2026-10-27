@@ -144,6 +144,9 @@ def files_under(root):
         dirs[:] = sorted(d for d in dirs if d not in SKIP_DIRS and not d.startswith(".kit-sync-")
                          and not skipped(("" if rel_base == "." else rel_base + "/") + d))
         for n in sorted(names):
+            if n in SKIP_DIRS:
+                # A linked worktree or submodule has a ".git" file that holds the host path of its git directory.
+                continue
             yield os.path.join(base, n)
 
 
