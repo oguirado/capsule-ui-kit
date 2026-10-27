@@ -239,7 +239,6 @@ function reviewedProducer() {
 }
 
 const BANNED_PUBLIC = [
-  'opensuperficies',
   'claude',
   'gpt',
   'openai',
