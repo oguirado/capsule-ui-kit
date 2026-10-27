@@ -4,11 +4,11 @@
 
 | Field | Value |
 |---|---|
-| Unit | Surface scheduling (`UI_ARCHITECTURE.md` §13) |
+| Unit | Surface scheduling (`architecture contract` §13) |
 | Source module | `packages/capsule-ui-kit/src/surfaces/presentationScheduler.js` |
 | Verification test | `packages/capsule-ui-kit/test/presentationScheduler.test.js` |
 | Companion book | `packages/capsule-ui-kit/books/presentation-scheduler.md` |
-| Governing sections | `UI_ARCHITECTURE.md` §§3, 4, 5, 6, 9, 10, 13 |
+| Governing sections | `architecture contract` §§3, 4, 5, 6, 9, 10, 13 |
 
 ## Architectural Contract
 
@@ -41,5 +41,5 @@
 
 ## AUSENTE Items (Not Invented)
 
-- Renderer display transport wire framing, OpenSuperficies binary/socket protocol, and core-to-renderer IPC frame lease wire schema (`UI_ARCHITECTURE.md` §5, §14 R4): **AUSENTE** (designed via transport-neutral callback hooks `onPresent`, `onReleaseLease`, `onRequestNewestGeneration`).
-- Production codec selection (MJPEG vs H.264/video vs WebRTC vs shared memory) and ratified wall capacity numbers (`UI_ARCHITECTURE.md` §2, §10, §14 R5): **AUSENTE** (callers must supply an explicitly frozen `FrozenSchedulerBudget` object).
+- Renderer display transport wire framing, display transport protocol, and core-to-renderer IPC frame lease wire schema (`architecture contract` §5, §14 R4): **AUSENTE** (designed via transport-neutral callback hooks `onPresent`, `onReleaseLease`, `onRequestNewestGeneration`).
+- Production codec selection (MJPEG vs H.264/video vs WebRTC vs shared memory) and ratified wall capacity numbers (`architecture contract` §2, §10, §14 R5): **AUSENTE** (callers must supply an explicitly frozen `FrozenSchedulerBudget` object).

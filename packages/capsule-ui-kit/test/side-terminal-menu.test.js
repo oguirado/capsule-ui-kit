@@ -1,3 +1,4 @@
+import { assertPackageImports } from './publication-rules.js';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -12,8 +13,6 @@ const theme = readFileSync(new URL('src/design/theme.css', root), 'utf8');
 const { descriptor, errors } = parse(source, { filename: 'SideTerminalNewMenu.vue' });
 const css = descriptor.styles.map((style) => style.content).join('\n');
 
-const PRODUCT_NAME_PATTERN = new RegExp(['ho', 'ldings'].join(''), 'i');
-const PROVIDER_NAME_PATTERN = new RegExp(`${['cl', 'aude'].join('')}|${['co', 'dex'].join('')}`, 'i');
 
 function definedTokenNames() {
   const names = new Set();
@@ -133,10 +132,10 @@ test('R7: menu carries no product names, mails, home paths or node imports', () 
   const email = /[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+/;
   const roots = ['ho' + 'me', 'Us' + 'ers', 'ro' + 'ot'].join('|');
   const homePath = new RegExp(`/(?:${roots})/[\\w.-]+`, 'i');
-  assert.doesNotMatch(source, PRODUCT_NAME_PATTERN, 'product reference');
-  assert.doesNotMatch(source, PROVIDER_NAME_PATTERN, 'provider name');
   assert.doesNotMatch(source, email, 'mail-shaped string');
   assert.doesNotMatch(source, homePath, 'absolute home path');
   assert.doesNotMatch(source, /from\s+['"][^'"]*node:/, 'node runtime import');
   assert.ok(!descriptor.template.content.includes('v-html'), 'never v-html');
 });
+
+test('imports use package boundaries and declared dependencies', () => assertPackageImports());

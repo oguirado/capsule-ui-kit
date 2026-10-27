@@ -1,6 +1,6 @@
 /**
  * @file Behavioral and structural verification oracle for Stream view (`TerminalView.vue`).
- * Covers UI_ARCHITECTURE.md §§3, 4, 5, 6, 7, 8, 9, 10, 12, 13:
+ * Covers architecture contract §§3, 4, 5, 6, 7, 8, 9, 10, 12, 13:
  * - Broker/display attachment lifecycle (detached -> attaching -> restoring -> live -> disconnected/replay/disposed)
  * - Negative contrast: stale attach (epoch/attachmentId mismatch), sequence gap resync (never skip VT bytes)
  * - Negative contrast: output -> input loop rejection (sync write re-entrancy, non-user input, protocol responses)
@@ -980,7 +980,7 @@ test('semantic control inventory (§9) and negative contrast for numeric list-le
   const mod = await loadTerminalViewHelpers();
   const { createStreamRegistry, buildTerminalSemanticControls, TERMINAL_ERROR_CODES } = mod;
 
-  // 1. Numeric list-length IDs must be rejected (UI_ARCHITECTURE.md §6, §9)
+  // 1. Numeric list-length IDs must be rejected (architecture contract §6, §9)
   assert.throws(
     () =>
       buildTerminalSemanticControls({

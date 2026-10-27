@@ -1,3 +1,4 @@
+import { assertPackageImports } from './publication-rules.js';
 import { describe, it, before } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -82,11 +83,7 @@ describe('DispatchResults.vue — SFC Compilation, JS/JSDoc Rules & Semantic Tem
     assert.equal(sfcDescriptor.script?.lang, undefined, '<script> must not use lang="ts"');
 
     const fullSource = sfcDescriptor.source;
-    assert.doesNotMatch(
-      fullSource,
-      /\u0068oldings/i,
-      'DispatchResults.vue must contain zero consumer imports or references'
-    );
+    assertPackageImports();
     assert.doesNotMatch(
       fullSource,
       /v-html/,

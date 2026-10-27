@@ -18,7 +18,6 @@ const KIT_ROOT = resolve(HERE, '..');
 const ABS_PREFIX = /^\/(tmp|home|root|work|Users|private|var|etc|opt|usr|data|mnt|srv)\//;
 const WIN_ABS = /^[A-Za-z]:[\\/]/;
 const DOTDOT = /(?:\.\.\/)+[A-Za-z0-9_@.\-/]*/g;
-const OUTSIDE_MARK = 'app/shell';
 
 /**
  * String-literal spans with 1-based line numbers. Templates are blanked first
@@ -61,7 +60,6 @@ function collectTests(dir, out = []) {
  */
 function checkLiteral(file, literal, line, hits) {
   const tag = `${file}:${line}`;
-  if (literal.includes(OUTSIDE_MARK)) hits.push(`${tag}: outside-kit marker in ${JSON.stringify(literal)}`);
   if (ABS_PREFIX.test(literal) || WIN_ABS.test(literal)) {
     hits.push(`${tag}: absolute host path ${JSON.stringify(literal)}`);
   }

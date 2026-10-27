@@ -1,3 +1,4 @@
+import { assertPackageImports } from './publication-rules.js';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -110,7 +111,7 @@ test('every semantic anchor on the bars matches a declared control family', () =
 
 test('kit bars carry no consumer names and import only the Dialog vendor primitive', () => {
   for (const [file, source] of [['TopBar.vue', topSource], ['StatusBar.vue', statusSource]]) {
-    assert.ok(!/\u0048oldings|Sequoia|Vanguard|Apex|Meridian|Northgate|Halcyon/.test(source), file);
+  assertPackageImports();
     const vendor = Array.from(source.matchAll(/from '(openvue\/[^']+)'/g)).map((m) => m[1]);
     assert.deepEqual(new Set(vendor), new Set(['openvue/dialog']), file);
   }

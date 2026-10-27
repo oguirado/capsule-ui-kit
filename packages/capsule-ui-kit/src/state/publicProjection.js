@@ -1,6 +1,6 @@
 /**
  * @file PublicProjection admission coordinator, closed schema validator, and read-only view facade.
- * Implements UI_ARCHITECTURE.md §4 (Non-authoritative state and persistence),
+ * Implements architecture contract §4 (Non-authoritative state and persistence),
  * §12 (C-OWN, C-PUBLIC, C-DECODE, C-INTEGER, C-FLOW, C-REV) and §13 (Projection unit).
  * Plain JavaScript ES module with JSDoc types; zero external runtime dependencies.
  */

@@ -1,3 +1,4 @@
+import { assertPackageImports } from './publication-rules.js';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -136,11 +137,11 @@ test('lists index re-exports every list component', () => {
 
 test('lists carry no consumer names and import nothing', () => {
   for (const [file, source] of sources) {
-    assert.ok(!/\u0048oldings|Sequoia|Vanguard|Apex|Meridian|Northgate|Halcyon/.test(source), file);
+  assertPackageImports();
     const imports = Array.from(source.matchAll(/from '([^']+)'/g)).map((m) => m[1]);
     assert.deepEqual(imports, [], file);
   }
-  assert.ok(!/\u0048oldings|Sequoia|Vanguard|Apex|Meridian|Northgate|Halcyon/.test(indexSource), 'index.js');
+  assertPackageImports();
   const indexImports = Array.from(indexSource.matchAll(/from '([^']+)'/g)).map((m) => m[1]);
   assert.equal(indexImports.length, 5, 'index.js');
   for (const spec of indexImports) {

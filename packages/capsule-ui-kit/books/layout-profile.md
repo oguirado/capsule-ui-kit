@@ -4,7 +4,7 @@
 
 This companion book documents the `UiLayout` persistence boundary, closed layout profile schema, sequential pure migration pipeline, `MissingPanel` replacement rules, and read-only quarantine guard implemented in `packages/capsule-ui-kit/src/workspace/layoutProfile.js` and verified in `packages/capsule-ui-kit/test/layoutProfile.test.js`.
 
-Governing design sections in the shared UI architecture document (`docs/UI_ARCHITECTURE.md` in the consuming product):
+Governing design sections in the shared UI architecture document (`architecture contract` in the consuming product):
 - **§3 Component inventory and ownership**: `DockWorkspace` (panel registry, Dockview adapter, restoration barrier) and `MissingPanel` (preserved layout identity and recoverable unavailable-type explanation; never fake content or synthetic backend handles).
 - **§4 Non-authoritative state and persistence (`UiLayout`)**:
   - Layout profile stores application schema version, product/profile/workspace scope, shared-kit version, Dockview version (`8.4.1`), panel-registry version, structural layout (`shell` + `dockview`), and allowlisted per-panel presentation parameters.
@@ -43,5 +43,5 @@ The `dockview` payload inside `LayoutProfileEnvelope` validates directly against
 
 ## AUSENTE Contracts and Safe Boundaries
 
-1. **Host IPC Profile Persistence Wire Message**: `UI_ARCHITECTURE.md` §5 specifies that `envelope/v0.1` has no existing message for reading/saving layout and preferences, and requires a narrow preload/host profile service contract (`AUSENTE`). `layoutProfile.js` therefore accepts an injected `{ readRaw, writeAtomic }` storage boundary and performs zero direct IPC or `localStorage` calls.
-2. **Dockview `suspendLayout` / `silent` Restore API**: Declared `AUSENTE` by `UI_ARCHITECTURE.md` §4 (`Q02`). `layoutProfile.js` prepares pure validated `SerializedDockview` data structures without calling unverified runtime methods.
+1. **Host IPC Profile Persistence Wire Message**: `architecture contract` §5 specifies that `envelope/v0.1` has no existing message for reading/saving layout and preferences, and requires a narrow preload/host profile service contract (`AUSENTE`). `layoutProfile.js` therefore accepts an injected `{ readRaw, writeAtomic }` storage boundary and performs zero direct IPC or `localStorage` calls.
+2. **Dockview `suspendLayout` / `silent` Restore API**: Declared `AUSENTE` by `architecture contract` §4 (`Q02`). `layoutProfile.js` prepares pure validated `SerializedDockview` data structures without calling unverified runtime methods.

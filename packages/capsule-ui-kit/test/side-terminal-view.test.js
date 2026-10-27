@@ -1,3 +1,4 @@
+import { assertPackageImports } from './publication-rules.js';
 /**
  * @file Side-terminal view contract: the overlay panel, the new-session menu
  * and the retuned terminal view and tab strip compile as plain JS, style with
@@ -28,8 +29,6 @@ const SETTINGS_PATH = path.resolve(__dirname, '../src/shell/SettingsModel.js');
 
 import { SETTINGS_STORAGE_KEYS } from '../src/shell/SettingsModel.js';
 
-const PRODUCT_NAME_PATTERN = new RegExp(['ho', 'ldings'].join(''), 'i');
-const PROVIDER_NAME_PATTERN = new RegExp(`${['cl', 'aude'].join('')}|${['co', 'dex'].join('')}`, 'i');
 
 /**
  * @param {string} sfcPath
@@ -55,7 +54,6 @@ function assertSfcContract(sfcPath, filename, id, strictBindings) {
   assert.ok(descriptor.scriptSetup, `${filename} must have a <script setup> block`);
   assert.equal(descriptor.scriptSetup.lang, undefined, '<script setup> must not use lang="ts"');
   assert.equal(descriptor.script?.lang, undefined, '<script> must not use lang="ts"');
-  assert.doesNotMatch(source, PRODUCT_NAME_PATTERN, `${filename} must contain zero product imports or references`);
   assert.doesNotMatch(
     source,
     /from\s+['"]openvue[^'"]*['"]/,
@@ -360,10 +358,10 @@ test('lane files carry no product names, mails, home paths or node imports', () 
     [SETTINGS_PATH, 'SettingsModel.js']
   ]) {
     const text = fs.readFileSync(filePath, 'utf8');
-    assert.doesNotMatch(text, PRODUCT_NAME_PATTERN, `${label}: product reference`);
-    assert.doesNotMatch(text, PROVIDER_NAME_PATTERN, `${label}: provider name`);
     assert.doesNotMatch(text, email, `${label}: mail-shaped string`);
     assert.doesNotMatch(text, homePath, `${label}: absolute home path`);
     assert.doesNotMatch(text, /from\s+['"][^'"]*node:/, `${label}: node runtime import`);
   }
 });
+
+test('imports use package boundaries and declared dependencies', () => assertPackageImports());

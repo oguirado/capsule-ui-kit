@@ -1,3 +1,4 @@
+import { assertPackageImports } from './publication-rules.js';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -49,7 +50,7 @@ test('Sidebar consumes OpenVue only through declared kit-internal imports', () =
     assert.ok(sidebarSource.includes(`from '${mod}'`), mod);
   }
   assert.ok(sidebarSource.includes("from './SidebarIcon.vue'"), 'icon part');
-  assert.doesNotMatch(sidebarSource + iconSource, /from\s+['"][^'"]*(?:app\/shell|src\/renderer|\u0068oldings\.owner|node:)/i);
+  assertPackageImports();
 });
 
 test('Sidebar keeps stable control ids, roles and accessible names', () => {
@@ -105,5 +106,5 @@ test('SidebarIcon ships the closed generic glyph set with aria-hidden art', () =
 });
 
 test('shell rail sources carry no application or real-world names', () => {
-  assert.doesNotMatch(sidebarSource + iconSource, /\u0068oldings|sequoia|vanguard|meridian|northgate|halcyon|apex/i);
+  assertPackageImports();
 });

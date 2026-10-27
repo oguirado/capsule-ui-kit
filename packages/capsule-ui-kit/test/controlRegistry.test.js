@@ -1,6 +1,6 @@
 /**
  * @file Behavioral oracle and negative contrast suite for the semantic control registry.
- * Covers UI_ARCHITECTURE.md §9 (AI-operability contract) and §13 (Semantic registry unit).
+ * Covers architecture contract §9 (AI-operability contract) and §13 (Semantic registry unit).
  */
 
 import test from 'node:test';

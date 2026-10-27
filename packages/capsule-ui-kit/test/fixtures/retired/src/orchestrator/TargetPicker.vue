@@ -1,14 +1,14 @@
 <script>
 /**
  * @fileoverview Core capability projection and explicit recipient target picker for the Orchestrator Drawer.
- * Implements UI_ARCHITECTURE.md §3 (OrchestratorDrawer ownership), §4 (Drafts & ingress alias cloning),
+ * Implements architecture contract §3 (OrchestratorDrawer ownership), §4 (Drafts & ingress alias cloning),
  * §6 (Capsule/Multislot identity, session activity/attachment, G5 focus preservation),
  * §7 (Target selection modes "One"/"Many"/"All", G3 per-slot lock, G4 target eligibility, review freeze/invalidation),
  * §8 (Flexbox panel internals and shared token roles), §9 (AI-operability contract for `drawer/targets/*` and `session/{sid}/target`),
  * and §13 (`TargetPicker.vue` unit: Core capability projection; duplicate/unknown recipient refuses).
  *
  * Structured adapter protocol name/version/capabilities and prompt/dispatch wire contracts in `envelope/v0.1`
- * are declared AUSENTE in UI_ARCHITECTURE.md §§5, 7, 14 R3; `adapterProtocol` defaults to `'AUSENTE'`.
+ * are declared AUSENTE in architecture contract §§5, 7, 14 R3; `adapterProtocol` defaults to `'AUSENTE'`.
  */
 
 /** @typedef {'one' | 'many' | 'all'} TargetSelectionMode */
@@ -597,7 +597,7 @@ function serializeTargetBasis(row) {
 }
 
 /**
- * Creates a pure stateful TargetPicker controller enforcing UI_ARCHITECTURE.md §§4, 6, 7, 9, and 13.
+ * Creates a pure stateful TargetPicker controller enforcing architecture contract §§4, 6, 7, 9, and 13.
  *
  * @param {Object} [config]
  * @param {string} [config.workspaceId]

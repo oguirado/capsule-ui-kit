@@ -2,7 +2,7 @@
 
 ## Purpose and Scope
 
-`DispatchResults.vue` implements the correlated per-target dispatch results presentation, non-authoritative `IntentStatus` tracking, witness-gated verification rules, uncertainty reconciliation, and guarded retry/cancel actions for the shared capsule UI kit (`UI_ARCHITECTURE.md` §§3, 4, 6 G5, 7, 8, 9, 10, 12, 13).
+`DispatchResults.vue` implements the correlated per-target dispatch results presentation, non-authoritative `IntentStatus` tracking, witness-gated verification rules, uncertainty reconciliation, and guarded retry/cancel actions for the shared capsule UI kit (`architecture contract` §§3, 4, 6 G5, 7, 8, 9, 10, 12, 13).
 
 It owns:
 - Request correlation across `(requestId, sessionId, runId, epoch)` for core admission replies, named refusal alerts (`alerts/dispatch-{did}`), streamed plain-text output chunks (`output/{sid}/text`), adapter completion events, and verified core receipts (`§4`, `§7`, `§13`).
@@ -31,9 +31,9 @@ It owns:
 
 ## AUSENTE Items (`§5`, `§7`, `§14 R3`)
 
-- **UI subscription/cursor/catch-up and dispatch/cancel wire schemas in `envelope/v0.1`:** Declared `AUSENTE` in `UI_ARCHITECTURE.md` §5 (`Observe agent results`, `Request agent work / cancel / resolve prompt uncertainty`) and §14 R3. `DispatchResults.vue` consumes correlated gateway events without inventing unapproved wire envelopes.
-- **Structured adapter completion protocol name, version, and capabilities:** Declared `AUSENTE` in `UI_ARCHITECTURE.md` §7 (ACP in Q21 is a candidate only, not an adopted API).
-- **Authoritative workload stream byte caps:** Declared `AUSENTE` in `UI_ARCHITECTURE.md` §5 and §7 (`maxStreamBytes` is configurable per instance without claiming a ratified product limit).
+- **UI subscription/cursor/catch-up and dispatch/cancel wire schemas in `envelope/v0.1`:** Declared `AUSENTE` in `architecture contract` §5 (`Observe agent results`, `Request agent work / cancel / resolve prompt uncertainty`) and §14 R3. `DispatchResults.vue` consumes correlated gateway events without inventing unapproved wire envelopes.
+- **Structured adapter completion protocol name, version, and capabilities:** Declared `AUSENTE` in `architecture contract` §7 (ACP in Q21 is a candidate only, not an adopted API).
+- **Authoritative workload stream byte caps:** Declared `AUSENTE` in `architecture contract` §5 and §7 (`maxStreamBytes` is configurable per instance without claiming a ratified product limit).
 
 ## Verification
 

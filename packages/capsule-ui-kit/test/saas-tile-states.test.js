@@ -1,3 +1,4 @@
+import { assertPublishable } from './publication-rules.js';
 /**
  * @fileoverview kw1 lane T tile-state tests: the seven-state model (icon,
  * label, colour token, description per state), badge chrome and take/release
@@ -238,23 +239,7 @@ function reviewedProducer() {
   };
 }
 
-const BANNED_PUBLIC = [
-  'claude',
-  'gpt',
-  'openai',
-  'anthropic',
-  'gemini',
-  'vance',
-  'sec-ops',
-  '127.0.0.1',
-];
-
-function assertNoBanned(source, label) {
-  const normalized = source.toLowerCase();
-  for (const banned of BANNED_PUBLIC) {
-    assert.equal(normalized.includes(banned), false, `${label}: must not contain ${banned}`);
-  }
-}
+const assertNoBanned = assertPublishable;
 
 test('tile states list the seven wall states frozen in wall order', () => {
   assert.deepEqual([...TILE_STATES], ['connecting', 'live', 'folded', 'human-control', 'agent-acting', 'lost', 'error']);
