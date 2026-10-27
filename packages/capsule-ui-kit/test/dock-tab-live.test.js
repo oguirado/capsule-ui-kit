@@ -89,7 +89,14 @@ app.whenReady().then(async()=>{const win=new BrowserWindow({width:1280,height:72
 await win.loadFile(${JSON.stringify(join(scratch,'dist/index.html'))});
 for(let i=0;i<600;i++){const result=await win.webContents.executeJavaScript('window.kwdResult');if(result){console.log(JSON.stringify(result));win.destroy();app.exit(result.ok?0:1);return;}await new Promise(r=>setTimeout(r,50));}
 win.destroy();app.exit(2);}).catch(e=>{console.error(e);app.exit(1);});`);
-    const run = spawnSync('systemd-run', ['--user','--scope','-q','-p','MemoryMax=8G','-p','MemorySwapMax=0','--','timeout','900','xvfb-run','-a',kitRequire('electron'),'--no-sandbox',join(scratch,'main.cjs')], {cwd:kit,encoding:'utf8',timeout:90000,maxBuffer:1024*1024});
+    // The runner supplies a display (for example via xvfb-run in headless CI).
+    // Keep host launchers and Node/Electron mode overrides out of the child.
+    const env = Object.fromEntries([
+      'PATH','HOME','TMPDIR','TEMP','TMP','DISPLAY','XAUTHORITY',
+      'WAYLAND_DISPLAY','XDG_RUNTIME_DIR','LANG','LC_ALL',
+      'SystemRoot','WINDIR',
+    ].filter(key => process.env[key] !== undefined).map(key => [key, process.env[key]]));
+    const run = spawnSync(kitRequire('electron'), ['--no-sandbox',join(scratch,'main.cjs')], {cwd:kit,env,encoding:'utf8',timeout:90000,maxBuffer:1024*1024});
     assert.equal(run.status, 0, run.stdout+'\n'+run.stderr);
     assert.match(run.stdout, /"ok":true/);
     assert.match(run.stdout, /"negativeRejected":true/);
