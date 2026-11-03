@@ -5,7 +5,7 @@
   "type": "module",
   "main": "electron/main.js",
   "description": "Starter skeleton for the capsule-ui-kit repository: two example capsule types plus the kit Terminal capsule.",
-  "license": "UNLICENSED",
+  "license": "AGPL-3.0-only",
   "scripts": {
     "dev": "npm run build && electron .",
     "build": "npm run build:preload && vite build",
