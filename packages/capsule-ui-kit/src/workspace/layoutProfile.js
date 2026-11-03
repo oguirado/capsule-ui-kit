@@ -5,17 +5,17 @@
  * capsule UI kit.
  *
  * Grounding:
- * - UI_ARCHITECTURE.md §3 (MissingPanel, DockWorkspace, ShellGrid)
- * - UI_ARCHITECTURE.md §4 (UiLayout boundary, layout profile rules, restore pipeline, atomic save guards)
- * - UI_ARCHITECTURE.md §5 (Read / save layout and preferences)
- * - UI_ARCHITECTURE.md §6 (Presentation moves vs backend lifecycle)
- * - UI_ARCHITECTURE.md §7 (retired bottom-drawer presentation states: collapsed, expanded, maximized)
- * - UI_ARCHITECTURE.md §13 (Layout migration unit)
+ * - architecture contract §3 (MissingPanel, DockWorkspace, ShellGrid)
+ * - architecture contract §4 (UiLayout boundary, layout profile rules, restore pipeline, atomic save guards)
+ * - architecture contract §5 (Read / save layout and preferences)
+ * - architecture contract §6 (Presentation moves vs backend lifecycle)
+ * - architecture contract §7 (retired bottom-drawer presentation states: collapsed, expanded, maximized)
+ * - architecture contract §13 (Layout migration unit)
  * - Installed `dockview-core version 8.4.1` `SerializedDockview` / `GroupviewPanelState` / `Orientation` declarations
  *
  * Notice on AUSENTE contracts:
- * - Host IPC profile read/save wire protocol (`envelope/v0.1` has no message for layout preferences; UI_ARCHITECTURE.md §5) is AUSENTE. This module accepts an injected profile storage boundary adapter (`readRaw`, `writeAtomic`) and never touches `window.localStorage` or direct filesystem/IPC globals.
- * - Dockview runtime `suspendLayout` or `silent` restore API is AUSENTE (UI_ARCHITECTURE.md §4); restoration produces pure validated `SerializedDockview` payloads ready for `fromJSON`.
+ * - Host IPC profile read/save wire protocol (`envelope/v0.1` has no message for layout preferences; architecture contract §5) is AUSENTE. This module accepts an injected profile storage boundary adapter (`readRaw`, `writeAtomic`) and never touches `window.localStorage` or direct filesystem/IPC globals.
+ * - Dockview runtime `suspendLayout` or `silent` restore API is AUSENTE (architecture contract §4); restoration produces pure validated `SerializedDockview` payloads ready for `fromJSON`.
  */
 
 /**
@@ -41,13 +41,13 @@ export const PINNED_VERSIONS = Object.freeze({
 
 /**
  * Canonical panel component type used when a saved panel references a retired
- * or unavailable panel component type (UI_ARCHITECTURE.md §3, §4).
+ * or unavailable panel component type (architecture contract §3, §4).
  * @type {string}
  */
 export const MISSING_PANEL_TYPE = 'MissingPanel';
 
 /**
- * Default admitted substantive panel types in the shared capsule kit (UI_ARCHITECTURE.md §3).
+ * Default admitted substantive panel types in the shared capsule kit (architecture contract §3).
  * Types absent from this set decode to `MissingPanel` with `originalPanelType`
  * preserved (retired types, e.g. the former bottom drawer, included).
  * @type {ReadonlySet<string>}
@@ -66,7 +66,7 @@ export const DEFAULT_ACTIVE_PANEL_TYPES = Object.freeze(
 
 /**
  * Explicitly forbidden keys in any panel parameters or profile metadata
- * (UI_ARCHITECTURE.md §4: No credentials, live process state, budgets,
+ * (architecture contract §4: No credentials, live process state, budgets,
  * permissions, pending admissions, capture paths, focus/scroll/control lease
  * or authoritative game state).
  * @type {ReadonlySet<string>}
@@ -105,7 +105,7 @@ export const FORBIDDEN_PARAM_KEYS = Object.freeze(
 );
 
 /**
- * Default allowlisted presentation parameter keys per panel (UI_ARCHITECTURE.md §4:
+ * Default allowlisted presentation parameter keys per panel (architecture contract §4:
  * Resource IDs are navigation hints revalidated against core state; allowlisted
  * per-panel presentation data only).
  * @type {ReadonlySet<string>}
@@ -143,7 +143,7 @@ const VALID_ORIENTATIONS = Object.freeze(new Set(['HORIZONTAL', 'VERTICAL']));
 const VALID_PANEL_RENDERERS = Object.freeze(new Set(['onlyWhenVisible', 'always']));
 
 /**
- * Valid retired-drawer chrome modes (UI_ARCHITECTURE.md §7). The shell keeps
+ * Valid retired-drawer chrome modes (architecture contract §7). The shell keeps
  * validating `drawerMode`/`drawerExpandedHeight` so profiles saved before the
  * drawer retirement still decode; the values no longer drive any surface.
  * @type {ReadonlySet<string>}
@@ -151,13 +151,13 @@ const VALID_PANEL_RENDERERS = Object.freeze(new Set(['onlyWhenVisible', 'always'
 const VALID_DRAWER_MODES = Object.freeze(new Set(['collapsed', 'expanded', 'maximized']));
 
 /**
- * Valid ShellGrid navigation rail modes (UI_ARCHITECTURE.md §3, §4).
+ * Valid ShellGrid navigation rail modes (architecture contract §3, §4).
  * @type {ReadonlySet<string>}
  */
 const VALID_RAIL_MODES = Object.freeze(new Set(['expanded', 'collapsed']));
 
 /**
- * Valid presentation modes (UI_ARCHITECTURE.md §4, §8).
+ * Valid presentation modes (architecture contract §4, §8).
  * @type {ReadonlySet<string>}
  */
 const VALID_PRESENTATION_MODES = Object.freeze(new Set(['standard', 'fullscreen', 'monitor-wall']));
@@ -608,7 +608,7 @@ function validateSerializedGridview(grid, seenGroupIds, referencedPanelIds, path
  * - `shell.railCollapsed` boolean was used instead of `leftRailMode`/`rightRailMode`.
  * - Panel `component` field was used instead of `contentComponent` in `dockview.panels`.
  *
- * Notice: Migrations are purely structural and never relaunch old processes or resend pending prompts (UI_ARCHITECTURE.md §4).
+ * Notice: Migrations are purely structural and never relaunch old processes or resend pending prompts (architecture contract §4).
  *
  * @param {Record<string, unknown>} rawV1
  * @returns {{ ok: true, migrated: Record<string, unknown> } | { ok: false, code: 'INVALID_ENVELOPE' | 'FORBIDDEN_DATA', reason: string }}
@@ -721,7 +721,7 @@ function migrateV1ToV2(rawV1) {
 /**
  * Normalizes a single panel state entry, enforcing the allowlisted parameter rule,
  * rejecting forbidden keys, and replacing retired or unknown panel component types
- * with `MissingPanel` while preserving panel ID and structural references (UI_ARCHITECTURE.md §4).
+ * with `MissingPanel` while preserving panel ID and structural references (architecture contract §4).
  *
  * @param {string} panelKey
  * @param {unknown} rawPanel
@@ -916,7 +916,7 @@ function normalizePanelState(
  * Decodes, validates, sequentially migrates, and normalizes a serialized layout profile
  * JSON string or raw parsed value.
  *
- * Pipeline (UI_ARCHITECTURE.md §4):
+ * Pipeline (architecture contract §4):
  * cold read → closed decode → sequential pure migrations → panel-type/parameter normalization
  * → replace retired types with `MissingPanel` preserving IDs and structural references.
  *
@@ -1589,7 +1589,7 @@ export function decodeAndMigrateLayoutProfile(rawInput, options = {}) {
 /**
  * Creates a documented default safe layout profile for a given scope when no stored
  * profile exists or when offering an in-memory safe layout during read-only quarantine
- * (UI_ARCHITECTURE.md §4).
+ * (architecture contract §4).
  *
  * @param {LayoutProfileScope} scope
  * @returns {LayoutProfileEnvelope}
@@ -1744,7 +1744,7 @@ function sortKeysDeep(value) {
 }
 
 /**
- * Applies a popout fallback when popouts are denied or unavailable (UI_ARCHITECTURE.md §4, §14 R2:
+ * Applies a popout fallback when popouts are denied or unavailable (architecture contract §4, §14 R2:
  * "Popout fallback must not overwrite an intended saved wall placement").
  * Moves panels from `popoutGroups` back into the in-memory main grid for display, while preserving
  * `savedWallPlacements` and the original `popoutGroups` in the persisted profile copy unless an
@@ -1828,7 +1828,7 @@ function findFirstLeaf(node) {
 }
 
 /**
- * Stateful coordinator for the restore pipeline and atomic save guard (UI_ARCHITECTURE.md §4):
+ * Stateful coordinator for the restore pipeline and atomic save guard (architecture contract §4):
  * - Cold read → closed decode → sequential pure migrations → panel normalization → MissingPanel replacement
  * - Unknown future schema or corrupt profile is retained untouched and makes persistence read-only
  *   until explicit recovery (`recoverWithProfile`); an in-memory safe layout is offered without overwriting.
@@ -1949,7 +1949,7 @@ export function createLayoutProfileController(config) {
 
     /**
      * Enables save-on-gesture-completion after visible-panel readiness, fonts, and
-     * final viewport settle (UI_ARCHITECTURE.md §4). Refuses if in read-only quarantine.
+     * final viewport settle (architecture contract §4). Refuses if in read-only quarantine.
      */
     markSettled() {
       if (phase === 'read-only-quarantine' || readOnly) {
@@ -2054,7 +2054,7 @@ export function createLayoutProfileController(config) {
     },
 
     /**
-     * Explicit operator recovery from read-only quarantine (UI_ARCHITECTURE.md §4:
+     * Explicit operator recovery from read-only quarantine (architecture contract §4:
      * "makes persistence read-only until explicit recovery").
      *
      * @param {LayoutProfileEnvelope} [replacementProfile]

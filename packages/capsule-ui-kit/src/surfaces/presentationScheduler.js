@@ -1,6 +1,6 @@
 /**
  * @fileoverview Coordinated fair presentation scheduler and surface frame-lease registry.
- * Sealed design authority: UI_ARCHITECTURE.md sections 3, 4, 5, 6, 9, 10 and 13.
+ * Sealed design authority: architecture contract sections 3, 4, 5, 6, 9, 10 and 13.
  *
  * Enforces:
  * - Non-reactive external service registry for frame mailboxes, leases, and bounded warm resources (§4, §10).

@@ -42,7 +42,7 @@ export function writeSidebarCollapsed(storage, collapsed) {
  * adornments, user card and engine strip. Data arrives via props, visual
  * overrides via the icon/header/footer/telemetry slots (telemetry renders
  * nothing by default). Contains no application names:
- * product strings live in the consumer navigation model (renderer-v2).
+ * product strings live in the consumer's navigation model.
  * Overlay mode (default): the collapsed icon rail reserves its width in
  * flow while the expanded panel floats above the dock layer (absolute,
  * drawer z-index, floating shadow) without reflowing siblings. The

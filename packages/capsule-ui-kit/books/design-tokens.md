@@ -1,6 +1,6 @@
 # Design tokens and vendor theme contract
 
-Status: sealed repository-owned token schema (`capsule-ui-kit.design-tokens/v1`) and vendor mapping manifest (`capsule-ui-kit.token-mappings/v1`) [TARGET]. Grounded against installed declarations under the consuming product’s `app/shell/node_modules/` [MEASURED].
+Status: sealed repository-owned token schema (`capsule-ui-kit.design-tokens/v1`) and vendor mapping manifest (`capsule-ui-kit.token-mappings/v1`) [TARGET]. Grounded against installed declarations under the consuming product’s `node_modules/` [MEASURED].
 
 <a id="reading-map"></a>
 Reading map: authority and token hierarchy §1; preference axes and root bridge §2; pinned vendor surfaces and AUSENTE declarations §3; fail-closed validation and negative contrasts §4; computed-property verification oracle §5.
@@ -8,10 +8,10 @@ Reading map: authority and token hierarchy §1; preference axes and root bridge 
 <a id="section-1"></a>
 ## 1. Authority and token hierarchy
 
-`packages/capsule-ui-kit/src/design/tokens.json` is the single design authority for consuming product renderer shells (`UI_ARCHITECTURE.md` §2, §8, §13). Token resolution flows strictly one way:
+`packages/capsule-ui-kit/src/design/tokens.json` is the single design authority for consuming product renderer shells (`architecture contract` §2, §8, §13). Token resolution flows strictly one way:
 
 1. **Primitive (`primitive.*`)**: raw hex/RGBA color scales (`neutral`, `accent`, `emerald`, `amber`, `rose`, `cyan`, `purple`, `orange`, `pink`, `alpha`, and the S1 `s1` ramp: `background`, `lowest`, `low`, `container`, `high`, `highest`, `bright`, `primary`/`onPrimary`/`primaryContainer`/`inversePrimary`, `secondary`/`onSecondary`/`secondaryContainer`/`onSecondaryContainer`, `tertiary`/`onTertiary`/`tertiaryContainer`/`onTertiaryContainer`, `error`/`onError`/`errorContainer`/`onErrorContainer`, `text`, `textVariant`, `outline`, `outlineVariant`), pixel spacing steps (`0`..`16`), border radii (`none`, `xs`, `sm`, `md`, `lg`, `s1_xl` 12px, `pill`), font stacks, weights, line heights, millisecond durations, cubic-bezier easings, z-index layers, and opacities. Primitive tokens never reference semantic or component tokens.
-2. **Semantic (`semantic.*`)**: role-bound tokens required by `UI_ARCHITECTURE.md` §8:
+2. **Semantic (`semantic.*`)**: role-bound tokens required by `architecture contract` §8:
    - `surface`: `canvas`, `panel`, `chrome`, `elevated`, `sunken`, `overlay`, `interactive`, `interactiveHover`, `interactiveActive`, `hoverS1` (doc-alternate `#182234`; the export hovers with a `container/60` overlay instead).
    - `text`: `primary`, `muted`, `disabled`, `inverse`, `accent`.
    - `border`: `default`, `subtle`, `strong`, `divider`, `width`.
@@ -20,14 +20,14 @@ Reading map: authority and token hierarchy §1; preference axes and root bridge 
    - `accent`: `primary`, `primaryHover`, `primaryActive`, `primaryContrast`, plus the S1 `secondary` and `tertiary` quartets (`<base>`, `on<Base>`, `<base>Container`, `on<Base>Container`).
    - `status`: `success`, `warning`, `error`, `info` (each with `surface`, `border`, `text`, `icon`).
    - `spacing`, `radius`, `typography` (`fontFamily`, `fontSize` with `xs`/`sm`/`md`/`lg`/`xl`/`terminal` plus S1 `s1_10`/`s1_14`/`s1_16`/`s1_20`, `fontWeight`, `lineHeight`, `roles`: `pageTitle`, `sectionTitle`, `body`, `label`, `supporting`, `tableCell`, `code` plus S1 `headlineLg`/`headlineMd`/`headlineSm`, `bodyMd`/`bodySm`, `labelMd`/`labelSm`, `codeMd`/`codeSm`, `tableHeader`), `zIndex`, `motion` (`duration`, `easing`), `size` (`control`, `tab`, `separator`, `rail`, `drawer`), `elevation` (`floatingShadow`, `scrollbarShadow`, S1 `s1Floating`), `opacity`, and `terminal` (viewport + 16 ANSI colors).
-3. **Component (`component.*`)**: capsule-ui-kit component roles for `shellGrid`, `dockWorkspace`, `capsulePanel`, `surfaceView`, `multiSlot`, `orchestratorDrawer`, `fleetPanel`, `inspectorPanel`, `alertBoard`, `timelinePanel`, `missingPanel`, `dialogHost`, `accessibleOutput`, `appShell`, and the S1 `s1` group (`capsuleHeaderHeight` 36px, `tableHeaderHeight` 28px, `tableRowHeight` 32px, `statusDot` 8px, `moraleBarWidth` 48px, `moraleBarHeight` 6px, `kpiValue` 13px mono semibold) (`UI_ARCHITECTURE.md` §3).
+3. **Component (`component.*`)**: capsule-ui-kit component roles for `shellGrid`, `dockWorkspace`, `capsulePanel`, `surfaceView`, `multiSlot`, `orchestratorDrawer`, `fleetPanel`, `inspectorPanel`, `alertBoard`, `timelinePanel`, `missingPanel`, `dialogHost`, `accessibleOutput`, `appShell`, and the S1 `s1` group (`capsuleHeaderHeight` 36px, `tableHeaderHeight` 28px, `tableRowHeight` 32px, `statusDot` 8px, `moraleBarWidth` 48px, `moraleBarHeight` 6px, `kpiValue` 13px mono semibold) (`architecture contract` §3).
 
 Shared tokens never reference vendor CSS variables (`--dv-*`, `--p-*`, `--px-*`, `--vscode-*`) or `dt(...)` expressions. All vendor adapters read from `tokens.json` through `packages/capsule-ui-kit/src/design/tokenMappings.json`.
 
 <a id="section-2"></a>
 ## 2. Preference axes and root bridge
 
-A single committed preference and resolved mode object drives root document attributes, the OpenVue dark-mode selector, Dockview theme metadata, and xterm `ITheme` (`UI_ARCHITECTURE.md` §8):
+A single committed preference and resolved mode object drives root document attributes, the OpenVue dark-mode selector, Dockview theme metadata, and xterm `ITheme` (`architecture contract` §8):
 
 | Axis | Admitted values | Root attribute | Independence / behavioral invariant |
 |---|---|---|---|
@@ -38,12 +38,12 @@ A single committed preference and resolved mode object drives root document attr
 | `forcedColors` | `none`, `active` | `data-theme-forced-colors` | Mirrors `@media (forced-colors: active)` onto CSS system color keywords (`Canvas`, `CanvasText`, `Highlight`, `GrayText`) |
 | `reducedMotion` | `no-preference`, `reduce` | `data-theme-motion` | Mirrors `@media (prefers-reduced-motion: reduce)`; collapses `fast`/`normal`/`slow` durations to `0ms` while `semantic.motion.duration.fold` is `0ms` in all modes |
 
-Bootstrap preferences initialize before first paint via a bundled CSP-compatible script and propagate to every window document (`UI_ARCHITECTURE.md` §8). Minimum qualified viewports are `1280x720` desktop and `1280x800` Steam Deck.
+Bootstrap preferences initialize before first paint via a bundled CSP-compatible script and propagate to every window document (`architecture contract` §8). Minimum qualified viewports are `1280x720` desktop and `1280x800` Steam Deck.
 
 <a id="section-3"></a>
 ## 3. Pinned vendor surfaces and AUSENTE declarations
 
-`packages/capsule-ui-kit/src/design/tokenMappings.json` inventories every token and theme option exposed by the pinned packages in the consuming product’s `app/shell/node_modules/`:
+`packages/capsule-ui-kit/src/design/tokenMappings.json` inventories every token and theme option exposed by the pinned packages in the consuming product’s `node_modules/`:
 
 | Vendor surface | Installed package & version [MEASURED] | Inspected files | Classification summary |
 |---|---|---|---|
@@ -55,7 +55,7 @@ Bootstrap preferences initialize before first paint via a bundled CSP-compatible
 
 - **External OpenVue preset package (`@openuxkit/themes` / `@primeuix/themes`)**: `AUSENTE` in `node_modules`. `capsule-ui-kit` generates the OpenVue preset and CSS custom properties directly from `tokens.json` and `tokenMappings.json`.
 - **`colorScheme.highContrast` in `@openuxkit/styled`**: `AUSENTE` in `node_modules/@openuxkit/styled/dist/index.mjs` (`ThemeUtils` only branches on `colorScheme.light` and `colorScheme.dark`). High contrast is application-owned via `[data-theme-contrast="high"]` and `modes` keys `<scheme>.high`.
-- **`dockview-vue version 8.6.1` tarball/declarations**: `AUSENTE` in `node_modules` and `PINS_EVIDENCE.json` (`8.4.1` is installed; tracked under `UI_ARCHITECTURE.md` §2/§14 R1).
+- **`dockview-vue version 8.6.1` tarball/declarations**: `AUSENTE` in `node_modules` and `dependency evidence record` (`8.4.1` is installed; tracked under `architecture contract` §2/§14 R1).
 
 <a id="section-4"></a>
 ## 4. Fail-closed validation and negative contrasts
@@ -87,4 +87,4 @@ Qualification tests (`node --test`) evaluate resolved computed values across the
 - S1 contrast pairs: `text.primary`/`muted` on all six S1 surfaces `>= 4.5` in both schemes; `secondaryContainer`/`onSecondaryContainer`, `tertiaryContainer`/`onTertiaryContainer`, badge `primary`/`primaryContrast`, and dark `error.surface`/`error.text` `>= 4.5`; dark `accent.primary` on canvas `>= 3`.
 - S1 chrome: `component.appShell.sidebarWidth`/`sidebarWidthS1` `15rem` (240px), `topbarHeight` `3rem` (48px), `semantic.size.rail.expandedWidth` `240px`; `component.s1.*` header/row/dot/bar sizes exact; `semantic.typography` S1 roles resolve `20/16/15/14/13/12/11/10px` at text scale `1` with the specified px line-heights.
 
-This companion book is scoped strictly to the supplied `UI_ARCHITECTURE.md`, `ROUTER_BOOTSTRAP.md`, and inspected `node_modules` declarations.
+This companion book is scoped strictly to the supplied `architecture contract`, `bootstrap contract`, and inspected `node_modules` declarations.

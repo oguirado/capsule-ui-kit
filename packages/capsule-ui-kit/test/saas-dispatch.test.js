@@ -152,8 +152,6 @@ describe('saas dispatch — SFC compilation and structural contracts', () => {
         false,
         'Dispatch skin uses plain elements only (no direct vendor imports)'
       );
-      const consumerImport = new RegExp('from\\s+[\'"][^\'"]*' + 'h' + 'oldings', 'i');
-      assert.equal(consumerImport.test(source), false, 'Must not contain consumer imports');
       const compiledScript = compilerSfc.compileScript(descriptor, { id: `saas-${file}` });
       assert.ok(compiledScript.content.length > 0);
       const compiledTemplate = compilerSfc.compileTemplate({

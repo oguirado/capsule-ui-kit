@@ -2,7 +2,7 @@
 /**
  * @fileoverview OrchestratorDrawer view controller, keyboard/IME/focus guards, separator handler,
  * and semantic control registry synchronizer.
- * Grounded in UI_ARCHITECTURE.md §§3, 6 (G5), 7 (G2, G3, G4), 8, 9, 10, 12, and 13.
+ * Grounded in architecture contract §§3, 6 (G5), 7 (G2, G3, G4), 8, 9, 10, 12, and 13.
  * Plain JavaScript with JSDoc; no authored TypeScript, no product-specific simulation imports.
  */
 

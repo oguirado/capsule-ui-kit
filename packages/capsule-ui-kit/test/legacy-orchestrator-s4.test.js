@@ -1,3 +1,4 @@
+import { assertPackageImports } from './publication-rules.js';
 /**
  * @file S4 orchestrator drawer contract: unread-output tracking in the drawer
  * model plus the collapsed bar (activity summary, unread count, latest
@@ -151,7 +152,7 @@ test('OrchestratorDrawer.vue — SFC contract (plain JS, no product imports, com
   assert.ok(descriptor.scriptSetup, '<script setup> block must exist');
   assert.equal(descriptor.scriptSetup.lang, undefined, '<script setup> must not use lang="ts"');
   assert.equal(descriptor.script?.lang, undefined, '<script> must not use lang="ts"');
-  assert.doesNotMatch(source, /\u0068oldings/i, 'Must contain zero product imports or references');
+  assertPackageImports();
   assert.doesNotMatch(source, /from\s+['"]openvue[^'"]*['"]/, 'Must not import OpenVue directly');
   assert.ok(!descriptor.template.content.includes('v-html'), 'Must never use v-html');
 

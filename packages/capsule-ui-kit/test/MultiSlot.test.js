@@ -1,5 +1,6 @@
+import { assertPackageImports } from './publication-rules.js';
 /**
- * @file Behavioral and structural oracle tests for MultiSlot.vue (`UI_ARCHITECTURE.md` §§ 3, 6, 7, 9, 10, 12, 13).
+ * @file Behavioral and structural oracle tests for MultiSlot.vue (`architecture contract` §§ 3, 6, 7, 9, 10, 12, 13).
  * Verifies the Session projection contract, 5 orthogonal multislot axes, attach/restore contiguous cursor
  * reconciliation, G5 fold/restore focus and activation veil protocol, §9 semantic control inventory,
  * @vue/compiler-sfc compilation, and the mandatory negative contrasts (tab/fold/mount cannot spawn/kill,
@@ -59,7 +60,7 @@ test('SFC structure, @vue/compiler-sfc compilation, plain JS/JSDoc law, and zero
   const source = fs.readFileSync(VUE_FILE_PATH, 'utf8');
   assert.ok(!source.includes('lang="ts"'), 'Authored TypeScript (lang="ts") is forbidden');
   assert.ok(!source.includes("lang='ts'"), "Authored TypeScript (lang='ts') is forbidden");
-  assert.ok(!/h3-app-root|h3-app-route|\u0068oldings\.owner-projection/i.test(source), 'No consumer imports or symbols allowed');
+  assertPackageImports();
   assert.ok(source.includes("'cuk-csp-hidden':"), 'Folded live hosts must stay mounted using a mounted hidden class (§6)');
 
   const compilerSfc = loadCompilerSfc();

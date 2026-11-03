@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 
 // PL2 K3 (+H1 boot): kit/theme CSS installed before first paint for every
 // capsule (F1 styling race). Kit side: synchronous, idempotent installer.
-// Consumer side (H1 surface) moved to app/shell/test/tp-pl4-theme-order.test.js (R17).
+// Consumer integration is verified separately.
 
 test('theme preset resolves synchronously for every scheme', async () => {
   const { createAuraPreset } = await import('../src/design/aura.js');

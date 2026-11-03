@@ -13,7 +13,7 @@
 
 /**
  * @typedef {Object} Pl6FamilyRule
- * @property {number} rowIndex - 1-based row index from UI_ARCHITECTURE.md §9 matrix.
+ * @property {number} rowIndex - 1-based row index from architecture contract §9 matrix.
  * @property {string} template - Canonical family template label.
  * @property {RegExp} pattern - Pattern matching concrete semantic anchors.
  * @property {readonly string[]} allowedRoles - Permitted ARIA/semantic roles for this control family.

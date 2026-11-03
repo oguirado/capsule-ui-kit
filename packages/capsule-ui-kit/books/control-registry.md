@@ -2,7 +2,7 @@
 
 ## Purpose and Scope
 
-`packages/capsule-ui-kit/src/agent/controlRegistry.js` implements the declarative component control inventory and AI-operability contract defined in the shared UI architecture document (`docs/UI_ARCHITECTURE.md` in the consuming product) §§3, 4, 5, 6, 7, 9, 10 and 13 (unit: **Semantic registry**).
+`packages/capsule-ui-kit/src/agent/controlRegistry.js` implements the declarative component control inventory and AI-operability contract defined in the shared UI architecture document (`architecture contract` in the consuming product) §§3, 4, 5, 6, 7, 9, 10 and 13 (unit: **Semantic registry**).
 
 The registry is a pure JavaScript ES module with JSDoc types, zero external runtime dependencies, and zero consumer imports. It enforces the separation between:
 
@@ -11,7 +11,7 @@ The registry is a pure JavaScript ES module with JSDoc types, zero external runt
 - Canonical collision-checked tuple `(windowId, presentationInstance, entityId, controlSlot)`
 - Reviewed lane producer mapping from `semanticAnchor` + `(epoch, generation)` to `stableId`
 
-## Normative Invariants (`UI_ARCHITECTURE.md` §9 & §13)
+## Normative Invariants (`architecture contract` §9 & §13)
 
 | Invariant | Enforcement in `controlRegistry.js` | Negative Contrast / Error Code |
 |---|---|---|
@@ -30,7 +30,7 @@ The registry is a pure JavaScript ES module with JSDoc types, zero external runt
 
 ## Public API Summary
 
-- `CONTROL_FAMILY_INVENTORY`: Frozen 13-row descriptor table from `UI_ARCHITECTURE.md` §9.
+- `CONTROL_FAMILY_INVENTORY`: Frozen 13-row descriptor table from `architecture contract` §9.
 - `matchControlFamily(semanticAnchor)`: Returns the matched `ControlFamilyRule` or `null`.
 - `createControlRegistry(config)`: Creates a window-scoped registry (`register`, `advanceEpoch`, `markNeedsRevalidation`, `revalidateControl`, `enterModalScope`, `exitModalScope`, `resolveActionableTarget`, `exportCanonicalState`).
 - `canonicalizeStateJson(state, options)`: Deterministic sorted-key compact JSON serializer supporting `{ nullBoxes: true }`.
@@ -39,8 +39,8 @@ The registry is a pure JavaScript ES module with JSDoc types, zero external runt
 
 ## AUSENTE Items
 
-- **Reviewed Electron lane producer wire schema**: Direct Electron semantic export remains `BLOCKED` pending a reviewed producer contract because bare Electron is absent from the inspected peer enum (`UI_ARCHITECTURE.md` §9, §14 R8; `WEB:513`). `controlRegistry.js` accepts an injected `reviewedProducer` contract seam and fails closed (`ERR_LANE_PRODUCER_BLOCKED`) when absent.
-- **Native `state_sha256` witness equivalence fixture**: Equivalence between `batteryDigest` and ARCH's `state_sha256` or session-record hash is `AUSENTE` (`UI_ARCHITECTURE.md` §9, §14 R10) and is not assumed.
+- **Reviewed Electron lane producer wire schema**: Direct Electron semantic export remains `BLOCKED` pending a reviewed producer contract because bare Electron is absent from the inspected peer enum (`architecture contract` §9, §14 R8; `WEB:513`). `controlRegistry.js` accepts an injected `reviewedProducer` contract seam and fails closed (`ERR_LANE_PRODUCER_BLOCKED`) when absent.
+- **Native `state_sha256` witness equivalence fixture**: Equivalence between `batteryDigest` and ARCH's `state_sha256` or session-record hash is `AUSENTE` (`architecture contract` §9, §14 R10) and is not assumed.
 
 ## Verification Command
 

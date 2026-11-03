@@ -1,7 +1,7 @@
 <script>
 /**
  * @fileoverview Shared DockWorkspace host module and pure presentation coordinator
- * (unit `Dock host`, `UI_ARCHITECTURE.md` §3, §4, §5, §6, §7, §8, §9, §10, §13, §14).
+ * (unit `Dock host`, `architecture contract` §3, §4, §5, §6, §7, §8, §9, §10, §13, §14).
  *
  * Grounded strictly in:
  * - Installed `dockview-vue version 8.4.1` (`dist/types/index.d.ts`, `dist/types/dockview/types.d.ts`,
@@ -17,9 +17,9 @@
  *
  * Binding Architectural Rules:
  * 1. `DockWorkspace` owns: Panel registry, Dockview adapter, presentation moves/tabs/size,
- *    and restoration barrier (`UI_ARCHITECTURE.md` §3 line 99).
+ *    and restoration barrier (`architecture contract` §3 line 99).
  * 2. `DockWorkspace` excludes: Capsule creation/destruction or authority from add/remove
- *    callbacks (`UI_ARCHITECTURE.md` §3 line 99, §6 line 175, §13 line 384).
+ *    callbacks (`architecture contract` §3 line 99, §6 line 175, §13 line 384).
  * 3. `dockview-core` `onDidAddPanel` and `onDidRemovePanel` fire during panel moves across groups
  *    (`component.api.d.ts:397-404`). Panel move, tab switch, float, dock-back, or presentation close
  *    NEVER calls `destroy` on a capsule or drops its core identity, terminal binding, or capture lease.
@@ -28,11 +28,11 @@
  *    and is not a dock panel.
  *
  * Notice on AUSENTE contracts:
- * - `dockview-vue version 8.6.1`: AUSENTE in `node_modules` (installed version is `8.4.1`; `UI_ARCHITECTURE.md` §2, §14 R1).
- * - Built-in `suspendLayout` or `silent` restore API in `dockview-core`: AUSENTE (`UI_ARCHITECTURE.md` §4 Q02).
+ * - `dockview-vue version 8.6.1`: AUSENTE in `node_modules` (installed version is `8.4.1`; `architecture contract` §2, §14 R1).
+ * - Built-in `suspendLayout` or `silent` restore API in `dockview-core`: AUSENTE (`architecture contract` §4 Q02).
  *   Handled via an explicit restore veil barrier (`wallRevealed`) + `origin: 'user' | 'api'` disambiguation.
  * - Custom popout `window.open` factory / Electron `BrowserWindow` transfer hook: AUSENTE in `dockview-core`
- *   (`popoutWindow.d.ts:4-58`) and blocked by R2 (`UI_ARCHITECTURE.md` §14 R2). Popout controls are rendered
+ *   (`popoutWindow.d.ts:4-58`) and blocked by R2 (`architecture contract` §14 R2). Popout controls are rendered
  *   disabled with an explicit R2 reason, and `onDidOpenPopoutWindowFail` triggers non-destructive in-memory
  *   fallback (`resolvePopoutFallbackView`).
  * - Enterprise Dockview modules (`KeyboardNavigation`, `PinnedTabs`, `MultiRowTabs`, `AdvancedOverflow`,
@@ -120,7 +120,7 @@ import * as defaultLayoutProfileModule from './layoutProfile.js';
 
 /**
  * Closed list of substantive panel component types registered in `DockWorkspace`
- * (`UI_ARCHITECTURE.md` §3 lines 99-108).
+ * (`architecture contract` §3 lines 99-108).
  * @type {readonly string[]}
  */
 export const DOCK_PANEL_REGISTRY_TYPES = Object.freeze([
@@ -158,7 +158,7 @@ export const VALID_DOCKVIEW_RENDERERS = Object.freeze(
 );
 
 /**
- * Density-to-gap pixel map for `DockviewTheme.gap` (`UI_ARCHITECTURE.md` §8).
+ * Density-to-gap pixel map for `DockviewTheme.gap` (`architecture contract` §8).
  * @type {Readonly<Record<string, number>>}
  */
 const DENSITY_GAP_MAP = Object.freeze({
@@ -194,7 +194,7 @@ function isPlainObject(val) {
 
 /**
  * Validates that a panel ID is a non-empty immutable string and never a list-length
- * or numeric index (`UI_ARCHITECTURE.md` §6, §9).
+ * or numeric index (`architecture contract` §6, §9).
  * @param {unknown} id
  * @returns {{ ok: true, id: string } | { ok: false, code: 'ERR_INVALID_PANEL_ID', reason: string }}
  */
@@ -225,7 +225,7 @@ export function validatePanelIdentity(id) {
 
 /**
  * Builds the closed panel component registry for `<DockviewVue :components="...">`
- * (`UI_ARCHITECTURE.md` §3, `dockview-vue` `VueProps.components`).
+ * (`architecture contract` §3, `dockview-vue` `VueProps.components`).
  * Any unknown or retired component type resolves deterministically to `MissingPanel`.
  *
  * @param {Record<string, unknown>} [componentMap]
@@ -263,7 +263,7 @@ export function createPanelRegistry(componentMap = {}) {
 
 /**
  * Creates the repository-owned `DockviewTheme` metadata object (`dockview-core` `theme.d.ts:2-21`,
- * `UI_ARCHITECTURE.md` §8 lines 271-275).
+ * `architecture contract` §8 lines 271-275).
  * Shared tokens drive `.mv-dockview-theme`; vendor preset palettes are never used as authority.
  *
  * @param {Object} [options]
@@ -297,7 +297,7 @@ export function createSharedDockviewTheme(options = {}) {
  * (`dockview-core` `options.d.ts:710-775`).
  * Live `CapsulePanel` instances default to `renderer: 'always'` so live surfaces and
  * xterm instances remain mounted in `.dv-overlay-render-container` across tab switches
- * and moves (`UI_ARCHITECTURE.md` §6 line 197, `ar_p_dockview` §8.2).
+ * and moves (`architecture contract` §6 line 197, `ar_p_dockview` §8.2).
  *
  * @param {AddPanelOptionsInput} input
  * @param {Object} [options]
@@ -467,7 +467,7 @@ export function createDockWorkspaceHost(config) {
     throw dockHostError('ERR_INVALID_CONFIG', 'createDockWorkspaceHost requires a config object');
   }
 
-  // Binding negative-contrast enforcement (`UI_ARCHITECTURE.md` §3 line 99, §6 line 175, §13 line 384):
+  // Binding negative-contrast enforcement (`architecture contract` §3 line 99, §6 line 175, §13 line 384):
   // DockWorkspace excludes capsule creation/destruction or authority from add/remove callbacks.
   if (
     'onDestroyCapsule' in config ||
@@ -494,7 +494,7 @@ export function createDockWorkspaceHost(config) {
   /** @type {Array<{ dispose: () => void }>} */
   const disposables = [];
 
-  // Restore barrier flags (`UI_ARCHITECTURE.md` §4 line 131:
+  // Restore barrier flags (`architecture contract` §4 line 131:
   // restore presentation -> await visible-panel readiness/fonts/final viewport -> reveal settled/error wall -> enable save-on-gesture-completion)
   const barrier = {
     layoutLoadedFromJSON: false,
@@ -522,7 +522,7 @@ export function createDockWorkspaceHost(config) {
   let activePanelId = null;
 
   /**
-   * Non-authoritative presentation tracking of core capsule bindings (`UI_ARCHITECTURE.md` §6).
+   * Non-authoritative presentation tracking of core capsule bindings (`architecture contract` §6).
    * Keyed by immutable `capsuleId`.
    * @type {Map<string, CapsuleBindingRecord>}
    */
@@ -603,7 +603,7 @@ export function createDockWorkspaceHost(config) {
 
     // `onDidAddPanel` and `onDidRemovePanel` fire multiple times when moving panels
     // (`component.api.d.ts:397-404`). They update presentation location only and NEVER
-    // spawn or destroy backend capsules (`UI_ARCHITECTURE.md` §3, §6, §13).
+    // spawn or destroy backend capsules (`architecture contract` §3, §6, §13).
     disposables.push(
       api.onDidRemovePanel((panel) => {
         const pid = panel?.id;
@@ -655,7 +655,7 @@ export function createDockWorkspaceHost(config) {
       })
     );
 
-    // R2 Popout failure handler (`dockview-core` `popoutWindow.d.ts:15-31`, `UI_ARCHITECTURE.md` §4, §14 R2):
+    // R2 Popout failure handler (`dockview-core` `popoutWindow.d.ts:15-31`, `architecture contract` §4, §14 R2):
     // When a popout window is blocked or refused, switch to the in-memory fallback view and prevent
     // gesture saves from overwriting the intended saved wall placement.
     disposables.push(
@@ -683,7 +683,7 @@ export function createDockWorkspaceHost(config) {
   }
 
   /**
-   * Executes the cold restore pipeline (`UI_ARCHITECTURE.md` §4 line 131):
+   * Executes the cold restore pipeline (`architecture contract` §4 line 131):
    * cold read -> closed decode -> sequential pure migrations -> panel normalization
    * -> replace retired types with `MissingPanel` preserving IDs and structural references
    * -> `dockviewApi.fromJSON(..., { reuseExistingPanels: true })`.
@@ -730,7 +730,7 @@ export function createDockWorkspaceHost(config) {
 
   /**
    * Sets the measured viewport dimensions (`1280x720` minimum / `1280x800` Deck matrix,
-   * `UI_ARCHITECTURE.md` §8 line 278) and forwards to `DockviewApi.layout(width, height)`.
+   * `architecture contract` §8 line 278) and forwards to `DockviewApi.layout(width, height)`.
    *
    * @param {number} width
    * @param {number} height
@@ -750,7 +750,7 @@ export function createDockWorkspaceHost(config) {
   }
 
   /**
-   * Registers or updates a core-projected capsule binding in the workspace (`UI_ARCHITECTURE.md` §6).
+   * Registers or updates a core-projected capsule binding in the workspace (`architecture contract` §6).
    * Mounting or moving a panel never spawns or kills a capsule process.
    *
    * @param {Object} binding
@@ -823,7 +823,7 @@ export function createDockWorkspaceHost(config) {
   /**
    * Moves a panel to a target group and `Position` (`'top' | 'bottom' | 'left' | 'right' | 'center'`)
    * via `DockviewPanelApi.moveTo` (`dockviewPanelApi.d.ts:23,58`).
-   * Preserves capsule identity, terminal session binding, and capture lease (`UI_ARCHITECTURE.md` §6 line 175).
+   * Preserves capsule identity, terminal session binding, and capture lease (`architecture contract` §6 line 175).
    *
    * @param {string} panelId
    * @param {Object} moveTarget
@@ -874,7 +874,7 @@ export function createDockWorkspaceHost(config) {
 
   /**
    * Moves a panel into a viewport-bounded floating group (`DockviewApi.addFloatingGroup`,
-   * `component.api.d.ts:588`). Preserves capsule lifecycle and bindings (`UI_ARCHITECTURE.md` §6).
+   * `component.api.d.ts:588`). Preserves capsule lifecycle and bindings (`architecture contract` §6).
    *
    * @param {string} panelId
    * @param {{ x?: number, y?: number, width?: number, height?: number }} [bounds]
@@ -897,7 +897,7 @@ export function createDockWorkspaceHost(config) {
   }
 
   /**
-   * Docks a floating panel or group back into the main wall grid (`UI_ARCHITECTURE.md` §5 line 153, §6 line 177).
+   * Docks a floating panel or group back into the main wall grid (`architecture contract` §5 line 153, §6 line 177).
    *
    * @param {string} panelId
    * @param {{ targetGroupId?: string, position?: DockviewPosition }} [options]
@@ -910,7 +910,7 @@ export function createDockWorkspaceHost(config) {
   }
 
   /**
-   * Closes a panel in the UI presentation layer ONLY (`DockviewPanelApi.close`, `UI_ARCHITECTURE.md` §5 line 144, §6 line 177).
+   * Closes a panel in the UI presentation layer ONLY (`DockviewPanelApi.close`, `architecture contract` §5 line 144, §6 line 177).
    * Closing a panel is strictly distinct from destroying a backend capsule (`surface_request destroy`).
    *
    * @param {string} panelId
@@ -934,7 +934,7 @@ export function createDockWorkspaceHost(config) {
 
   /**
    * Explicitly refuses any attempt to trigger backend capsule destruction through `DockWorkspace`
-   * (`UI_ARCHITECTURE.md` §3 line 99, §6 line 175, §13 line 384).
+   * (`architecture contract` §3 line 99, §6 line 175, §13 line 384).
    *
    * @param {string} capsuleId
    */
@@ -948,7 +948,7 @@ export function createDockWorkspaceHost(config) {
   }
 
   /**
-   * Refuses direct UI popout creation under R2 (`UI_ARCHITECTURE.md` §14 R2) with an explicit
+   * Refuses direct UI popout creation under R2 (`architecture contract` §14 R2) with an explicit
    * human- and agent-readable reason, never calling `window.open`.
    *
    * @param {string} panelId
@@ -994,7 +994,7 @@ export function createDockWorkspaceHost(config) {
   }
 
   /**
-   * Explicit operator recovery from read-only quarantine (`UI_ARCHITECTURE.md` §4 line 133).
+   * Explicit operator recovery from read-only quarantine (`architecture contract` §4 line 133).
    */
   async function recoverLayoutExplicitly() {
     const res = await profileController.recoverExplicitly();
@@ -1007,7 +1007,7 @@ export function createDockWorkspaceHost(config) {
   }
 
   /**
-   * Keyboard navigation and separator handler (`UI_ARCHITECTURE.md` §7 line 219, §8 line 277):
+   * Keyboard navigation and separator handler (`architecture contract` §7 line 219, §8 line 277):
    * - Terminal keystrokes (`isTerminalTarget === true`) never bubble into workspace pane shortcuts.
    * - `F6` / `Shift+F6` uses `DockviewApi.activateNext()` / `activatePrevious()` (never deprecated `moveToNext`).
    * - `ArrowLeft` / `ArrowRight` on separator resizes the primary split region deterministically.
@@ -1055,7 +1055,7 @@ export function createDockWorkspaceHost(config) {
    * Builds the §9 semantic control descriptors owned by `DockWorkspace`
    * (`workspace/separator/{id}`, `capsule/{id}/panel`, `capsule/{id}/tab`,
    * `capsule/{id}/popout`, `capsule/{id}/dock-back`).
-   * Hidden or veil-covered nodes receive `box: null` (`UI_ARCHITECTURE.md` §9 line 302).
+   * Hidden or veil-covered nodes receive `box: null` (`architecture contract` §9 line 302).
    *
    * @param {Object} [context]
    * @param {string} [context.windowId]
@@ -1322,7 +1322,7 @@ const emit = defineEmits([
   'active-panel-change',
 ]);
 
-// Keep DockviewApi and host coordinator out of deep Vue reactivity (UI_ARCHITECTURE.md §10, ar_p_vue §11)
+// Keep DockviewApi and host coordinator out of deep Vue reactivity (architecture contract §10, ar_p_vue §11)
 const dockviewApiRef = shallowRef(null);
 const stageElementRef = shallowRef(null);
 let stageObserver = null;
@@ -1677,7 +1677,7 @@ defineExpose({
     @pointercancel="clearDropPreview"
     @pointerup="dropPreview = ''; onUserGesture()"
   >
-    <!-- Read-only quarantine alert banner when saved layout has unknown future schema or corruption (UI_ARCHITECTURE.md §4) -->
+    <!-- Read-only quarantine alert banner when saved layout has unknown future schema or corruption (architecture contract §4) -->
     <div
       v-if="isReadOnlyQuarantine"
       id="workspace-quarantine-alert"
@@ -1701,7 +1701,7 @@ defineExpose({
       </button>
     </div>
 
-    <!-- Accessible keyboard workspace controls and R2 popout status bar (UI_ARCHITECTURE.md §8, §9, §14 R2) -->
+    <!-- Accessible keyboard workspace controls and R2 popout status bar (architecture contract §8, §9, §14 R2) -->
     <div
       id="workspace-keyboard-toolbar"
       class="mv-dock-workspace__toolbar"
@@ -1778,7 +1778,7 @@ defineExpose({
         @did-drop="onDidDrop"
       />
 
-      <!-- Full-size restore barrier veil (UI_ARCHITECTURE.md §4 line 131, §12 G-VISUAL) -->
+      <!-- Full-size restore barrier veil (architecture contract §4 line 131, §12 G-VISUAL) -->
       <div
         
         id="workspace-restore-veil"
@@ -1885,7 +1885,7 @@ defineExpose({
   height: 100%;
 }
 
-/* Overlay positioning permitted only for overlays/veils (UI_ARCHITECTURE.md §8 line 277) */
+/* Overlay positioning permitted only for overlays/veils (architecture contract §8 line 277) */
 .mv-dock-workspace__veil {
   position: absolute;
   inset: 0;
@@ -1897,7 +1897,7 @@ defineExpose({
   color: var(--mv-text-muted, #8b949e);
 }
 
-/* Shared Dockview theme adapter mapping --dv-* variables to repository-owned --mv-* roles (UI_ARCHITECTURE.md §8) */
+/* Shared Dockview theme adapter mapping --dv-* variables to repository-owned --mv-* roles (architecture contract §8) */
 .mv-dockview-theme {
   --dv-group-view-background-color: var(--mv-surface-panel, #161b22);
   --dv-tabs-and-actions-container-background-color: var(--mv-surface-chrome, #0d1117);

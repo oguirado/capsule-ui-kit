@@ -3,7 +3,7 @@
  * compiled component (defaults, slots, secondary fallback), anchor and
  * agent_lane/v1 registry conformance, CSP (no style attributes in rendered
  * HTML), token-only styling, dock-area container responsiveness, WCAG AA
- * contrast in all 12 kit modes, and the 0.2.1 release bump. Plain JS,
+ * contrast in all 12 kit modes, and the 0.2.2 release bump. Plain JS,
  * node:test, no Electron.
  *
  * SSR graph: the real EmptyWall.vue and the real UiButton.vue are compiled
@@ -395,14 +395,14 @@ test('wall responds to the dock area through a container query', () => {
   assert.ok(style.includes('flex-direction: column'), 'actions stack when the area narrows');
 });
 
-test('shell index exports EmptyWall and the release reads 0.2.1', () => {
+test('shell index exports EmptyWall and the release reads 0.2.2', () => {
   assert.ok(
     readKit('src/index-shell.js').includes("export { default as EmptyWall } from './shell/EmptyWall.vue';"),
     'public shell export',
   );
-  assert.equal(JSON.parse(readKit('package.json')).version, '0.2.1', 'kit version bumped');
+  assert.equal(JSON.parse(readKit('package.json')).version, '0.2.2', 'kit version bumped');
   const changelog = readKit('CHANGELOG.md');
-  assert.ok(changelog.includes('## 0.2.1'), 'changelog entry present');
+  assert.ok(changelog.includes('## 0.2.2'), 'changelog entry present');
   assert.ok(changelog.includes('EmptyWall'), 'changelog names the component');
   assert.ok(changelog.includes('live-scheme'), 'changelog names the overlay fix');
 });

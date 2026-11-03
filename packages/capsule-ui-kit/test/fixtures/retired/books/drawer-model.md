@@ -2,7 +2,7 @@
 
 ## Purpose and Scope
 
-`drawerModel.js` implements the pure state machine, closed draft/target validation schemas, review freeze and invalidation guards, deterministic request identity derivation (G2), per-slot dispatch reservation checks (G3), target eligibility rules (G4), and semantic control inventory projection for the Orchestrator Drawer (`UI_ARCHITECTURE.md` §§3, 4, 5, 6, 7, 9, 13, 14).
+`drawerModel.js` implements the pure state machine, closed draft/target validation schemas, review freeze and invalidation guards, deterministic request identity derivation (G2), per-slot dispatch reservation checks (G3), target eligibility rules (G4), and semantic control inventory projection for the Orchestrator Drawer (`architecture contract` §§3, 4, 5, 6, 7, 9, 13, 14).
 
 It owns:
 - Presentation state transitions (`collapsed`, `expanded`, `maximized`) with height clamping and scroll/draft/session preservation across collapse (`§7`).
@@ -38,8 +38,8 @@ It owns:
 
 ## AUSENTE Items (`§5`, `§7`, `§14 R3`)
 
-- **Wire schema for prompt/session/dispatch/cancel in `envelope/v0.1`:** Declared `AUSENTE` in `UI_ARCHITECTURE.md` §5 and §14 R3. `submitReviewedDispatch` emits a local `intentPreview` marked with `wireContractStatus: 'AUSENTE'` and never fabricates a privileged IPC or PTY payload.
-- **Adapter structured protocol identity and capabilities:** Declared `AUSENTE` in `UI_ARCHITECTURE.md` §7 (`adapterProtocol` defaults to `'AUSENTE'` until a reviewed protocol contract is supplied).
+- **Wire schema for prompt/session/dispatch/cancel in `envelope/v0.1`:** Declared `AUSENTE` in `architecture contract` §5 and §14 R3. `submitReviewedDispatch` emits a local `intentPreview` marked with `wireContractStatus: 'AUSENTE'` and never fabricates a privileged IPC or PTY payload.
+- **Adapter structured protocol identity and capabilities:** Declared `AUSENTE` in `architecture contract` §7 (`adapterProtocol` defaults to `'AUSENTE'` until a reviewed protocol contract is supplied).
 
 ## Verification
 

@@ -1,6 +1,6 @@
 /**
  * @file Declarative semantic control registry and AI-operability contract enforcement.
- * Grounded in UI_ARCHITECTURE.md §9 (AI-operability contract) and §13 (Semantic registry unit).
+ * Grounded in architecture contract §9 (AI-operability contract) and §13 (Semantic registry unit).
  * Plain JavaScript ES module with JSDoc types; no authored TypeScript, no consumer imports.
  */
 
@@ -16,7 +16,7 @@ import { sha256 } from './sha256.js';
 
 /**
  * @typedef {Object} ControlFamilyRule
- * @property {number} rowIndex - 1-based row index from UI_ARCHITECTURE.md §9 matrix.
+ * @property {number} rowIndex - 1-based row index from architecture contract §9 matrix.
  * @property {string} template - Canonical family template label.
  * @property {RegExp} pattern - Pattern matching concrete semantic anchors.
  * @property {readonly string[]} allowedRoles - Permitted ARIA/semantic roles for this control family.
@@ -123,7 +123,7 @@ function assertSafeNonNegativeInt(value, label, errCode = 'ERR_INVALID_INTEGER')
 }
 
 /**
- * Allowed control-family inventory from UI_ARCHITECTURE.md §9 (13 normative rows, expanded into pattern rules).
+ * Allowed control-family inventory from architecture contract §9 (13 normative rows, expanded into pattern rules).
  * Additive SaaS rows (record/destroy, layout-save, detail steppers/pty/scaled-badge, review-confirm)
  * extend existing rows without changing the 13-row shape; pl3 R9 likewise
  * admits dialog control roles on row 12 (dialog/{id}/{action} plus one
@@ -676,7 +676,7 @@ const FAMILY_RULES = Object.freeze([
 ]);
 
 /**
- * The 13 normative control-family rows from UI_ARCHITECTURE.md §9.
+ * The 13 normative control-family rows from architecture contract §9.
  */
 export const CONTROL_FAMILY_INVENTORY = Object.freeze([
   Object.freeze({
@@ -982,7 +982,7 @@ export function computeStateDigests(canonicalState) {
 }
 
 /**
- * Validates a closed native agent_lane frame per UI_ARCHITECTURE.md §9:
+ * Validates a closed native agent_lane frame per architecture contract §9:
  * - Exact frame keys: `nonce,seq,verb,body`
  * - `verb` in `['observe', 'submit']`; unknown keys reject
  * - For `submit` (T2), `body` has exact keys `tick,seq,cmd,args`
@@ -1039,7 +1039,7 @@ export function validateAgentLaneFrame(frame) {
 }
 
 /**
- * Creates a window-scoped semantic control registry enforcing UI_ARCHITECTURE.md §9 & §13 invariants.
+ * Creates a window-scoped semantic control registry enforcing architecture contract §9 & §13 invariants.
  * @param {{
  *   windowId: string,
  *   epoch: number,

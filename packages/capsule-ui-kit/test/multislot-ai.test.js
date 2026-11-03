@@ -1,3 +1,4 @@
+import { assertPackageImports } from './publication-rules.js';
 /**
  * @file AI multislot kit behaviour suite (lanes 1-4 contract, conductor overrides applied).
  * Covers the shell/panes/splitter keep-alive rules, record/screenshot gating,
@@ -324,10 +325,6 @@ test('contract: bench demo page ships the stub host and review checklist', () =>
 });
 
 test('contract: lane 5 files pass publication hygiene', () => {
-  const product = new RegExp(
-    ['ho', 'ldings'].join('') + '|' + ['me', 'taviewer'].join('') + '|' + ['te', 'amwork'].join(''),
-    'i',
-  );
   const email = /[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+/;
   const homePath = new RegExp(`/(?:${['ho' + 'me', 'Us' + 'ers', 'ro' + 'ot'].join('|')})/[\\w.-]+`, 'i');
   const targets = [
@@ -340,7 +337,6 @@ test('contract: lane 5 files pass publication hygiene', () => {
     const text = read(file);
     assert.doesNotMatch(text, email, `${label}: e-mail-shaped string`);
     assert.doesNotMatch(text, homePath, `${label}: absolute home path`);
-    assert.equal(product.test(text), false, `${label}: product name`);
   }
 });
 
@@ -380,11 +376,7 @@ for (const name of ALL_SFC) {
       compilerOptions: { bindingMetadata: script.bindings },
     });
     assert.equal(template.errors.length, 0, `${name} template errors`);
-    const consumerMark = new RegExp(
-      ['h3-app-root', 'h3-app-route', ['ho', 'ldings'].join('') + '.owner-projection'].join('|'),
-      'i',
-    );
-    assert.ok(!consumerMark.test(source), `${name}: zero consumer imports`);
+    assertPackageImports();
     assert.ok(
       !/from\s+['"]openvue['"]|from\s+['"]@openvue\//.test(source),
       `${name}: OpenVue only through kit wrappers`,
@@ -895,10 +887,6 @@ test('lane 4: tokens, index exports, book', { skip: skipIntegration }, async () 
 });
 
 test('multislot tree passes publication hygiene', { skip: skipIntegration }, () => {
-  const product = new RegExp(
-    ['ho', 'ldings'].join('') + '|' + ['me', 'taviewer'].join('') + '|' + ['te', 'amwork'].join(''),
-    'i',
-  );
   const email = /[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+/;
   const homePath = new RegExp(`/(?:${['ho' + 'me', 'Us' + 'ers', 'ro' + 'ot'].join('|')})/[\\w.-]+`, 'i');
   const targets = [
@@ -911,6 +899,5 @@ test('multislot tree passes publication hygiene', { skip: skipIntegration }, () 
     const text = read(file);
     assert.doesNotMatch(text, email, `${label}: e-mail-shaped string`);
     assert.doesNotMatch(text, homePath, `${label}: absolute home path`);
-    assert.equal(product.test(text), false, `${label}: product name`);
   }
 });

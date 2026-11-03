@@ -1,6 +1,6 @@
 /**
  * @file Behavioral oracle and negative-contrast test suite for PublicProjection.
- * Covers UI_ARCHITECTURE.md §4, §12 (C-OWN, C-PUBLIC, C-DECODE, C-INTEGER, C-FLOW, C-REV) and §13.
+ * Covers architecture contract §4, §12 (C-OWN, C-PUBLIC, C-DECODE, C-INTEGER, C-FLOW, C-REV) and §13.
  */
 
 import test from 'node:test';

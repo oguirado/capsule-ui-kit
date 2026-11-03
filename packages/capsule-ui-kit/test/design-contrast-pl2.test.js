@@ -1,3 +1,4 @@
+import { assertPackageImports } from './publication-rules.js';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -110,7 +111,7 @@ test('SkipLink compiles as plain JS with tokens only and a stable id/role/name',
       assert.ok(themeVars.has(match[1]), `${file}: undeclared token ${match[1]}`);
     }
   }
-  assert.ok(!/\u0048oldings|Sequoia|Vanguard|Apex|Meridian|Northgate|Halcyon/.test(source), file);
+  assertPackageImports();
   for (const match of source.matchAll(/from '([^']+)'/g)) {
     assert.equal(match[1], 'vue', `${file}: unexpected import ${match[1]}`);
   }

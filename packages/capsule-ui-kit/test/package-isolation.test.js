@@ -1,3 +1,4 @@
+import { assertPackageImports } from './publication-rules.js';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { cpSync, mkdtempSync, readFileSync, readdirSync, rmSync } from 'node:fs';
@@ -18,14 +19,6 @@ test('public kit loads unchanged outside the consumer tree and imports no consum
       const path=typeof value==='string'?value:value.default;
       assert.ok(readFileSync(join(scratch,'kit',path)).byteLength>0);
     }
-    const walk=dir=>{for(const entry of readdirSync(dir,{withFileTypes:true})){
-      const path=join(dir,entry.name);
-      if(entry.isDirectory())walk(path);
-      else if(/\.(js|vue)$/.test(path)) {
-        const code=readFileSync(path,'utf8');
-        assert.doesNotMatch(code,/from\s+['"][^'"]*(?:app\/shell|src\/renderer|\u0068oldings\.owner|node:)/i);
-      }
-    }};
-    walk(join(scratch,'kit/src'));
+    assertPackageImports(join(scratch, 'kit'));
   } finally {rmSync(scratch,{recursive:true,force:true});}
 });

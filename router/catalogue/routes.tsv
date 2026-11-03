@@ -210,6 +210,7 @@ file:3fca28229934a40071de	packages/capsule-ui-kit/test/presentationScheduler.tes
 file:5de9d75f5a6959c89c73	packages/capsule-ui-kit/test/publicProjection-money.test.js
 file:5d484ccf0324a2947ddb	packages/capsule-ui-kit/test/publicProjection.test.js
 file:09d360017d415a841026	packages/capsule-ui-kit/test/publication-hygiene.test.js
+file:c925a6dd78b06b0651db	packages/capsule-ui-kit/test/publication-rules.js
 file:85a5c7833504429c90d8	packages/capsule-ui-kit/test/recordings-panel.test.js
 file:80c2bdade46e4035faf8	packages/capsule-ui-kit/test/saas-detail.test.js
 file:18b7d5b07099ddd3c2ab	packages/capsule-ui-kit/test/saas-dispatch.test.js

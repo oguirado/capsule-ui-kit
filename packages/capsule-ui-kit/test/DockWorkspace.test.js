@@ -1,6 +1,7 @@
+import { assertPackageImports } from './publication-rules.js';
 /**
  * @fileoverview Behavioral and structural tests for `DockWorkspace.vue` (unit `Dock host`,
- * `UI_ARCHITECTURE.md` §3, §4, §5, §6, §7, §8, §9, §10, §13, §14).
+ * `architecture contract` §3, §4, §5, §6, §7, §8, §9, §10, §13, §14).
  *
  * Tests:
  * 1. `@vue/compiler-sfc` parsing, template compilation, no-TypeScript (`lang="ts"` absent),
@@ -488,11 +489,7 @@ test('Dock host unit — DockWorkspace.vue', async (t) => {
       assert.equal(descriptor.script?.lang, undefined, '<script> must not use lang="ts"');
 
       // Verify no consumer imports anywhere in the file
-      assert.doesNotMatch(
-        sfcSource,
-        /\u0048oldings|h3-app-root|h3-app-route/i,
-        'DockWorkspace.vue must contain zero consumer imports or symbols'
-      );
+      assertPackageImports();
 
       // Verify Dockview CSS import and DockviewVue usage
       assert.match(
@@ -538,7 +535,7 @@ test('Dock host unit — DockWorkspace.vue', async (t) => {
         buildAddPanelOptions,
       } = helpers;
 
-      // Verify all substantive panel types from UI_ARCHITECTURE.md §3
+      // Verify all substantive panel types from architecture contract §3
       for (const expectedType of [
         'CapsulePanel',
         'FleetPanel',
@@ -567,7 +564,7 @@ test('Dock host unit — DockWorkspace.vue', async (t) => {
         'Unknown or retired component types must resolve to MissingPanel'
       );
 
-      // Shared theme adapter (UI_ARCHITECTURE.md §8, ar_p_dockview §9.1)
+      // Shared theme adapter (architecture contract §8, ar_p_dockview §9.1)
       const darkTheme = createSharedDockviewTheme({
         colorScheme: 'dark',
         density: 'compact',
@@ -581,7 +578,7 @@ test('Dock host unit — DockWorkspace.vue', async (t) => {
       assert.equal(darkTheme.dndTabIndicator, 'line');
       assert.ok(Object.isFrozen(darkTheme), 'Theme object must be frozen');
 
-      // Live CapsulePanel defaults to renderer: 'always' (UI_ARCHITECTURE.md §6 line 197, ar_p_dockview §8.2)
+      // Live CapsulePanel defaults to renderer: 'always' (architecture contract §6 line 197, ar_p_dockview §8.2)
       const capsuleAddOpts = buildAddPanelOptions({
         id: 'panel-cap-1',
         component: 'CapsulePanel',
@@ -951,7 +948,7 @@ test('Dock host unit — DockWorkspace.vue', async (t) => {
       assert.equal(fallbackSave.code, 'POPOUT_FALLBACK_NO_OVERWRITE');
 
       // Keyboard navigation: F6 / Shift+F6 calls activateNext / activatePrevious, never deprecated moveToNext,
-      // and ignores keystrokes originating from a terminal input target (UI_ARCHITECTURE.md §7)
+      // and ignores keystrokes originating from a terminal input target (architecture contract §7)
       const termKeyIgnored = host.handleWorkspaceKeydown({
         key: 'F6',
         shiftKey: false,

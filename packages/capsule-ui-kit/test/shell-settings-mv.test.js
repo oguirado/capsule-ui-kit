@@ -1,3 +1,4 @@
+import { assertPackageImports } from './publication-rules.js';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -148,7 +149,6 @@ test('record destination flows only through the host capability', () => {
 
 test('host-key files carry no consumer or provider names', () => {
   for (const [label, source] of [['panel', panelSource], ['model', modelSource]]) {
-    assert.ok(!/H\u006Fldings|Sequoia|Vanguard|Apex|Meridian|Northgate|Halcyon/.test(source), label);
     assert.doesNotMatch(source, /claude|codex/i, label);
     assert.doesNotMatch(source, /[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+/, `${label}: mail-shaped string`);
   }
@@ -193,3 +193,5 @@ test('existing settings contract is unchanged', () => {
     assert.ok(panelSource.includes(anchor), anchor);
   }
 });
+
+test('imports use package boundaries and declared dependencies', () => assertPackageImports());

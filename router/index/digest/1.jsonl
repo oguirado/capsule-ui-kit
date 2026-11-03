@@ -1,3 +1,4 @@
-{"g":["shell-topbar.test"],"i":256,"id":"file:fb344298f4674210ab26","o":[],"p":"Kit file packages/capsule-ui-kit/test/shell-topbar.test.js","t":"shell-topbar.test.js"}
-{"g":["cspMenu"],"i":257,"id":"file:fc3cbe42f18f5db8784f","o":[],"p":"Kit file packages/capsule-ui-kit/src/workspace/cspMenu.js","t":"cspMenu.js"}
-{"g":["layout-default-profile.test"],"i":258,"id":"file:ffdaa5f99e5b4574e53c","o":[],"p":"Kit file packages/capsule-ui-kit/test/layout-default-profile.test.js","t":"layout-default-profile.test.js"}
+{"g":["UiPage"],"i":256,"id":"file:fb09588ede4c1b16224e","o":[],"p":"Kit file packages/capsule-ui-kit/src/ui/UiPage.vue","t":"UiPage.vue"}
+{"g":["shell-topbar.test"],"i":257,"id":"file:fb344298f4674210ab26","o":[],"p":"Kit file packages/capsule-ui-kit/test/shell-topbar.test.js","t":"shell-topbar.test.js"}
+{"g":["cspMenu"],"i":258,"id":"file:fc3cbe42f18f5db8784f","o":[],"p":"Kit file packages/capsule-ui-kit/src/workspace/cspMenu.js","t":"cspMenu.js"}
+{"g":["layout-default-profile.test"],"i":259,"id":"file:ffdaa5f99e5b4574e53c","o":[],"p":"Kit file packages/capsule-ui-kit/test/layout-default-profile.test.js","t":"layout-default-profile.test.js"}

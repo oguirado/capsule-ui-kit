@@ -1,3 +1,4 @@
+import { assertPackageImports } from './publication-rules.js';
 /**
  * @file S4 terminal capsule contract (tabs, launcher, composer) in S1 language.
  * Verifies the new terminal SFCs compile as plain JS/JSDoc (no lang="ts", no
@@ -52,7 +53,7 @@ function assertSfcContract(sfcPath, filename, id) {
   assert.ok(descriptor.scriptSetup, `${filename} must have a <script setup> block`);
   assert.equal(descriptor.scriptSetup.lang, undefined, '<script setup> must not use lang="ts"');
   assert.equal(descriptor.script?.lang, undefined, '<script> must not use lang="ts"');
-  assert.doesNotMatch(source, /\u0068oldings/i, `${filename} must contain zero product imports or references`);
+  assertPackageImports();
   assert.doesNotMatch(
     source,
     /from\s+['"]openvue[^'"]*['"]/,

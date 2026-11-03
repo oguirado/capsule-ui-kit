@@ -2,7 +2,7 @@
 
 ## Purpose and Scope
 
-`TargetPicker.vue` implements the core capability projection and explicit recipient selector for the Orchestrator Drawer (`UI_ARCHITECTURE.md` §§3, 4, 6, 7, 8, 9, 13, 14). It is authored as a runtime-only-friendly Vue 3.5 SFC using `<script setup>` and a companion `<script>` module in plain JavaScript with JSDoc types (no `lang="ts"`, no consumer imports).
+`TargetPicker.vue` implements the core capability projection and explicit recipient selector for the Orchestrator Drawer (`architecture contract` §§3, 4, 6, 7, 8, 9, 13, 14). It is authored as a runtime-only-friendly Vue 3.5 SFC using `<script setup>` and a companion `<script>` module in plain JavaScript with JSDoc types (no `lang="ts"`, no consumer imports).
 
 It owns:
 - Closed-schema validation and deep-frozen ingress cloning for core-projected session capability descriptors (`validateSingleTargetCapability`, `validateTargetCapabilityProjection`, `§4`, `§6`).
@@ -43,8 +43,8 @@ It owns:
 
 ## AUSENTE Items (`§5`, `§7`, `§14 R3`)
 
-- **Structured adapter protocol name, version, and capability schema:** Declared `AUSENTE` in `UI_ARCHITECTURE.md` §7 (ACP in Q21 is a candidate to evaluate, not an adopted API). `adapterProtocol` defaults to `'AUSENTE'` unless supplied by a reviewed adapter projection.
-- **Prompt/session/dispatch/cancel UI wire contract in `envelope/v0.1`:** Declared `AUSENTE` in `UI_ARCHITECTURE.md` §5 and §14 R3. `TargetPicker.vue` manages UI-only explicit recipient selection and frozen review basis without synthesizing unapproved IPC or PTY wire payloads.
+- **Structured adapter protocol name, version, and capability schema:** Declared `AUSENTE` in `architecture contract` §7 (ACP in Q21 is a candidate to evaluate, not an adopted API). `adapterProtocol` defaults to `'AUSENTE'` unless supplied by a reviewed adapter projection.
+- **Prompt/session/dispatch/cancel UI wire contract in `envelope/v0.1`:** Declared `AUSENTE` in `architecture contract` §5 and §14 R3. `TargetPicker.vue` manages UI-only explicit recipient selection and frozen review basis without synthesizing unapproved IPC or PTY wire payloads.
 
 ## Verification
 

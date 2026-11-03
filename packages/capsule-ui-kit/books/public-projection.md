@@ -2,7 +2,7 @@
 
 ## Purpose and Scope
 
-`packages/capsule-ui-kit/src/state/publicProjection.js` implements the non-authoritative renderer state admission coordinator and read-only view facade specified in the shared UI architecture document (`docs/UI_ARCHITECTURE.md` in the consuming product) §§ 4, 12, and 13 (`Projection` writer unit).
+`packages/capsule-ui-kit/src/state/publicProjection.js` implements the non-authoritative renderer state admission coordinator and read-only view facade specified in the shared UI architecture document (`architecture contract` in the consuming product) §§ 4, 12, and 13 (`Projection` writer unit).
 
 The coordinator enforces a single admission boundary per renderer instance (`createPublicProjectionCoordinator`) while exposing only deeply frozen, alias-free snapshots through `getView()`.
 

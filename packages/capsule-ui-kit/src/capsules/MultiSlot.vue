@@ -2,12 +2,12 @@
 /**
  * @file MultiSlot capsule AI session projection controller, G5 fold/restore focus & activation veil
  * protocol, and §9 AI-operability semantic control inventory helpers.
- * Grounded in UI_ARCHITECTURE.md §§ 3, 6, 7, 8, 9, 10, 12, and 13 (unit: Multislot).
+ * Grounded in architecture contract §§ 3, 6, 7, 8, 9, 10, 12, and 13 (unit: Multislot).
  * Plain JavaScript with JSDoc annotations; no authored TypeScript, no consumer imports.
  */
 
 /**
- * Closed backend capsule lifecycle vocabulary (ARCH:110, UI_ARCHITECTURE.md §6:181).
+ * Closed backend capsule lifecycle vocabulary (ARCH:110, architecture contract §6:181).
  * @type {readonly string[]}
  */
 export const ALLOWED_BACKEND_LIFECYCLES = Object.freeze([
@@ -19,7 +19,7 @@ export const ALLOWED_BACKEND_LIFECYCLES = Object.freeze([
 ]);
 
 /**
- * Axis 1: AI-region presentation states (UI_ARCHITECTURE.md §6:189).
+ * Axis 1: AI-region presentation states (architecture contract §6:189).
  * @type {readonly string[]}
  */
 export const AI_REGION_PRESENTATION_STATES = Object.freeze([
@@ -28,7 +28,7 @@ export const AI_REGION_PRESENTATION_STATES = Object.freeze([
 ]);
 
 /**
- * Axis 2: Session view selection states (UI_ARCHITECTURE.md §6:190).
+ * Axis 2: Session view selection states (architecture contract §6:190).
  * @type {readonly string[]}
  */
 export const SESSION_VIEW_SELECTION_STATES = Object.freeze([
@@ -37,7 +37,7 @@ export const SESSION_VIEW_SELECTION_STATES = Object.freeze([
 ]);
 
 /**
- * Axis 3: Session attachment states (UI_ARCHITECTURE.md §6:191).
+ * Axis 3: Session attachment states (architecture contract §6:191).
  * @type {readonly string[]}
  */
 export const ATTACHMENT_STATES = Object.freeze([
@@ -49,7 +49,7 @@ export const ATTACHMENT_STATES = Object.freeze([
 ]);
 
 /**
- * Axis 4: Projected session activity states (UI_ARCHITECTURE.md §6:192).
+ * Axis 4: Projected session activity states (architecture contract §6:192).
  * @type {readonly string[]}
  */
 export const PROJECTED_SESSION_ACTIVITIES = Object.freeze([
@@ -63,7 +63,7 @@ export const PROJECTED_SESSION_ACTIVITIES = Object.freeze([
 ]);
 
 /**
- * Axis 5: View retention states (UI_ARCHITECTURE.md §6:193).
+ * Axis 5: View retention states (architecture contract §6:193).
  * @type {readonly string[]}
  */
 export const VIEW_RETENTION_STATES = Object.freeze([
@@ -73,7 +73,7 @@ export const VIEW_RETENTION_STATES = Object.freeze([
 ]);
 
 /**
- * Permitted capsule-to-session roles (UI_ARCHITECTURE.md §6:185).
+ * Permitted capsule-to-session roles (architecture contract §6:185).
  * @type {readonly string[]}
  */
 export const ALLOWED_SESSION_ROLES = Object.freeze([
@@ -82,7 +82,7 @@ export const ALLOWED_SESSION_ROLES = Object.freeze([
 ]);
 
 /**
- * Permitted projected dispatch outcomes per session (UI_ARCHITECTURE.md §6:162, §7:223).
+ * Permitted projected dispatch outcomes per session (architecture contract §6:162, §7:223).
  * @type {readonly string[]}
  */
 export const ALLOWED_DISPATCH_OUTCOMES = Object.freeze([
@@ -211,7 +211,7 @@ export function validateImmutableEntityId(value, label) {
 }
 
 /**
- * Validates and deeply freezes a capsule-to-session projection batch (`UI_ARCHITECTURE.md` §6, §13).
+ * Validates and deeply freezes a capsule-to-session projection batch (`architecture contract` §6, §13).
  * Enforces the 5 orthogonal axes, closed schema keys, immutable IDs, and the single-active-controller
  * per capsule rule.
  * @param {unknown} raw
@@ -475,7 +475,7 @@ export function validateCapsuleSessionProjection(raw) {
 }
 
 /**
- * Evaluates the G5 activation veil truth table (`UI_ARCHITECTURE.md` §6:211; `SLOT §5`).
+ * Evaluates the G5 activation veil truth table (`architecture contract` §6:211; `SLOT §5`).
  * Veil shows ONLY when more than one live surface exists (`liveSurfaceCount > 1`),
  * this surface lacks keyboard ownership (`!hasKeyboardOwnership`), and it is not under
  * AI command (`!underAiCommand`).
@@ -516,7 +516,7 @@ export function computeActivationVeilState(input) {
 }
 
 /**
- * Preserves live-host focus when interacting with controls beside live surfaces (`UI_ARCHITECTURE.md` §6:212).
+ * Preserves live-host focus when interacting with controls beside live surfaces (`architecture contract` §6:212).
  * `pointerdown` and `mousedown` call `preventDefault()` while button `click` and keyboard events
  * submit the explicit intent without global close-button exceptions.
  * @param {{ type?: string, preventDefault?: () => void }} event
@@ -541,7 +541,7 @@ export function preserveLiveSurfaceFocusGuard(event, options = {}) {
 }
 
 /**
- * Formats the computed accessible name for a session tab per `UI_ARCHITECTURE.md` §9:
+ * Formats the computed accessible name for a session tab per `architecture contract` §9:
  * includes session title, disambiguator, and current projected activity/attention state.
  * @param {{ sessionId: string, title: string, disambiguator?: string, activity: string, attention?: boolean }} session
  * @returns {string}
@@ -554,7 +554,7 @@ export function formatSessionTabAccessibleName(session) {
 
 /**
  * Builds the §9 AI-operability semantic control registration descriptors for `MultiSlot`.
- * Enforces the rule that hidden/folded controls never supply a fabricated box (`UI_ARCHITECTURE.md` §9:290,302).
+ * Enforces the rule that hidden/folded controls never supply a fabricated box (`architecture contract` §9:290,302).
  * @param {Record<string, any>} state - Snapshot from `controller.getState()`.
  * @param {{
  *   presentationInstance?: string,
@@ -752,7 +752,7 @@ export function buildMultiSlotSemanticControls(state, options = {}) {
 }
 
 /**
- * Creates a deterministic, pure-JS MultiSlot controller enforcing `UI_ARCHITECTURE.md` §§ 3, 6, 7, 9, 10, 12, 13:
+ * Creates a deterministic, pure-JS MultiSlot controller enforcing `architecture contract` §§ 3, 6, 7, 9, 10, 12, 13:
  * - Mount, tab selection, fold/unfold, and Dockview remount NEVER spawn or kill a capsule/session.
  * - Attach installs handlers first, requests snapshot/cursor, buffers bounded later chunks, applies snapshot
  *   and contiguous tail to a per-session non-reactive writer, and acknowledges only the contiguous prefix.
@@ -822,7 +822,7 @@ export function createMultiSlotController(config) {
   /**
    * Computes whether terminal input is permitted for a session record.
    * Input is permitted ONLY in `developer-pty` mode when `attachment === 'live'`,
-   * `viewRetention === 'live-view'`, and `hasControlLease === true` (`UI_ARCHITECTURE.md` §6:191, §7:260).
+   * `viewRetention === 'live-view'`, and `hasControlLease === true` (`architecture contract` §6:191, §7:260).
    * @param {Record<string, any>} session
    * @returns {boolean}
    */
@@ -993,7 +993,7 @@ export function createMultiSlotController(config) {
   }
 
   /**
-   * Selects a session tab for viewing (`UI_ARCHITECTURE.md` §6:190, §13).
+   * Selects a session tab for viewing (`architecture contract` §6:190, §13).
    * Changes `viewedSessionId` ONLY; never mutates `recipientSessionIds`, `activeControllerSessionId`,
    * or process lifecycle (`spawnCount === 0`, `killCount === 0`).
    * @param {string} sessionId
@@ -1035,7 +1035,7 @@ export function createMultiSlotController(config) {
   }
 
   /**
-   * Folds the MultiSlot AI area (`UI_ARCHITECTURE.md` §6:189, 197, 207, §13).
+   * Folds the MultiSlot AI area (`architecture contract` §6:189, 197, 207, §13).
    * Moves focus to the valid fold invoker (`capsule/{id}/session-slot/fold`) BEFORE hiding, keeps the DOM host
    * mounted via `mounted hidden classes`, disables display scheduling, cancels pending focus retries, and NEVER kills sessions.
    * @param {Record<string, unknown>} [forbiddenOptions]
@@ -1090,7 +1090,7 @@ export function createMultiSlotController(config) {
   }
 
   /**
-   * Unfolds / restores the MultiSlot AI area (`UI_ARCHITECTURE.md` §6:189, 208).
+   * Unfolds / restores the MultiSlot AI area (`architecture contract` §6:189, 208).
    * Re-enables scheduling while waiting for positive geometry to schedule `rAF` + `120 ms` terminal refit.
    */
   function unfoldSlot() {
@@ -1117,7 +1117,7 @@ export function createMultiSlotController(config) {
 
   /**
    * Verifies positive container geometry after restore/unfold and schedules `rAF` (`0 ms`) plus
-   * `+120 ms` refit retries (`UI_ARCHITECTURE.md` §6:208; `FOLD §2.7`).
+   * `+120 ms` refit retries (`architecture contract` §6:208; `FOLD §2.7`).
    * Rejects empty-box frames (`width <= 0` or `height <= 0`).
    * @param {{ width: number, height: number } | null | undefined} box
    */
@@ -1185,7 +1185,7 @@ export function createMultiSlotController(config) {
   }
 
   /**
-   * Registers a per-session non-reactive writer callback (`UI_ARCHITECTURE.md` §6:195, §10:311).
+   * Registers a per-session non-reactive writer callback (`architecture contract` §6:195, §10:311).
    * @param {string} sessionId
    * @param {(chunk: string, done: () => void) => void} writerFn
    */
@@ -1197,7 +1197,7 @@ export function createMultiSlotController(config) {
   }
 
   /**
-   * Begins session attachment (`UI_ARCHITECTURE.md` §6:191, 195):
+   * Begins session attachment (`architecture contract` §6:191, 195):
    * 1. Installs stream handlers first (`handlersInstalled = true`)
    * 2. Requests authorized snapshot/cursor (`snapshotRequested = true`)
    * 3. Keeps input disabled while in `attaching` / `restoring`
@@ -1281,7 +1281,7 @@ export function createMultiSlotController(config) {
   /**
    * Applies the authorized snapshot through `cursorOffset` plus any contiguous buffered tail,
    * writing directly to the per-session non-reactive writer and acknowledging only the contiguous
-   * parser-consumed prefix (`UI_ARCHITECTURE.md` §6:195).
+   * parser-consumed prefix (`architecture contract` §6:195).
    * @param {string} sessionId
    * @param {{
    *   epoch: number,
@@ -1388,7 +1388,7 @@ export function createMultiSlotController(config) {
   }
 
   /**
-   * Writes a live contiguous stream chunk through the non-reactive writer (`UI_ARCHITECTURE.md` §6:195).
+   * Writes a live contiguous stream chunk through the non-reactive writer (`architecture contract` §6:195).
    * If a sequence gap or stale epoch is detected, refuses to skip VT bytes and restarts reconciliation.
    * @param {string} sessionId
    * @param {{
@@ -1450,7 +1450,7 @@ export function createMultiSlotController(config) {
   }
 
   /**
-   * Negative contrast guard (`UI_ARCHITECTURE.md` §6:192, §12:367):
+   * Negative contrast guard (`architecture contract` §6:192, §12:367):
    * Quiet output NEVER implies `ready` or `done`. Only authenticated core/adapter events change activity.
    * @param {string} sessionId
    * @param {number} _quietDurationMs
@@ -1518,7 +1518,7 @@ export function createMultiSlotController(config) {
   }
 
   /**
-   * Negative contrast (`ARCH:226`, `UI_ARCHITECTURE.md` §6:180):
+   * Negative contrast (`ARCH:226`, `architecture contract` §6:180):
    * Prohibits reviving a destroyed or lost capsule/session under its old identifier.
    * @param {string} attemptedId
    */
@@ -1889,7 +1889,7 @@ const semanticControls = computed(() =>
 );
 
 /**
- * Preserves live-surface DOM focus on pointerdown/mousedown (`UI_ARCHITECTURE.md` §6:212).
+ * Preserves live-surface DOM focus on pointerdown/mousedown (`architecture contract` §6:212).
  * @param {Event} event
  */
 function onSurfaceAdjacentPointer(event) {
@@ -2071,7 +2071,7 @@ defineExpose({
       </div>
     </header>
 
-    <!-- Folded live hosts stay mounted using mounted hidden classes with scheduling disabled (UI_ARCHITECTURE.md §6:197) -->
+    <!-- Folded live hosts stay mounted using mounted hidden classes with scheduling disabled (architecture contract §6:197) -->
     <div
       
       :id="`capsule/${capsuleId}/slot-body`"
