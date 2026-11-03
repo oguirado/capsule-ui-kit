@@ -34,4 +34,4 @@ Install the pre-push hook once per clone: `install -m 755 tools/hooks/pre-push .
 
 - English only. No absolute host paths, user or machine names, credentials or e-mail addresses.
 - Machine-specific settings go in an ignored `local/` folder, never in tracked files.
-- Licence stays UNLICENSED until the owner decides; this repository is private.
+- Licence: `AGPL-3.0-only` ([LICENSE](LICENSE)). Contributions are accepted under the same licence.
